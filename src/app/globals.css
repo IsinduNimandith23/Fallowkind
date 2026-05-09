@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+}
+
+@layer base {
+  body {
+    @apply bg-linen text-forest;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-forest text-linen px-6 py-3 text-sm tracking-widest uppercase hover:bg-sage transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply border border-forest text-forest px-6 py-3 text-sm tracking-widest uppercase hover:bg-forest hover:text-linen transition-colors duration-200;
+  }
+
+  .section-padding {
+    @apply px-6 py-16 md:px-12 lg:px-24;
+  }
+
+  .page-container {
+    @apply max-w-7xl mx-auto;
+  }
+}
