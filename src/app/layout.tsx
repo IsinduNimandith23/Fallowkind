@@ -17,6 +17,9 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: { default: "Fallowkind", template: "%s | Fallowkind" },
   description: "Clothing rooted in the land. Regenerative living.",
+  icons: {
+    icon: "/circle sticker.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

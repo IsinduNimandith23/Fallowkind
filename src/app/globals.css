@@ -7,6 +7,16 @@
   --font-display: "Playfair Display", Georgia, serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Subtle custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #F5F0E5; }
+::-webkit-scrollbar-thumb { background: #A8B89A; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #7A9070; }
+
 @layer base {
   body {
     @apply bg-linen text-forest;
@@ -19,18 +29,80 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-forest text-linen px-6 py-3 text-sm tracking-widest uppercase hover:bg-sage transition-colors duration-200;
+    @apply relative bg-forest text-linen px-7 py-3.5 text-xs tracking-widest uppercase overflow-hidden rounded-lg
+           transition-all duration-300 hover:bg-sage hover:tracking-[0.22em];
   }
 
   .btn-outline {
-    @apply border border-forest text-forest px-6 py-3 text-sm tracking-widest uppercase hover:bg-forest hover:text-linen transition-colors duration-200;
+    @apply border border-forest text-forest px-7 py-3.5 text-xs tracking-widest uppercase rounded-lg
+           transition-all duration-300 hover:bg-forest hover:text-linen hover:tracking-[0.22em];
   }
 
   .section-padding {
-    @apply px-6 py-16 md:px-12 lg:px-24;
+    @apply px-6 py-20 md:px-12 lg:px-24;
   }
 
   .page-container {
     @apply max-w-7xl mx-auto;
   }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Reveal variants */
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-28px);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-fade {
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+
+  .reveal-fade.is-visible {
+    opacity: 1;
+  }
+
+  /* Product card image zoom */
+  .card-img {
+    @apply overflow-hidden;
+  }
+
+  .card-img > * {
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card-img:hover > * {
+    transform: scale(1.06);
+  }
+}
+
+/* Marquee strip */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }

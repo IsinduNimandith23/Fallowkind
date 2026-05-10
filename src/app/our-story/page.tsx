@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import AnimateOnScroll from "@/components/AnimateOnScroll";
 
 export const metadata: Metadata = { title: "Our Story" };
 
@@ -20,14 +22,29 @@ const values = [
 export default function OurStoryPage() {
   return (
     <>
-      {/* Hero */}
-      <section className="bg-forest section-padding">
-        <div className="page-container max-w-3xl">
-          <p className="text-xs tracking-[0.3em] uppercase text-fern mb-6">Who we are</p>
-          <h1 className="text-linen text-5xl md:text-6xl leading-tight mb-8">
-            Rooted in the land.
+      {/* ── Hero ── */}
+      <section className="bg-forest section-padding relative overflow-hidden">
+        {/* Decorative circle */}
+        <div className="absolute -right-32 -top-32 w-96 h-96 rounded-full border border-fern/10" />
+        <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full border border-fern/10" />
+
+        <div className="page-container max-w-3xl relative">
+          <p
+            className="text-xs tracking-[0.35em] uppercase text-fern mb-7 opacity-0 animate-fade-in"
+            style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}
+          >
+            Who we are
+          </p>
+          <h1
+            className="text-linen text-5xl md:text-7xl leading-tight mb-10 opacity-0 animate-fade-in-up"
+            style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
+          >
+            Rooted in<br />the land.
           </h1>
-          <p className="text-linen/70 text-lg leading-relaxed">
+          <p
+            className="text-linen/65 text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
+            style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
+          >
             Fallowkind began as a question: what would clothing look like if it honoured the earth
             it came from? The answer is a small, considered brand — built season by season, stitch
             by stitch.
@@ -35,11 +52,11 @@ export default function OurStoryPage() {
         </div>
       </section>
 
-      {/* Story body */}
+      {/* ── Story body ── */}
       <section className="section-padding page-container grid md:grid-cols-2 gap-16 items-start">
-        <div>
-          <h2 className="text-3xl mb-6">Where it started</h2>
-          <div className="space-y-4 text-forest/70 leading-relaxed">
+        <AnimateOnScroll>
+          <h2 className="text-3xl mb-8">Where it started</h2>
+          <div className="space-y-5 text-forest/65 leading-relaxed">
             <p>
               We grew up around fields — the kind that get left fallow between seasons so the soil
               can breathe and rebuild. That rhythm of rest and renewal became the heartbeat of
@@ -54,31 +71,76 @@ export default function OurStoryPage() {
               is an invitation to slow down and choose well.
             </p>
           </div>
-        </div>
-        <div className="bg-cream aspect-square rounded-sm" />
+        </AnimateOnScroll>
+
+        <AnimateOnScroll delay={150}>
+          <div className="relative aspect-[4/5] bg-cream overflow-hidden rounded-sm group">
+            <Image
+              src="/ModuraShop.jpg"
+              alt="Modura Shop - Our beginning"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute bottom-6 left-6 right-6 bg-linen/80 backdrop-blur-sm p-5">
+              <p className="text-[10px] tracking-widest uppercase text-moss mb-2">Our beginning</p>
+              <p className="text-forest/80 text-sm font-display italic leading-relaxed">
+                &ldquo;One tee. A market stall. A belief.&rdquo;
+              </p>
+            </div>
+          </div>
+        </AnimateOnScroll>
       </section>
 
-      {/* Values */}
+      {/* ── Values ── */}
       <section className="bg-cream section-padding">
         <div className="page-container">
-          <h2 className="text-3xl md:text-4xl mb-12 text-center">What we stand for</h2>
+          <AnimateOnScroll className="text-center mb-16">
+            <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Principles</p>
+            <h2 className="text-3xl md:text-4xl">What we stand for</h2>
+          </AnimateOnScroll>
+
           <div className="grid md:grid-cols-3 gap-8">
-            {values.map((v) => (
-              <div key={v.label} className="border-t-2 border-sage pt-6">
-                <h3 className="text-lg mb-3">{v.label}</h3>
-                <p className="text-forest/60 leading-relaxed text-sm">{v.body}</p>
-              </div>
+            {values.map((v, i) => (
+              <AnimateOnScroll key={v.label} delay={i * 120}>
+                <div className="bg-linen p-8 h-full">
+                  <span className="inline-block w-8 h-px bg-sage mb-7" />
+                  <h3 className="text-lg mb-4 font-display">{v.label}</h3>
+                  <p className="text-forest/60 leading-relaxed text-sm">{v.body}</p>
+                </div>
+              </AnimateOnScroll>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pull quote */}
-      <section className="section-padding page-container text-center max-w-3xl mx-auto">
-        <blockquote className="text-3xl md:text-4xl text-forest leading-snug">
-          &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
-        </blockquote>
+      {/* ── Stats ── */}
+      <section className="section-padding page-container">
+        <AnimateOnScroll className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {[
+            { number: "100%", label: "Natural fibres" },
+            { number: "12",   label: "Workshop partners" },
+            { number: "3%",   label: "Revenue to soil projects" },
+            { number: "2026", label: "Founded" },
+          ].map((s) => (
+            <div key={s.label}>
+              <p className="text-4xl md:text-5xl font-display text-forest mb-2">{s.number}</p>
+              <p className="text-xs tracking-widest uppercase text-moss">{s.label}</p>
+            </div>
+          ))}
+        </AnimateOnScroll>
       </section>
+
+      {/* ── Pull quote ── */}
+      <AnimateOnScroll>
+        <section className="bg-forest section-padding">
+          <div className="page-container text-center max-w-3xl mx-auto">
+            <blockquote className="text-3xl md:text-5xl text-linen font-display leading-snug">
+              &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
+            </blockquote>
+            <p className="mt-8 text-xs tracking-[0.3em] uppercase text-fern/60">— Fallowkind</p>
+          </div>
+        </section>
+      </AnimateOnScroll>
     </>
   );
 }

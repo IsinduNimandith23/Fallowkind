@@ -12,6 +12,16 @@ export default function Footer() {
             <p className="text-linen/60 text-sm leading-relaxed max-w-xs">
               Clothing rooted in the land. Made for those who believe the future is conscious.
             </p>
+            <div className="flex gap-3 pt-1">
+              {["IG", "TK", "PN"].map((s) => (
+                <button
+                  key={s}
+                  className="rounded-lg text-[10px] tracking-widest uppercase text-linen/40 hover:text-linen/80 transition-colors duration-200 border border-linen/20 hover:border-linen/40 w-9 h-9 flex items-center justify-center"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Nav links */}
@@ -42,7 +52,7 @@ export default function Footer() {
                 placeholder="your@gmail.com"
                 className="bg-transparent border border-linen/30 text-linen placeholder:text-linen/30 px-4 py-2 text-sm flex-1 focus:outline-none focus:border-linen/60"
               />
-              <button type="submit" className="bg-linen text-forest px-4 py-2 text-xs tracking-widest uppercase hover:bg-cream transition-colors">
+              <button type="submit" className="rounded-lg bg-linen text-forest px-4 py-2 text-xs tracking-widest uppercase hover:bg-cream transition-colors">
                 Join
               </button>
             </form>

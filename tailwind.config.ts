@@ -20,6 +20,34 @@ const config: Config = {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "Georgia", "serif"],
       },
+      keyframes: {
+        fadeInUp: {
+          "0%":   { opacity: "0", transform: "translateY(28px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        fadeIn: {
+          "0%":   { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        slideInLeft: {
+          "0%":   { opacity: "0", transform: "translateX(-24px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        shimmer: {
+          "0%":   { backgroundPosition: "-200% center" },
+          "100%": { backgroundPosition: "200% center" },
+        },
+        marquee: {
+          "0%":   { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+      },
+      animation: {
+        "fade-in-up":   "fadeInUp 0.7s ease-out forwards",
+        "fade-in":      "fadeIn 0.6s ease-out forwards",
+        "slide-in-left":"slideInLeft 0.6s ease-out forwards",
+        "marquee":      "marquee 20s linear infinite",
+      },
     },
   },
   plugins: [],
