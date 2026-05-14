@@ -1,0 +1,589 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/contexts/CartContext";
+
+const SHIPPING = 400;
+
+const BANK_DETAILS = {
+  accountName: "S sepala dahanayake",
+  accountNumber: "8024217640",
+  bank: "Commercial Bank",
+  branch: "Kottawa",
+};
+
+type PaymentMethod = "bank_transfer" | "cod";
+
+type Form = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  notes: string;
+};
+
+type AppliedCoupon = {
+  code: string;
+  discountType: string;
+  discountValue: number;
+  discountAmount: number;
+};
+
+type UploadedReceipt = {
+  path: string;
+  filename: string;
+  displayName: string;
+};
+
+const INITIAL_FORM: Form = {
+  firstName: "", lastName: "", email: "", phone: "",
+  address: "", city: "", postalCode: "", notes: "",
+};
+
+export default function CheckoutPage() {
+  const router = useRouter();
+  const { items, subtotal, clearCart } = useCart();
+  const [form, setForm] = useState<Form>(INITIAL_FORM);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer");
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [errors, setErrors] = useState<Partial<Form>>({});
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
+
+  const [receipt, setReceipt] = useState<UploadedReceipt | null>(null);
+  const [receiptError, setReceiptError] = useState("");
+  const [receiptUploading, setReceiptUploading] = useState(false);
+
+  useEffect(() => {
+    if (items.length === 0) router.replace("/shop");
+  }, [items, router]);
+
+  const discountAmount = appliedCoupon?.discountAmount ?? 0;
+  const total = subtotal - discountAmount + SHIPPING;
+
+  function setField(field: keyof Form, value: string) {
+    setForm((f) => ({ ...f, [field]: value }));
+    setErrors((e) => ({ ...e, [field]: "" }));
+  }
+
+  function validate(): boolean {
+    const next: Partial<Form> = {};
+    if (!form.firstName.trim()) next.firstName = "Required";
+    if (!form.lastName.trim()) next.lastName = "Required";
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      next.email = "Enter a valid email address";
+    if (!form.phone.trim() || form.phone.replace(/\D/g, "").length < 9)
+      next.phone = "Enter a valid phone number";
+    if (!form.address.trim()) next.address = "Required";
+    if (!form.city.trim()) next.city = "Required";
+    if (!form.postalCode.trim()) next.postalCode = "Required";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
+
+  async function applyCoupon() {
+    if (!couponInput.trim()) return;
+    setCouponLoading(true);
+    setCouponError("");
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponInput.trim(), subtotal }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setAppliedCoupon(data.coupon);
+      } else {
+        setCouponError(data.error || "Invalid coupon");
+        setAppliedCoupon(null);
+      }
+    } catch {
+      setCouponError("Could not validate coupon. Try again.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  async function handleReceiptChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setReceiptError("");
+    setReceiptUploading(true);
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      const res = await fetch("/api/upload/receipt", { method: "POST", body: data });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setReceiptError(json.error || "Could not upload receipt");
+        setReceipt(null);
+      } else {
+        setReceipt({ path: json.path, filename: json.filename, displayName: file.name });
+      }
+    } catch {
+      setReceiptError("Network error while uploading. Try again.");
+    } finally {
+      setReceiptUploading(false);
+      e.target.value = "";
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    if (paymentMethod === "bank_transfer" && !receipt) {
+      setReceiptError("Please upload your payment receipt before placing the order.");
+      return;
+    }
+
+    setLoading(true);
+    setServerError("");
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer: form,
+          items,
+          paymentMethod,
+          couponCode: appliedCoupon?.code,
+          discountAmount,
+          receipt: paymentMethod === "bank_transfer" ? receipt : undefined,
+        }),
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        setServerError(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+
+      clearCart();
+      router.push(`/order-success?id=${data.orderId}&number=${data.orderNumber}&method=${paymentMethod}`);
+    } catch {
+      setServerError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className="section-padding page-container">
+      <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Secure checkout</p>
+      <h1 className="font-display text-3xl md:text-4xl text-forest mb-12">Checkout</h1>
+
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="grid lg:grid-cols-[3fr_2fr] gap-12 xl:gap-20">
+          {/* ── Left: Form ── */}
+          <div className="space-y-10">
+            {/* Contact */}
+            <section>
+              <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Contact</h2>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="First name" error={errors.firstName}>
+                    <input
+                      type="text"
+                      value={form.firstName}
+                      onChange={(e) => setField("firstName", e.target.value)}
+                      className={inputCls(!!errors.firstName)}
+                      placeholder="Kamal"
+                    />
+                  </Field>
+                  <Field label="Last name" error={errors.lastName}>
+                    <input
+                      type="text"
+                      value={form.lastName}
+                      onChange={(e) => setField("lastName", e.target.value)}
+                      className={inputCls(!!errors.lastName)}
+                      placeholder="Perera"
+                    />
+                  </Field>
+                </div>
+                <Field label="Email address" error={errors.email}>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setField("email", e.target.value)}
+                    className={inputCls(!!errors.email)}
+                    placeholder="kamal@example.com"
+                  />
+                </Field>
+                <Field label="Phone number" error={errors.phone}>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) => setField("phone", e.target.value)}
+                    className={inputCls(!!errors.phone)}
+                    placeholder="077 123 4567"
+                  />
+                </Field>
+              </div>
+            </section>
+
+            {/* Shipping address */}
+            <section>
+              <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Shipping address</h2>
+              <div className="space-y-4">
+                <Field label="Street address" error={errors.address}>
+                  <input
+                    type="text"
+                    value={form.address}
+                    onChange={(e) => setField("address", e.target.value)}
+                    className={inputCls(!!errors.address)}
+                    placeholder="123 Galle Road"
+                  />
+                </Field>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="City" error={errors.city}>
+                    <input
+                      type="text"
+                      value={form.city}
+                      onChange={(e) => setField("city", e.target.value)}
+                      className={inputCls(!!errors.city)}
+                      placeholder="Colombo"
+                    />
+                  </Field>
+                  <Field label="Postal code" error={errors.postalCode}>
+                    <input
+                      type="text"
+                      value={form.postalCode}
+                      onChange={(e) => setField("postalCode", e.target.value)}
+                      className={inputCls(!!errors.postalCode)}
+                      placeholder="00300"
+                    />
+                  </Field>
+                </div>
+              </div>
+            </section>
+
+            {/* Order notes */}
+            <section>
+              <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-5">
+                Order notes <span className="normal-case tracking-normal text-forest/30">(optional)</span>
+              </h2>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setField("notes", e.target.value)}
+                rows={3}
+                className="w-full border border-forest/20 bg-transparent px-4 py-3 text-sm text-forest placeholder:text-forest/30 focus:outline-none focus:border-forest/50 transition-colors duration-200 resize-none"
+                placeholder="Special instructions, delivery notes…"
+              />
+            </section>
+
+            {/* Discount code */}
+            <section>
+              <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Discount code</h2>
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between bg-sage/10 border border-sage/30 px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium text-forest">{appliedCoupon.code}</p>
+                    <p className="text-xs text-moss mt-0.5">
+                      {appliedCoupon.discountType === "percentage"
+                        ? `${appliedCoupon.discountValue}% off`
+                        : `Rs. ${appliedCoupon.discountValue.toLocaleString("en-LK")} off`}
+                      {" — "}
+                      saving Rs. {appliedCoupon.discountAmount.toLocaleString("en-LK")}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setAppliedCoupon(null); setCouponInput(""); }}
+                    className="text-forest/35 hover:text-forest transition-colors duration-200 text-xs tracking-widest uppercase"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={couponInput}
+                      onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyCoupon())}
+                      className="flex-1 border border-forest/20 bg-transparent px-4 py-3 text-sm text-forest placeholder:text-forest/30 focus:outline-none focus:border-forest/50 transition-colors duration-200 uppercase tracking-widest"
+                      placeholder="ENTER CODE"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyCoupon}
+                      disabled={couponLoading || !couponInput.trim()}
+                      className="px-5 btn-outline text-xs tracking-widest uppercase disabled:opacity-40"
+                    >
+                      {couponLoading ? "…" : "Apply"}
+                    </button>
+                  </div>
+                  {couponError && (
+                    <p className="text-xs text-red-500/70 mt-2">{couponError}</p>
+                  )}
+                </>
+              )}
+            </section>
+
+            {/* Payment method */}
+            <section>
+              <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Payment method</h2>
+              <div className="space-y-3">
+                <PaymentOption
+                  selected={paymentMethod === "bank_transfer"}
+                  onSelect={() => setPaymentMethod("bank_transfer")}
+                  icon={<BankIcon />}
+                  label="Direct Bank Transfer"
+                  description="Transfer to our account and upload the receipt below. Your order ships once payment clears."
+                />
+                <PaymentOption
+                  selected={paymentMethod === "cod"}
+                  onSelect={() => setPaymentMethod("cod")}
+                  icon={<CodIcon />}
+                  label="Cash on Delivery"
+                  description="Pay in cash when your order is delivered to your door."
+                />
+              </div>
+
+              {paymentMethod === "bank_transfer" && (
+                <div className="mt-5 space-y-5">
+                  {/* Bank details panel */}
+                  <div className="border border-forest/15 bg-cream/40 p-5">
+                    <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
+                      Transfer to this account
+                    </p>
+                    <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-sm">
+                      <dt className="text-forest/55">Account name</dt>
+                      <dd className="text-forest font-medium">{BANK_DETAILS.accountName}</dd>
+                      <dt className="text-forest/55">Account number</dt>
+                      <dd className="text-forest font-medium font-mono">{BANK_DETAILS.accountNumber}</dd>
+                      <dt className="text-forest/55">Bank</dt>
+                      <dd className="text-forest font-medium">{BANK_DETAILS.bank}</dd>
+                      <dt className="text-forest/55">Branch</dt>
+                      <dd className="text-forest font-medium">{BANK_DETAILS.branch}</dd>
+                      <dt className="text-forest/55 pt-2 border-t border-forest/10 mt-1">Amount</dt>
+                      <dd className="text-forest font-semibold pt-2 border-t border-forest/10 mt-1">
+                        Rs. {total.toLocaleString("en-LK")}
+                      </dd>
+                    </dl>
+                    <p className="text-xs text-forest/55 mt-4 leading-relaxed">
+                      Use your <strong className="text-forest">full name</strong> as the payment reference,
+                      then upload your receipt or screenshot below.
+                      Online, in-bank, and ATM deposits are all accepted.
+                    </p>
+                  </div>
+
+                  {/* Receipt upload */}
+                  <Field
+                    label="Payment receipt"
+                    error={receiptError}
+                  >
+                    {receipt ? (
+                      <div className="flex items-center justify-between border border-sage/40 bg-sage/10 px-4 py-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <svg className="w-4 h-4 text-sage shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                          </svg>
+                          <span className="text-sm text-forest truncate">{receipt.displayName}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => { setReceipt(null); setReceiptError(""); }}
+                          className="text-forest/35 hover:text-forest transition-colors duration-200 text-xs tracking-widest uppercase ml-3 shrink-0"
+                        >
+                          Replace
+                        </button>
+                      </div>
+                    ) : (
+                      <label className={`flex items-center justify-center gap-3 border-2 border-dashed ${receiptError ? "border-red-400/70" : "border-forest/25"} px-4 py-6 cursor-pointer hover:border-forest/45 transition-colors duration-200`}>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
+                          onChange={handleReceiptChange}
+                          disabled={receiptUploading}
+                          className="hidden"
+                        />
+                        {receiptUploading ? (
+                          <span className="text-sm text-forest/60">Uploading…</span>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5 text-forest/45" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                            </svg>
+                            <span className="text-sm text-forest/70">
+                              Click to upload your receipt
+                              <span className="block text-xs text-forest/40 mt-0.5">JPG, PNG, WEBP, HEIC or PDF · max 5 MB</span>
+                            </span>
+                          </>
+                        )}
+                      </label>
+                    )}
+                  </Field>
+                </div>
+              )}
+            </section>
+
+            {serverError && (
+              <p className="text-sm text-red-500/80 bg-red-50 border border-red-200 px-4 py-3">
+                {serverError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading || receiptUploading}
+              className="w-full btn-primary text-xs tracking-widest uppercase py-4 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? "Processing…" : "Place Order →"}
+            </button>
+          </div>
+
+          {/* ── Right: Order Summary ── */}
+          <div className="lg:sticky lg:top-28 self-start">
+            <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-6">Order summary</h2>
+
+            <ul className="space-y-4 mb-6">
+              {items.map((item) => (
+                <li
+                  key={`${item.productId}-${item.color}-${item.size}`}
+                  className="flex gap-4"
+                >
+                  <div
+                    className="w-16 h-20 shrink-0 rounded-sm"
+                    style={{ background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)` }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-forest leading-tight">{item.name}</p>
+                    <p className="text-[11px] text-moss mt-0.5">{item.color} · Size {item.size}</p>
+                    <div className="flex justify-between mt-2">
+                      <span className="text-xs text-forest/50">Qty: {item.quantity}</span>
+                      <span className="text-sm text-forest">
+                        Rs. {(item.priceValue * item.quantity).toLocaleString("en-LK")}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="border-t border-forest/10 pt-5 space-y-2.5">
+              <SummaryRow label="Subtotal" value={`Rs. ${subtotal.toLocaleString("en-LK")}`} />
+              {discountAmount > 0 && (
+                <SummaryRow
+                  label={`Discount (${appliedCoupon?.code})`}
+                  value={`−Rs. ${discountAmount.toLocaleString("en-LK")}`}
+                  accent
+                />
+              )}
+              <SummaryRow label="Shipping" value={`Rs. ${SHIPPING.toLocaleString("en-LK")}`} />
+              <div className="border-t border-forest/10 pt-3 flex justify-between">
+                <span className="text-base font-semibold text-forest">Total</span>
+                <span className="text-base font-semibold text-forest">
+                  Rs. {total.toLocaleString("en-LK")}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-forest/10 pt-5">
+              <div className="flex items-center gap-3 text-forest/50">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+                <span className="text-xs">Secure, encrypted checkout</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+// ── Small helpers ────────────────────────────────────────────────
+
+function inputCls(hasError: boolean) {
+  return `w-full border ${hasError ? "border-red-400/70" : "border-forest/20"} bg-transparent px-4 py-3 text-sm text-forest placeholder:text-forest/30 focus:outline-none focus:border-forest/50 transition-colors duration-200`;
+}
+
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="block text-[10px] tracking-widest uppercase text-forest/50 mb-1.5">
+        {label}
+      </label>
+      {children}
+      {error && <p className="text-xs text-red-500/70 mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function PaymentOption({
+  selected, onSelect, icon, label, description,
+}: {
+  selected: boolean;
+  onSelect: () => void;
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`w-full flex items-start gap-4 p-4 border text-left transition-all duration-200 ${
+        selected ? "border-forest bg-cream/60" : "border-forest/15 hover:border-forest/35"
+      }`}
+    >
+      <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-colors duration-200 ${selected ? "border-forest" : "border-forest/30"}`}>
+        {selected && <div className="w-2 h-2 rounded-full bg-forest" />}
+      </div>
+      <div className="text-forest/40 shrink-0 mt-0.5">{icon}</div>
+      <div>
+        <p className="text-sm font-medium text-forest">{label}</p>
+        <p className="text-xs text-forest/50 mt-0.5 leading-relaxed">{description}</p>
+      </div>
+    </button>
+  );
+}
+
+function SummaryRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="flex justify-between">
+      <span className="text-sm text-forest/55">{label}</span>
+      <span className={`text-sm ${accent ? "text-sage" : "text-forest/80"}`}>{value}</span>
+    </div>
+  );
+}
+
+function BankIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l9 4.5H3L12 3zM4.5 9v9m4-9v9m7-9v9m4-9v9M3 21h18" />
+    </svg>
+  );
+}
+
+function CodIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75" />
+    </svg>
+  );
+}

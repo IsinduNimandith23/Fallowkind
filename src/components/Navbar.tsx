@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useCart } from "@/contexts/CartContext";
 
 const links = [
   { href: "/",          label: "Home"      },
@@ -14,27 +15,42 @@ const links = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { totalItems, openCart } = useCart();
 
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="fixed top-0 inset-x-0 z-50">
+    <header className="fixed top-0 inset-x-0 z-40">
       <div className="flex items-center justify-between px-6 md:px-10 h-20 max-w-7xl mx-auto">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 relative z-10">
+        <Link href="/" className="relative flex items-center gap-2 z-10">
+          <span
+            aria-hidden
+            className={`absolute left-1/2 top-[calc(50%+2px)] -translate-x-1/2 -translate-y-1/2 w-36 h-9 rounded-full bg-white/35 backdrop-blur-md border border-white/60 shadow-md transition-opacity duration-300 ${
+              scrolled ? "opacity-100" : "opacity-0"
+            }`}
+          />
           <Image
             src="/Untitled design.png"
             alt="Fallowkind"
             width={200}
             height={200}
-            className="w-44 h-44 object-contain"
+            className="w-44 h-44 object-contain relative"
             priority
           />
         </Link>
 
-        {/* Desktop nav — glassy pill */}
+        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1 bg-white/35 backdrop-blur-md border border-white/60 rounded-full px-2 py-1.5 shadow-md">
           {links.map((l) => {
             const isActive = pathname === l.href;
@@ -56,14 +72,21 @@ export default function Navbar() {
 
         {/* Right icons */}
         <div className="hidden md:flex items-center gap-4 text-forest">
-          {/* <button aria-label="Search" className="hover:text-sage transition-colors duration-200">
-            <SearchIcon className="w-5 h-5" />
-          </button> */}
-          <button aria-label="Cart" className="hover:text-sage transition-colors duration-200 relative">
+          <button
+            onClick={openCart}
+            aria-label="Open cart"
+            className={`hover:text-sage transition-all duration-300 relative w-10 h-10 flex items-center justify-center rounded-full ${
+              scrolled
+                ? "bg-white/35 backdrop-blur-md border border-white/60 shadow-md"
+                : "bg-transparent border border-transparent"
+            }`}
+          >
             <CartIcon className="w-5 h-5" />
-            <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-sage rounded-full text-[8px] text-linen flex items-center justify-center leading-none">
-              0
-            </span>
+            {totalItems > 0 && (
+              <span className="absolute top-0 right-0 w-4 h-4 bg-sage rounded-full text-[8px] text-linen flex items-center justify-center leading-none font-medium">
+                {totalItems > 9 ? "9+" : totalItems}
+              </span>
+            )}
           </button>
         </div>
 
@@ -79,7 +102,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile menu — slide down */}
+      {/* Mobile menu */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
           menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
@@ -98,21 +121,19 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-          <div className="flex gap-5 pt-4 text-forest/60">
-            <button aria-label="Search"><SearchIcon className="w-4 h-4" /></button>
-            <button aria-label="Cart"><CartIcon className="w-4 h-4" /></button>
-          </div>
+          <button
+            onClick={() => { setMenuOpen(false); openCart(); }}
+            className="flex items-center gap-2 pt-4 text-forest/60 hover:text-forest transition-colors duration-200"
+            aria-label="Open cart"
+          >
+            <CartIcon className="w-4 h-4" />
+            {totalItems > 0 && (
+              <span className="text-xs text-moss">({totalItems})</span>
+            )}
+          </button>
         </div>
       </div>
     </header>
-  );
-}
-
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-    </svg>
   );
 }
 

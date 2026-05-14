@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
+import { getAllProducts } from "@/lib/products";
+import { getSiteSettings } from "@/lib/siteSettings";
 
 export const metadata: Metadata = { title: "Home" };
 
-const featured = [
-  { id: 1, name: "Field Tee",       category: "Tops",     price: "$48",  tag: "New"        },
-  { id: 2, name: "Canvas Tote",     category: "Bags",     price: "$36"                     },
-  { id: 3, name: "Harvest Beanie",  category: "Headwear", price: "$32",  tag: "Bestseller" },
-  { id: 4, name: "Linen Overshirt", category: "Tops",     price: "$95",  tag: "New"        },
-];
+// Always render fresh — hero video / product edits should appear immediately.
+export const revalidate = 0;
 
 const marqueeItems = [
   "Binatural Materials",
@@ -20,17 +18,25 @@ const marqueeItems = [
   "Rooted in the Land",
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [products, settings] = await Promise.all([
+    getAllProducts(),
+    getSiteSettings(),
+  ]);
+  const featured = products.slice(0, 4);
+  const heroVideo = settings.heroVideoUrl || "/mp5.mp4";
+
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative -mt-16 h-screen min-h-[640px] overflow-hidden bg-forest flex items-end">
+      <section className="relative -mt-20 h-screen min-h-[640px] overflow-hidden bg-forest flex items-end">
         <div className="absolute inset-0">
           <video
+            key={heroVideo}
             autoPlay muted loop playsInline
             className="absolute inset-0 h-full w-full object-cover"
           >
-            <source src="/mp5.mp4" type="video/mp4" />
+            <source src={heroVideo} type="video/mp4" />
           </video>
           {/* Gradient overlay — heavier at bottom for text legibility */}
           <div className="absolute inset-0 bg-gradient-to-t from-forest/80 via-forest/20 to-transparent" />
@@ -105,7 +111,9 @@ export default function HomePage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {featured.map((item, i) => (
             <AnimateOnScroll key={item.id} delay={i * 100}>
-              <ProductCard {...item} />
+              <Link href={`/shop/${item.id}`}>
+                <ProductCard {...item} />
+              </Link>
             </AnimateOnScroll>
           ))}
         </div>
@@ -196,11 +204,16 @@ export default function HomePage() {
   );
 }
 
-function ProductCard({ name, category, price, tag }: { name: string; category: string; price: string; tag?: string }) {
+function ProductCard({ name, category, price, tag, imageUrl }: { name: string; category: string; price: string; tag?: string; imageUrl?: string }) {
   return (
     <div className="group cursor-pointer">
-      <div className="relative card-img bg-cream aspect-[3/4] mb-4">
-        <div className="w-full h-full bg-gradient-to-br from-fern/25 to-sage/15" />
+      <div className="relative card-img bg-cream aspect-[3/4] mb-4 overflow-hidden">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-fern/25 to-sage/15" />
+        )}
         {tag && (
           <span className="absolute top-3 left-3 text-[9px] tracking-widest uppercase bg-forest text-linen px-2.5 py-1 z-10">
             {tag}
