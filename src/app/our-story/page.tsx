@@ -74,14 +74,14 @@ export default function OurStoryPage() {
         </AnimateOnScroll>
 
         <AnimateOnScroll delay={150}>
-          <div className="relative aspect-[4/5] bg-cream overflow-hidden rounded-sm group">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl group shadow-lg border border-white/40">
             <Image
               src="/ModuraShop.jpg"
               alt="Modura Shop - Our beginning"
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-700"
             />
-            <div className="absolute bottom-6 left-6 right-6 bg-linen/80 backdrop-blur-sm p-5">
+            <div className="absolute bottom-6 left-6 right-6 glass-panel p-5">
               <p className="text-[10px] tracking-widest uppercase text-moss mb-2">Our beginning</p>
               <p className="text-forest/80 text-sm font-display italic leading-relaxed">
                 &ldquo;One tee. A market stall. A belief.&rdquo;
@@ -92,8 +92,12 @@ export default function OurStoryPage() {
       </section>
 
       {/* ── Values ── */}
-      <section className="bg-cream section-padding">
-        <div className="page-container">
+      <section className="relative section-padding overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-cream/55 via-linen/30 to-fern/20" />
+        <div className="absolute -top-32 -right-20 w-96 h-96 rounded-full bg-fern/25 blur-3xl" />
+        <div className="absolute -bottom-32 -left-20 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
+
+        <div className="relative page-container">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Principles</p>
             <h2 className="text-3xl md:text-4xl">What we stand for</h2>
@@ -102,7 +106,7 @@ export default function OurStoryPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {values.map((v, i) => (
               <AnimateOnScroll key={v.label} delay={i * 120}>
-                <div className="bg-linen p-8 h-full">
+                <div className="glass-card p-8 h-full">
                   <span className="inline-block w-8 h-px bg-sage mb-7" />
                   <h3 className="text-lg mb-4 font-display">{v.label}</h3>
                   <p className="text-forest/60 leading-relaxed text-sm">{v.body}</p>
@@ -132,12 +136,16 @@ export default function OurStoryPage() {
 
       {/* ── Pull quote ── */}
       <AnimateOnScroll>
-        <section className="bg-forest section-padding">
-          <div className="page-container text-center max-w-3xl mx-auto">
-            <blockquote className="text-3xl md:text-5xl text-linen font-display leading-snug">
+        <section className="relative section-padding overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-cream/60 via-linen/40 to-fern/25" />
+          <div className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-fern/25 blur-3xl" />
+          <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
+
+          <div className="relative page-container text-center max-w-3xl mx-auto">
+            <blockquote className="text-3xl md:text-5xl text-forest font-display leading-snug">
               &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
             </blockquote>
-            <p className="mt-8 text-xs tracking-[0.3em] uppercase text-fern/60">— Fallowkind</p>
+            <p className="mt-8 text-xs tracking-[0.3em] uppercase text-moss">— Fallowkind</p>
           </div>
         </section>
       </AnimateOnScroll>

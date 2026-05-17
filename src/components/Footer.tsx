@@ -16,7 +16,7 @@ export default function Footer() {
               {["IG", "TK", "PN"].map((s) => (
                 <button
                   key={s}
-                  className="rounded-lg text-[10px] tracking-widest uppercase text-linen/40 hover:text-linen/80 transition-colors duration-200 border border-linen/20 hover:border-linen/40 w-9 h-9 flex items-center justify-center"
+                  className="rounded-full text-[10px] tracking-widest uppercase text-linen/55 hover:text-linen transition-all duration-200 bg-linen/10 backdrop-blur-md border border-linen/25 hover:bg-linen/20 hover:border-linen/45 w-10 h-10 flex items-center justify-center"
                 >
                   {s}
                 </button>
@@ -50,9 +50,9 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="your@gmail.com"
-                className="bg-transparent border border-linen/30 text-linen placeholder:text-linen/30 px-4 py-2 text-sm flex-1 focus:outline-none focus:border-linen/60"
+                className="bg-linen/10 backdrop-blur-md border border-linen/25 rounded-full text-linen placeholder:text-linen/40 px-4 py-2 text-sm flex-1 focus:outline-none focus:bg-linen/20 focus:border-linen/55 transition-all duration-200"
               />
-              <button type="submit" className="rounded-lg bg-linen text-forest px-4 py-2 text-xs tracking-widest uppercase hover:bg-cream transition-colors">
+              <button type="submit" className="rounded-full bg-linen/90 backdrop-blur-md text-forest px-5 py-2 text-xs tracking-widest uppercase hover:bg-linen transition-colors shadow-sm">
                 Join
               </button>
             </form>

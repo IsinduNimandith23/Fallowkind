@@ -30,7 +30,7 @@ export default function CartDrawer() {
 
       {/* Drawer panel */}
       <div
-        className={`fixed top-0 right-0 h-full z-50 w-full max-w-md bg-linen flex flex-col shadow-2xl transition-transform duration-400 ease-in-out ${
+        className={`fixed top-0 right-0 h-full z-50 w-full max-w-md bg-linen/85 backdrop-blur-2xl border-l border-white/40 flex flex-col shadow-2xl transition-transform duration-400 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
@@ -41,7 +41,7 @@ export default function CartDrawer() {
           <div className="flex items-center gap-3">
             <h2 className="font-display text-xl text-forest">Your Cart</h2>
             {totalItems > 0 && (
-              <span className="text-[10px] tracking-widest uppercase text-moss bg-cream px-2 py-0.5">
+              <span className="text-[10px] tracking-widest uppercase text-moss bg-fern/30 backdrop-blur-md border border-white/40 rounded-full px-2.5 py-0.5">
                 {totalItems} {totalItems === 1 ? "item" : "items"}
               </span>
             )}
@@ -86,7 +86,7 @@ export default function CartDrawer() {
 
         {/* Footer — only shown when cart has items */}
         {items.length > 0 && (
-          <div className="border-t border-forest/10 px-6 pt-5 pb-6 space-y-3 bg-linen">
+          <div className="border-t border-forest/10 px-6 pt-5 pb-6 space-y-3 bg-linen/40 backdrop-blur-xl">
             <div className="flex justify-between text-sm text-forest/60">
               <span>Subtotal</span>
               <span>Rs. {subtotal.toLocaleString("en-LK")}</span>
@@ -134,7 +134,7 @@ function CartLineItem({
     <li className="flex gap-4">
       {/* Image placeholder */}
       <div
-        className="w-20 h-24 shrink-0 rounded-sm"
+        className="w-20 h-24 shrink-0 rounded-2xl border border-white/40 shadow-sm"
         style={{
           background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)`,
         }}
@@ -161,19 +161,19 @@ function CartLineItem({
 
         <div className="flex items-center justify-between">
           {/* Qty stepper */}
-          <div className="flex items-center border border-forest/20">
+          <div className="inline-flex items-center rounded-full bg-white/40 backdrop-blur-md border border-white/55 shadow-sm">
             <button
               onClick={() => onUpdateQty(item.quantity - 1)}
-              className="px-2.5 py-1 text-forest/60 hover:text-forest hover:bg-cream transition-colors duration-200 text-sm leading-none"
+              className="pl-3 pr-1.5 py-1 text-forest/60 hover:text-forest transition-colors duration-200 text-sm leading-none"
             >
               −
             </button>
-            <span className="px-3 py-1 text-xs font-medium text-forest border-x border-forest/20 min-w-[32px] text-center">
+            <span className="px-2 py-1 text-xs font-medium text-forest min-w-[28px] text-center">
               {item.quantity}
             </span>
             <button
               onClick={() => onUpdateQty(item.quantity + 1)}
-              className="px-2.5 py-1 text-forest/60 hover:text-forest hover:bg-cream transition-colors duration-200 text-sm leading-none"
+              className="pl-1.5 pr-3 py-1 text-forest/60 hover:text-forest transition-colors duration-200 text-sm leading-none"
             >
               +
             </button>

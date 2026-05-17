@@ -3,6 +3,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export const metadata: Metadata = { title: "Dashboard" };
+export const revalidate = 0;
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {

@@ -19,23 +19,38 @@ html {
 
 @layer base {
   body {
-    @apply bg-linen text-forest;
+    @apply bg-linen text-forest relative font-semibold;
+    background-image:
+      radial-gradient(60% 50% at 12% 8%, rgba(168, 184, 154, 0.25) 0%, rgba(168, 184, 154, 0) 70%),
+      radial-gradient(50% 40% at 88% 92%, rgba(122, 144, 112, 0.18) 0%, rgba(122, 144, 112, 0) 70%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    @apply font-display font-bold;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply relative bg-forest text-linen px-7 py-3.5 text-xs tracking-widest uppercase overflow-hidden rounded-lg
-           transition-all duration-300 hover:bg-sage hover:tracking-[0.22em];
+    @apply relative bg-forest/90 text-linen px-7 py-3.5 text-xs tracking-widest uppercase overflow-hidden rounded-full
+           backdrop-blur-md border border-forest/40 shadow-sm
+           transition-all duration-300 hover:bg-sage hover:tracking-[0.22em] hover:shadow-md;
   }
 
   .btn-outline {
-    @apply border border-forest text-forest px-7 py-3.5 text-xs tracking-widest uppercase rounded-lg
-           transition-all duration-300 hover:bg-forest hover:text-linen hover:tracking-[0.22em];
+    @apply border border-forest/50 bg-white/30 backdrop-blur-md text-forest px-7 py-3.5 text-xs tracking-widest uppercase rounded-full
+           transition-all duration-300 hover:bg-forest hover:text-linen hover:border-forest hover:tracking-[0.22em];
+  }
+
+  .btn-glass {
+    @apply bg-white/35 backdrop-blur-md border border-white/55 text-forest px-7 py-3.5 text-xs tracking-widest uppercase rounded-full
+           shadow-sm transition-all duration-300 hover:bg-white/55 hover:shadow-md hover:tracking-[0.22em];
+  }
+
+  .btn-glass-dark {
+    @apply bg-linen/10 backdrop-blur-md border border-linen/30 text-linen px-7 py-3.5 text-xs tracking-widest uppercase rounded-full
+           shadow-sm transition-all duration-300 hover:bg-linen/20 hover:border-linen/55 hover:tracking-[0.22em];
   }
 
   .section-padding {
@@ -44,6 +59,45 @@ html {
 
   .page-container {
     @apply max-w-7xl mx-auto;
+  }
+
+  /* Glass surfaces */
+  .glass {
+    @apply bg-white/40 backdrop-blur-md border border-white/50 shadow-sm;
+  }
+
+  .glass-card {
+    @apply bg-white/35 backdrop-blur-md border border-white/45 shadow-sm rounded-2xl;
+  }
+
+  .glass-panel {
+    @apply bg-white/40 backdrop-blur-xl border border-white/55 shadow-md rounded-2xl;
+  }
+
+  .glass-dark {
+    @apply bg-forest/30 backdrop-blur-md border border-linen/15 shadow-sm;
+  }
+
+  .glass-tinted {
+    @apply bg-fern/15 backdrop-blur-md border border-fern/30 shadow-sm rounded-2xl;
+  }
+
+  .glass-input {
+    @apply bg-white/35 backdrop-blur-md border border-white/55 rounded-full
+           focus:bg-white/60 focus:border-forest/40 focus:outline-none focus:ring-2 focus:ring-forest/10
+           transition-all duration-200;
+  }
+
+  .glass-input-soft {
+    @apply bg-white/30 backdrop-blur-md border border-white/45 rounded-2xl
+           focus:bg-white/55 focus:border-forest/40 focus:outline-none focus:ring-2 focus:ring-forest/10
+           transition-all duration-200;
+  }
+
+  /* Pill-style tag */
+  .tag-pill {
+    @apply rounded-full px-3 py-1 text-[9px] tracking-widest uppercase
+           bg-forest/85 backdrop-blur-md text-linen border border-linen/15 shadow-sm;
   }
 
   /* Scroll reveal */
@@ -83,7 +137,7 @@ html {
 
   /* Product card image zoom */
   .card-img {
-    @apply overflow-hidden;
+    @apply overflow-hidden rounded-2xl;
   }
 
   .card-img > * {

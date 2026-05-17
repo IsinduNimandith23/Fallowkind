@@ -21,14 +21,15 @@ export async function POST(request: Request) {
   try {
     const form = await request.formData();
     const file = form.get("file");
-    const kind = String(form.get("kind") || "image"); // "image" | "video"
+    const kind = String(form.get("kind") || "image"); // "image" | "video" | "banner"
 
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const allowed = kind === "video" ? VIDEO_TYPES : IMAGE_TYPES;
-    const maxBytes = kind === "video" ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+    const isVideo = kind === "video";
+    const allowed = isVideo ? VIDEO_TYPES : IMAGE_TYPES;
+    const maxBytes = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
 
     if (!allowed.includes(file.type)) {
       return NextResponse.json(
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const folder = kind === "video" ? "hero" : "products";
+    const folder = kind === "video" ? "hero" : kind === "banner" ? "banner" : "products";
     const path = `${folder}/${Date.now()}-${safeName(file.name)}`;
 
     const arrayBuffer = await file.arrayBuffer();

@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 export default function AdminLoginPage() {
-  const [token, setToken] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -15,7 +16,7 @@ export default function AdminLoginPage() {
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
+      body: JSON.stringify({ email, password }),
     });
 
     if (res.ok) {
@@ -23,7 +24,8 @@ export default function AdminLoginPage() {
       // and the sidebar appears immediately.
       window.location.assign("/admin/dashboard");
     } else {
-      setError("Incorrect password. Try again.");
+      const body = await res.json().catch(() => ({}));
+      setError(body?.error || "Incorrect email or password. Try again.");
       setLoading(false);
     }
   }
@@ -38,22 +40,34 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className="bg-linen p-8 rounded-sm">
           <label className="block text-[10px] tracking-widest uppercase text-forest/50 mb-2">
-            Admin password
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border border-forest/20 bg-transparent px-4 py-3 text-sm text-forest focus:outline-none focus:border-forest/60 transition-colors duration-200 mb-4"
+            placeholder="you@example.com"
+            autoFocus
+            required
+          />
+          <label className="block text-[10px] tracking-widest uppercase text-forest/50 mb-2">
+            Password
           </label>
           <input
             type="password"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-forest/20 bg-transparent px-4 py-3 text-sm text-forest focus:outline-none focus:border-forest/60 transition-colors duration-200 mb-4"
             placeholder="Enter your admin password"
-            autoFocus
+            required
           />
           {error && (
             <p className="text-xs text-red-600 mb-4">{error}</p>
           )}
           <button
             type="submit"
-            disabled={loading || !token}
+            disabled={loading || !email || !password}
             className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Signing in…" : "Sign in →"}

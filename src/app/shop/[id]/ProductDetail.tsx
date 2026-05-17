@@ -77,7 +77,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
         {/* ── Gallery ── */}
         <div>
           <div
-            className="aspect-[3/4] w-full mb-3 relative overflow-hidden bg-cream"
+            className="aspect-[3/4] w-full mb-3 relative overflow-hidden rounded-3xl bg-cream/40 backdrop-blur-sm border border-white/40 shadow-md"
             style={product.imageUrl ? undefined : thumbStyles[activeThumb]}
           >
             {product.imageUrl ? (
@@ -87,21 +87,20 @@ export default function ProductDetail({ product, allProducts }: Props) {
               <>
                 <button
                   onClick={() => setActiveThumb((t) => (t - 1 + 4) % 4)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-linen/70 backdrop-blur-sm flex items-center justify-center hover:bg-linen transition-colors duration-200 text-forest text-xl leading-none"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/45 backdrop-blur-md border border-white/60 flex items-center justify-center hover:bg-white/65 transition-colors duration-200 text-forest text-xl leading-none shadow-sm"
                   aria-label="Previous view"
                 >
                   ‹
                 </button>
                 <button
                   onClick={() => setActiveThumb((t) => (t + 1) % 4)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-linen/70 backdrop-blur-sm flex items-center justify-center hover:bg-linen transition-colors duration-200 text-forest text-xl leading-none"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/45 backdrop-blur-md border border-white/60 flex items-center justify-center hover:bg-white/65 transition-colors duration-200 text-forest text-xl leading-none shadow-sm"
                   aria-label="Next view"
                 >
                   ›
                 </button>
-                <div className="absolute inset-6 border border-white/25 pointer-events-none" />
                 <div className="absolute bottom-5 left-0 right-0 flex justify-center">
-                  <span className="text-[9px] tracking-[0.3em] uppercase text-forest/30 bg-white/20 backdrop-blur-sm px-3 py-1">
+                  <span className="rounded-full text-[9px] tracking-[0.3em] uppercase text-forest/60 bg-white/40 backdrop-blur-md border border-white/55 px-3 py-1">
                     {thumbLabels[activeThumb]}
                   </span>
                 </div>
@@ -115,10 +114,10 @@ export default function ProductDetail({ product, allProducts }: Props) {
                 <button
                   key={i}
                   onClick={() => setActiveThumb(i)}
-                  className={`aspect-square transition-all duration-200 ${
+                  className={`aspect-square rounded-2xl border border-white/40 transition-all duration-200 ${
                     activeThumb === i
                       ? "ring-2 ring-forest ring-offset-2"
-                      : "opacity-50 hover:opacity-80"
+                      : "opacity-60 hover:opacity-90"
                   }`}
                   style={style}
                   aria-label={thumbLabels[i]}
@@ -133,9 +132,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
           {/* Tag */}
           {product.tag && (
             <div className="flex items-center gap-3 mb-3">
-              <span className="text-[9px] tracking-widest uppercase bg-forest text-linen px-2.5 py-1">
-                {product.tag}
-              </span>
+              <span className="tag-pill">{product.tag}</span>
             </div>
           )}
 
@@ -205,15 +202,15 @@ export default function ProductDetail({ product, allProducts }: Props) {
                 View Size Guide →
               </button>
             </div>
-            <div className={`flex flex-wrap gap-2 transition-all duration-200 ${sizeError ? "ring-2 ring-red-400/60 ring-offset-2 rounded-sm p-1" : ""}`}>
+            <div className={`flex flex-wrap gap-2 transition-all duration-200 ${sizeError ? "ring-2 ring-red-400/60 ring-offset-2 rounded-2xl p-1" : ""}`}>
               {product.sizes.map((s) => (
                 <button
                   key={s}
                   onClick={() => { setSelectedSize(s); setSizeError(false); }}
-                  className={`min-w-[44px] px-3 py-2 text-xs border transition-all duration-200 ${
+                  className={`min-w-[44px] px-4 py-2 text-xs rounded-full backdrop-blur-md border transition-all duration-200 ${
                     selectedSize === s
                       ? "bg-forest text-linen border-forest"
-                      : "border-forest/25 text-forest/60 hover:border-forest hover:text-forest"
+                      : "bg-white/30 border-white/55 text-forest/65 hover:bg-white/50 hover:text-forest hover:border-forest/40"
                   }`}
                 >
                   {s}
@@ -235,19 +232,19 @@ export default function ProductDetail({ product, allProducts }: Props) {
 
           {/* Qty */}
           <div className="flex items-center mb-3">
-            <div className="flex items-center border border-forest/25">
+            <div className="inline-flex items-center rounded-full bg-white/35 backdrop-blur-md border border-white/55 shadow-sm">
               <button
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="px-3.5 py-3 text-forest hover:bg-cream transition-colors duration-200 leading-none"
+                className="pl-4 pr-2 py-2.5 text-forest hover:text-sage transition-colors duration-200 leading-none"
               >
                 −
               </button>
-              <span className="px-4 py-3 text-sm font-medium text-forest border-x border-forest/25 min-w-[44px] text-center">
+              <span className="px-3 py-2.5 text-sm font-medium text-forest min-w-[40px] text-center">
                 {qty}
               </span>
               <button
                 onClick={() => setQty((q) => q + 1)}
-                className="px-3.5 py-3 text-forest hover:bg-cream transition-colors duration-200 leading-none"
+                className="pl-2 pr-4 py-2.5 text-forest hover:text-sage transition-colors duration-200 leading-none"
               >
                 +
               </button>
@@ -306,7 +303,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
 
           {/* Shipping info */}
           <div className="border-t border-forest/15 py-3">
-            <div className="flex items-center gap-3 px-4 py-3 bg-cream/70 rounded-sm">
+            <div className="flex items-center gap-3 px-4 py-3 glass-card rounded-full">
               <svg
                 className="w-5 h-5 text-forest/40 shrink-0"
                 fill="none"
@@ -335,15 +332,15 @@ export default function ProductDetail({ product, allProducts }: Props) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {related.map((p) => (
               <Link key={p.id} href={`/shop/${p.id}`} className="group">
-                <div className="relative card-img bg-cream aspect-[3/4] mb-4 overflow-hidden">
+                <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 shadow-sm aspect-[3/4] mb-4">
                   {p.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-fern/25 to-sage/15" />
+                    <div className="w-full h-full bg-gradient-to-br from-fern/30 to-sage/15" />
                   )}
                   {p.tag && (
-                    <span className="absolute top-3 left-3 text-[9px] tracking-widest uppercase bg-forest text-linen px-2.5 py-1 z-10">
+                    <span className="absolute top-3 left-3 tag-pill z-10">
                       {p.tag}
                     </span>
                   )}
@@ -373,19 +370,19 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-forest/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-forest/40 backdrop-blur-md p-4"
       onClick={onClose}
     >
       <div
-        className="bg-linen max-w-md w-full p-8 relative"
+        className="glass-panel max-w-md w-full p-8 relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-forest/35 hover:text-forest transition-colors duration-200"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/40 backdrop-blur-md border border-white/55 flex items-center justify-center text-forest/55 hover:text-forest hover:bg-white/60 transition-colors duration-200"
           aria-label="Close size guide"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -394,7 +391,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
         <h2 className="font-display text-2xl text-forest mb-6">Size Guide</h2>
 
         {/* Image placeholder — replace src with actual chart image when ready */}
-        <div className="bg-cream border border-forest/10 aspect-video flex items-center justify-center mb-6 rounded-sm">
+        <div className="glass-card aspect-video flex items-center justify-center mb-6">
           <p className="text-[10px] tracking-widest uppercase text-forest/30">Size chart image coming soon</p>
         </div>
 

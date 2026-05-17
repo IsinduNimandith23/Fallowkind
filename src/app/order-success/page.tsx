@@ -13,8 +13,9 @@ export default async function OrderSuccessPage({ searchParams }: Props) {
     <div className="section-padding page-container min-h-[70vh] flex items-center justify-center">
       <div className="max-w-md w-full text-center">
         {/* Check icon */}
-        <div className="w-16 h-16 rounded-full bg-sage/20 flex items-center justify-center mx-auto mb-8">
-          <svg className="w-8 h-8 text-sage" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <div className="w-20 h-20 rounded-full bg-sage/25 backdrop-blur-md border border-sage/30 shadow-lg flex items-center justify-center mx-auto mb-8 relative">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-fern/40 to-sage/0 blur-xl -z-10" />
+          <svg className="w-9 h-9 text-sage" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
           </svg>
         </div>

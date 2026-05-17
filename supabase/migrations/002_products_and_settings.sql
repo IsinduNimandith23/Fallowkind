@@ -67,32 +67,32 @@ INSERT INTO products
   (id, name, category, price_display, price_value, original_price, tag, description,
    in_stock, material, fit, care, origin, colors, sizes, sort_order)
 VALUES
-  -- ── Essential ──
-  (1, 'Field Tee', 'Essential', 'Rs. 14,500', 14500, 'Rs. 18,000', 'New',
+  -- ── T-Shirts ──
+  (1, 'Field Tee', 'T-Shirts', 'Rs. 14,500', 14500, 'Rs. 18,000', 'New',
    'A crisp everyday tee in 100% organic cotton. Structured enough to dress up, soft enough to live in — the Field Tee earns its place in every rotation.',
    TRUE, '100% Organic Cotton, 180gsm', 'Regular fit — true to size', 'Machine wash cold, tumble dry low', 'Responsibly made in Sri Lanka',
    '[{"name":"Natural","hex":"#EDE6D3"},{"name":"Forest","hex":"#2A3D2A"},{"name":"Sage","hex":"#4F6B4A"},{"name":"Clay","hex":"#A0745A"}]'::jsonb,
    ARRAY['S','M','L','XL','XXL'], 1),
 
-  (2, 'Earthwork Tee', 'Essential', 'Rs. 13,200', 13200, NULL, NULL,
+  (2, 'Earthwork Tee', 'T-Shirts', 'Rs. 13,200', 13200, NULL, NULL,
    'Built for days that start early. A clean, everyday staple cut from midweight organic cotton with a clean crew neck and a slightly longer back hem.',
    TRUE, '100% Organic Cotton, 180gsm', 'Regular fit — true to size', 'Machine wash cold, tumble dry low', 'Responsibly made in Sri Lanka',
    '[{"name":"Clay","hex":"#A0745A"},{"name":"Forest","hex":"#2A3D2A"},{"name":"Oat","hex":"#D4C4A0"}]'::jsonb,
    ARRAY['S','M','L','XL','XXL'], 2),
 
-  (3, 'Root Tee', 'Essential', 'Rs. 12,900', 12900, NULL, NULL,
+  (3, 'Root Tee', 'T-Shirts', 'Rs. 12,900', 12900, NULL, NULL,
    'Back to basics. The Root Tee is a minimalist organic cotton essential with a clean neckline and an easy, flattering fit that holds its shape over time.',
    TRUE, '100% Organic Cotton, 180gsm', 'Regular fit — true to size', 'Machine wash cold, tumble dry low', 'Responsibly made in Sri Lanka',
    '[{"name":"Natural","hex":"#EDE6D3"},{"name":"Moss","hex":"#7A9070"},{"name":"Forest","hex":"#2A3D2A"}]'::jsonb,
    ARRAY['S','M','L','XL','XXL'], 3),
 
-  (4, 'Fern Tee', 'Essential', 'Rs. 13,500', 13500, NULL, NULL,
+  (4, 'Fern Tee', 'T-Shirts', 'Rs. 13,500', 13500, NULL, NULL,
    'Quiet colour for the everyday. A slightly longer hem and a softened ribbed collar set the Fern Tee apart from the basics — earth tones, easy fit.',
    TRUE, '100% Organic Cotton, 180gsm', 'Regular fit — true to size', 'Machine wash cold, tumble dry low', 'Responsibly made in Sri Lanka',
    '[{"name":"Moss","hex":"#7A9070"},{"name":"Sage","hex":"#4F6B4A"},{"name":"Natural","hex":"#EDE6D3"},{"name":"Oat","hex":"#D4C4A0"}]'::jsonb,
    ARRAY['S','M','L','XL','XXL'], 4),
 
-  (5, 'Loam Tee', 'Essential', 'Rs. 14,200', 14200, NULL, 'Bestseller',
+  (5, 'Loam Tee', 'T-Shirts', 'Rs. 14,200', 14200, NULL, 'Bestseller',
    'Our most loved everyday tee. The Loam Tee is the kind of staple you reach for without thinking — consistent, comfortable, and made to last many seasons.',
    TRUE, '100% Organic Cotton, 180gsm', 'Regular fit — true to size', 'Machine wash cold, tumble dry low', 'Responsibly made in Sri Lanka',
    '[{"name":"Stone","hex":"#C4B89A"},{"name":"Forest","hex":"#2A3D2A"},{"name":"Bark","hex":"#6B5B45"},{"name":"Oat","hex":"#D4C4A0"}]'::jsonb,

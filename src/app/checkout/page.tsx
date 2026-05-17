@@ -273,13 +273,13 @@ export default function CheckoutPage() {
             {/* Order notes */}
             <section>
               <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-5">
-                Order notes <span className="normal-case tracking-normal text-forest/30">(optional)</span>
+                Order notes <span className="normal-case tracking-normal text-forest/55">(optional)</span>
               </h2>
               <textarea
                 value={form.notes}
                 onChange={(e) => setField("notes", e.target.value)}
                 rows={3}
-                className="w-full border border-forest/20 bg-transparent px-4 py-3 text-sm text-forest placeholder:text-forest/30 focus:outline-none focus:border-forest/50 transition-colors duration-200 resize-none"
+                className="w-full glass-input-soft px-4 py-3 text-sm text-forest placeholder:text-forest/50 resize-none"
                 placeholder="Special instructions, delivery notes…"
               />
             </section>
@@ -288,7 +288,7 @@ export default function CheckoutPage() {
             <section>
               <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Discount code</h2>
               {appliedCoupon ? (
-                <div className="flex items-center justify-between bg-sage/10 border border-sage/30 px-4 py-3">
+                <div className="flex items-center justify-between glass-tinted px-4 py-3">
                   <div>
                     <p className="text-sm font-medium text-forest">{appliedCoupon.code}</p>
                     <p className="text-xs text-moss mt-0.5">
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                       value={couponInput}
                       onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyCoupon())}
-                      className="flex-1 border border-forest/20 bg-transparent px-4 py-3 text-sm text-forest placeholder:text-forest/30 focus:outline-none focus:border-forest/50 transition-colors duration-200 uppercase tracking-widest"
+                      className="flex-1 glass-input px-5 py-3 text-sm text-forest placeholder:text-forest/50 uppercase tracking-widest"
                       placeholder="ENTER CODE"
                     />
                     <button
@@ -357,25 +357,25 @@ export default function CheckoutPage() {
               {paymentMethod === "bank_transfer" && (
                 <div className="mt-5 space-y-5">
                   {/* Bank details panel */}
-                  <div className="border border-forest/15 bg-cream/40 p-5">
+                  <div className="glass-card p-6">
                     <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
                       Transfer to this account
                     </p>
                     <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-sm">
-                      <dt className="text-forest/55">Account name</dt>
+                      <dt className="text-forest/75">Account name</dt>
                       <dd className="text-forest font-medium">{BANK_DETAILS.accountName}</dd>
-                      <dt className="text-forest/55">Account number</dt>
+                      <dt className="text-forest/75">Account number</dt>
                       <dd className="text-forest font-medium font-mono">{BANK_DETAILS.accountNumber}</dd>
-                      <dt className="text-forest/55">Bank</dt>
+                      <dt className="text-forest/75">Bank</dt>
                       <dd className="text-forest font-medium">{BANK_DETAILS.bank}</dd>
-                      <dt className="text-forest/55">Branch</dt>
+                      <dt className="text-forest/75">Branch</dt>
                       <dd className="text-forest font-medium">{BANK_DETAILS.branch}</dd>
                       <dt className="text-forest/55 pt-2 border-t border-forest/10 mt-1">Amount</dt>
                       <dd className="text-forest font-semibold pt-2 border-t border-forest/10 mt-1">
                         Rs. {total.toLocaleString("en-LK")}
                       </dd>
                     </dl>
-                    <p className="text-xs text-forest/55 mt-4 leading-relaxed">
+                    <p className="text-xs text-forest/75 mt-4 leading-relaxed">
                       Use your <strong className="text-forest">full name</strong> as the payment reference,
                       then upload your receipt or screenshot below.
                       Online, in-bank, and ATM deposits are all accepted.
@@ -388,7 +388,7 @@ export default function CheckoutPage() {
                     error={receiptError}
                   >
                     {receipt ? (
-                      <div className="flex items-center justify-between border border-sage/40 bg-sage/10 px-4 py-3">
+                      <div className="flex items-center justify-between glass-tinted px-4 py-3">
                         <div className="flex items-center gap-3 min-w-0">
                           <svg className="w-4 h-4 text-sage shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -404,7 +404,7 @@ export default function CheckoutPage() {
                         </button>
                       </div>
                     ) : (
-                      <label className={`flex items-center justify-center gap-3 border-2 border-dashed ${receiptError ? "border-red-400/70" : "border-forest/25"} px-4 py-6 cursor-pointer hover:border-forest/45 transition-colors duration-200`}>
+                      <label className={`flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed bg-white/25 backdrop-blur-md ${receiptError ? "border-red-400/70" : "border-forest/25"} px-4 py-6 cursor-pointer hover:border-forest/45 hover:bg-white/40 transition-all duration-200`}>
                         <input
                           type="file"
                           accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
@@ -419,9 +419,9 @@ export default function CheckoutPage() {
                             <svg className="w-5 h-5 text-forest/45" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                             </svg>
-                            <span className="text-sm text-forest/70">
+                            <span className="text-sm text-forest/80">
                               Click to upload your receipt
-                              <span className="block text-xs text-forest/40 mt-0.5">JPG, PNG, WEBP, HEIC or PDF · max 5 MB</span>
+                              <span className="block text-xs text-forest/60 mt-0.5">JPG, PNG, WEBP, HEIC or PDF · max 5 MB</span>
                             </span>
                           </>
                         )}
@@ -433,7 +433,7 @@ export default function CheckoutPage() {
             </section>
 
             {serverError && (
-              <p className="text-sm text-red-500/80 bg-red-50 border border-red-200 px-4 py-3">
+              <p className="text-sm text-red-600/90 bg-red-50/60 backdrop-blur-md border border-red-200/70 rounded-2xl px-4 py-3">
                 {serverError}
               </p>
             )}
@@ -458,14 +458,14 @@ export default function CheckoutPage() {
                   className="flex gap-4"
                 >
                   <div
-                    className="w-16 h-20 shrink-0 rounded-sm"
+                    className="w-16 h-20 shrink-0 rounded-2xl border border-white/40 shadow-sm"
                     style={{ background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)` }}
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-forest leading-tight">{item.name}</p>
                     <p className="text-[11px] text-moss mt-0.5">{item.color} · Size {item.size}</p>
                     <div className="flex justify-between mt-2">
-                      <span className="text-xs text-forest/50">Qty: {item.quantity}</span>
+                      <span className="text-xs text-forest/70">Qty: {item.quantity}</span>
                       <span className="text-sm text-forest">
                         Rs. {(item.priceValue * item.quantity).toLocaleString("en-LK")}
                       </span>
@@ -494,7 +494,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="mt-6 border-t border-forest/10 pt-5">
-              <div className="flex items-center gap-3 text-forest/50">
+              <div className="flex items-center gap-3 text-forest/70">
                 <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                 </svg>
@@ -511,7 +511,7 @@ export default function CheckoutPage() {
 // ── Small helpers ────────────────────────────────────────────────
 
 function inputCls(hasError: boolean) {
-  return `w-full border ${hasError ? "border-red-400/70" : "border-forest/20"} bg-transparent px-4 py-3 text-sm text-forest placeholder:text-forest/30 focus:outline-none focus:border-forest/50 transition-colors duration-200`;
+  return `w-full glass-input px-5 py-3 text-sm text-forest placeholder:text-forest/50 ${hasError ? "!border-red-400/70" : ""}`;
 }
 
 function Field({
@@ -525,7 +525,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-[10px] tracking-widest uppercase text-forest/50 mb-1.5">
+      <label className="block text-[10px] tracking-widest uppercase text-forest/75 mb-1.5">
         {label}
       </label>
       {children}
@@ -547,8 +547,10 @@ function PaymentOption({
     <button
       type="button"
       onClick={onSelect}
-      className={`w-full flex items-start gap-4 p-4 border text-left transition-all duration-200 ${
-        selected ? "border-forest bg-cream/60" : "border-forest/15 hover:border-forest/35"
+      className={`w-full flex items-start gap-4 p-4 rounded-2xl backdrop-blur-md text-left transition-all duration-200 ${
+        selected
+          ? "bg-fern/25 border border-forest/40 shadow-sm"
+          : "bg-white/30 border border-white/50 hover:bg-white/45 hover:border-forest/30"
       }`}
     >
       <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center transition-colors duration-200 ${selected ? "border-forest" : "border-forest/30"}`}>
@@ -557,7 +559,7 @@ function PaymentOption({
       <div className="text-forest/40 shrink-0 mt-0.5">{icon}</div>
       <div>
         <p className="text-sm font-medium text-forest">{label}</p>
-        <p className="text-xs text-forest/50 mt-0.5 leading-relaxed">{description}</p>
+        <p className="text-xs text-forest/70 mt-0.5 leading-relaxed">{description}</p>
       </div>
     </button>
   );
@@ -566,8 +568,8 @@ function PaymentOption({
 function SummaryRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="flex justify-between">
-      <span className="text-sm text-forest/55">{label}</span>
-      <span className={`text-sm ${accent ? "text-sage" : "text-forest/80"}`}>{value}</span>
+      <span className="text-sm text-forest/75">{label}</span>
+      <span className={`text-sm ${accent ? "text-sage" : "text-forest"}`}>{value}</span>
     </div>
   );
 }

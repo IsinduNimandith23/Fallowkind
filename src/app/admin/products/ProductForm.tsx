@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Product, ProductColor } from "@/lib/products";
 
 const SIZE_OPTIONS = ["S", "M", "L", "XL"];
-const CATEGORY_OPTIONS = ["Essential", "Graphic", "Heavyweight", "Oversized"];
+const CATEGORY_OPTIONS = ["T-Shirts", "Graphic", "Heavyweight", "Oversized"];
 const TAG_OPTIONS = ["", "New", "Bestseller", "Sale", "Limited"];
 
 type Props = {
@@ -27,7 +27,7 @@ export default function ProductForm({ mode, product }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(product?.name ?? "");
-  const [category, setCategory] = useState(product?.category ?? "Essential");
+  const [category, setCategory] = useState(product?.category ?? "T-Shirts");
   const [priceDisplay, setPriceDisplay] = useState(product?.price ?? "Rs. ");
   const [priceValue, setPriceValue] = useState<number>(
     product ? parsePriceDigits(product.price) : 0

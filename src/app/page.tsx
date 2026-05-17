@@ -59,10 +59,10 @@ export default async function HomePage() {
             className="flex flex-wrap gap-4 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
           >
-            <Link href="/shop" className="btn-primary">
+            <Link href="/shop" className="btn-glass-dark">
               Shop the Collection
             </Link>
-            <Link href="/our-story" className="rounded-lg border border-linen/50 text-linen px-7 py-3.5 text-xs tracking-widest uppercase transition-all duration-300 hover:border-linen hover:bg-linen/10 hover:tracking-[0.22em]">
+            <Link href="/our-story" className="rounded-full border border-linen/40 bg-linen/10 backdrop-blur-md text-linen px-7 py-3.5 text-xs tracking-widest uppercase transition-all duration-300 hover:border-linen hover:bg-linen/20 hover:tracking-[0.22em]">
               Our Story
             </Link>
           </div>
@@ -128,7 +128,7 @@ export default async function HomePage() {
               Binatural materials,<br />made to last.
             </h2>
             <div className="mt-10 flex justify-center">
-              <Link href="/our-story" className="rounded-lg border border-linen/40 text-linen/80 px-7 py-3 text-xs tracking-widest uppercase transition-all duration-300 hover:border-linen hover:text-linen hover:tracking-[0.22em]">
+              <Link href="/our-story" className="rounded-full bg-linen/15 backdrop-blur-md border border-linen/40 text-linen/90 px-7 py-3 text-xs tracking-widest uppercase transition-all duration-300 hover:bg-linen/25 hover:border-linen hover:text-linen hover:tracking-[0.22em]">
                 Learn more
               </Link>
             </div>
@@ -150,7 +150,7 @@ export default async function HomePage() {
             { label: "Regenerative Roots", body: "A portion of every sale funds soil health projects. The land gives; we give back." },
           ].map((v, i) => (
             <AnimateOnScroll key={v.label} delay={i * 120}>
-              <div className="border-t-2 border-sage pt-7">
+              <div className="glass-card p-8 h-full">
                 <div className="w-6 h-6 mb-5">
                   <LeafIcon />
                 </div>
@@ -177,9 +177,9 @@ export default async function HomePage() {
         </AnimateOnScroll>
 
         <AnimateOnScroll delay={150}>
-          <div className="relative aspect-[4/5] bg-cream overflow-hidden rounded-sm group">
-            <div className="absolute inset-0 bg-gradient-to-br from-fern/30 to-sage/20 group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute bottom-6 left-6 right-6">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl group shadow-lg border border-white/40">
+            <div className="absolute inset-0 bg-gradient-to-br from-fern/45 via-cream/30 to-sage/30 group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute bottom-6 left-6 right-6 glass-panel p-5">
               <p className="text-xs tracking-[0.25em] uppercase text-forest/50 mb-1">Est. 2023</p>
               <p className="text-forest/80 text-sm font-display italic leading-relaxed">
                 &ldquo;We started with one tee and a market stall.&rdquo;
@@ -191,8 +191,11 @@ export default async function HomePage() {
 
       {/* ── Pull quote ── */}
       <AnimateOnScroll>
-        <section className="bg-cream section-padding">
-          <div className="page-container text-center max-w-3xl mx-auto">
+        <section className="relative section-padding overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-cream/60 via-linen/40 to-fern/25" />
+          <div className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-fern/25 blur-3xl" />
+          <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
+          <div className="relative page-container text-center max-w-3xl mx-auto">
             <p className="text-4xl md:text-5xl text-forest font-display leading-snug">
               &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
             </p>
@@ -207,20 +210,20 @@ export default async function HomePage() {
 function ProductCard({ name, category, price, tag, imageUrl }: { name: string; category: string; price: string; tag?: string; imageUrl?: string }) {
   return (
     <div className="group cursor-pointer">
-      <div className="relative card-img bg-cream aspect-[3/4] mb-4 overflow-hidden">
+      <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 aspect-[3/4] mb-4 shadow-sm">
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-fern/25 to-sage/15" />
+          <div className="w-full h-full bg-gradient-to-br from-fern/30 to-sage/15" />
         )}
         {tag && (
-          <span className="absolute top-3 left-3 text-[9px] tracking-widest uppercase bg-forest text-linen px-2.5 py-1 z-10">
+          <span className="absolute top-3 left-3 tag-pill z-10">
             {tag}
           </span>
         )}
         {/* Quick add — slides up on hover */}
-        <div className="absolute bottom-0 inset-x-0 bg-forest/90 backdrop-blur-sm text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+        <div className="absolute bottom-0 inset-x-0 bg-forest/80 backdrop-blur-md text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           Quick Add
         </div>
       </div>

@@ -1,16 +1,29 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
+import {
+  ADMIN_ACCESS_COOKIE,
+  ADMIN_REFRESH_COOKIE,
+  getAdminUserFromAccessToken,
+  refreshAdminSession,
+} from "@/lib/adminAuth";
 import AdminSidebar from "./AdminSidebar";
 
 export const metadata: Metadata = { title: { default: "Admin", template: "%s | Admin" } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
-  const isAuthed = cookieStore.get("fk_admin")?.value === process.env.ADMIN_TOKEN;
+  const accessToken = cookieStore.get(ADMIN_ACCESS_COOKIE)?.value;
+  const refreshToken = cookieStore.get(ADMIN_REFRESH_COOKIE)?.value;
+
+  let user = await getAdminUserFromAccessToken(accessToken);
+  if (!user) {
+    const refreshed = await refreshAdminSession(refreshToken);
+    user = refreshed?.user ?? null;
+  }
 
   // Logged out: render the page bare (login screen handles its own layout)
-  if (!isAuthed) {
+  if (!user) {
     return <>{children}</>;
   }
 

@@ -12,7 +12,7 @@ export default function ContactPage() {
         <AnimateOnScroll className="mb-14">
           <p className="text-xs tracking-[0.3em] uppercase text-moss mb-4">Get in touch</p>
           <h1 className="text-4xl md:text-6xl mb-6">Say hello.</h1>
-          <p className="text-forest/55 leading-relaxed max-w-md">
+          <p className="text-forest/75 leading-relaxed max-w-md">
             Questions about an order, wholesale enquiries, or just want to talk about
             regenerative living — we&apos;re here for it.
           </p>
@@ -27,7 +27,7 @@ export default function ContactPage() {
             </div>
             <FormField id="subject" label="Subject" type="text" />
             <div className="flex flex-col gap-2">
-              <label htmlFor="message" className="text-[10px] tracking-widest uppercase text-forest/45">
+              <label htmlFor="message" className="text-[10px] tracking-widest uppercase text-forest/75">
                 Message
               </label>
               <textarea
@@ -35,7 +35,7 @@ export default function ContactPage() {
                 name="message"
                 rows={6}
                 required
-                className="bg-cream border border-transparent focus:border-sage/60 focus:outline-none focus:bg-linen px-5 py-4 text-sm text-forest placeholder:text-forest/30 resize-none transition-all duration-200"
+                className="glass-input-soft px-5 py-4 text-sm text-forest placeholder:text-forest/50 resize-none"
                 placeholder="Your message..."
               />
             </div>
@@ -54,34 +54,34 @@ export default function ContactPage() {
         <AnimateOnScroll>
           <div className="grid gap-10 text-sm sm:grid-cols-2">
             <div>
-              <p className="text-[10px] tracking-widest uppercase text-forest/40 mb-3">Email</p>
+              <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Email</p>
               <a
                 href="mailto:fallowkind@gmail.com"
-                className="text-forest/70 hover:text-forest transition-colors duration-200"
+                className="text-forest/85 hover:text-forest transition-colors duration-200"
               >
                 fallowkind@gmail.com
               </a>
             </div>
             <div>
-              <p className="text-[10px] tracking-widest uppercase text-forest/40 mb-3">Phone</p>
+              <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Phone</p>
               <div className="flex flex-col gap-1.5">
-                <a href="tel:+61407610465" className="text-forest/70 hover:text-forest transition-colors duration-200">
+                <a href="tel:+61407610465" className="text-forest/85 hover:text-forest transition-colors duration-200">
                   +61 407 610 465
                 </a>
-                <a href="tel:+94767357660" className="text-forest/70 hover:text-forest transition-colors duration-200">
+                <a href="tel:+94767357660" className="text-forest/85 hover:text-forest transition-colors duration-200">
                   +94 76 735 7660
                 </a>
               </div>
             </div>
             <div>
-              <p className="text-[10px] tracking-widest uppercase text-forest/40 mb-3">Address</p>
-              <p className="text-forest/70 leading-relaxed">
+              <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Address</p>
+              <p className="text-forest/85 leading-relaxed">
                 164/1, Rathmaldeniya Road,<br />Erewwala, Pannipitiya
               </p>
             </div>
             <div>
-              <p className="text-[10px] tracking-widest uppercase text-forest/40 mb-3">Response time</p>
-              <p className="text-forest/70">We reply within 2 business days.</p>
+              <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Response time</p>
+              <p className="text-forest/85">We reply within a day.</p>
             </div>
           </div>
         </AnimateOnScroll>
@@ -93,7 +93,7 @@ export default function ContactPage() {
 function FormField({ id, label, type }: { id: string; label: string; type: string }) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-[10px] tracking-widest uppercase text-forest/45">
+      <label htmlFor={id} className="text-[10px] tracking-widest uppercase text-forest/75">
         {label}
       </label>
       <input
@@ -101,7 +101,7 @@ function FormField({ id, label, type }: { id: string; label: string; type: strin
         name={id}
         type={type}
         required
-        className="bg-cream border border-transparent focus:border-sage/60 focus:outline-none focus:bg-linen px-5 py-3.5 text-sm text-forest placeholder:text-forest/30 transition-all duration-200"
+        className="glass-input px-5 py-3.5 text-sm text-forest placeholder:text-forest/50"
         placeholder={label}
       />
     </div>

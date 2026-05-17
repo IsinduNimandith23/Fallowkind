@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { supabase } from "@/lib/supabase";
 import CreateCouponForm from "./CreateCouponForm";
 import ToggleButton from "./ToggleButton";
+import CouponRowActions from "./CouponRowActions";
 
 export const metadata: Metadata = { title: "Coupons" };
 
@@ -40,6 +41,7 @@ export default async function CouponsPage() {
                   <Th>Uses</Th>
                   <Th>Expires</Th>
                   <Th>Active</Th>
+                  <Th>Actions</Th>
                 </tr>
               </thead>
               <tbody>
@@ -78,6 +80,19 @@ export default async function CouponsPage() {
                       </td>
                       <td className="px-6 py-3.5">
                         <ToggleButton id={coupon.id} active={coupon.active} />
+                      </td>
+                      <td className="px-6 py-3.5">
+                        <CouponRowActions
+                          coupon={{
+                            id: coupon.id,
+                            code: coupon.code,
+                            discount_type: coupon.discount_type,
+                            discount_value: coupon.discount_value,
+                            min_order_value: coupon.min_order_value,
+                            max_uses: coupon.max_uses,
+                            expires_at: coupon.expires_at,
+                          }}
+                        />
                       </td>
                     </tr>
                   );
