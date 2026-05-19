@@ -29,7 +29,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative -mt-20 h-screen min-h-[640px] overflow-hidden bg-forest flex items-end">
+      <section className="relative -mt-20 h-screen min-h-[640px] overflow-hidden bg-forest flex items-center">
         <div className="absolute inset-0">
           <video
             key={heroVideo}
@@ -38,31 +38,32 @@ export default async function HomePage() {
           >
             <source src={heroVideo} type="video/mp4" />
           </video>
-          {/* Gradient overlay — heavier at bottom for text legibility */}
-          <div className="absolute inset-0 bg-gradient-to-t from-forest/80 via-forest/20 to-transparent" />
+          {/* Gradient overlay — subtle top/bottom darkening for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-forest/70 via-forest/15 to-forest/25" />
         </div>
 
-        <div className="relative section-padding page-container w-full pb-24">
+        <div className="relative section-padding w-full mr-auto pt-24">
           <p
-            className="text-xs tracking-[0.35em] uppercase text-fern mb-5 opacity-0 animate-fade-in"
+            className="text-xs tracking-[0.35em] uppercase text-fern mb-6 opacity-0 animate-fade-in"
             style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
           >
             The Fallowkind Issue — Regenerative Living
           </p>
           <h1
-            className="text-linen text-5xl md:text-7xl lg:text-8xl leading-[1.05] max-w-3xl mb-10 opacity-0 animate-fade-in-up"
+            className="text-linen text-5xl md:text-7xl lg:text-8xl xl:text-9xl leading-[0.95] font-bold tracking-tight mb-10 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.5s", animationFillMode: "forwards" }}
           >
-            The Future<br />is Conscious.
+            <span className="block whitespace-nowrap">The Future</span>
+            <span className="block whitespace-nowrap">is Conscious.</span>
           </h1>
           <div
             className="flex flex-wrap gap-4 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
           >
-            <Link href="/shop" className="btn-glass-dark">
+            <Link href="/shop" className="btn-glass-dark !px-10 !py-5 !text-sm">
               Shop the Collection
             </Link>
-            <Link href="/our-story" className="rounded-full border border-linen/40 bg-linen/10 backdrop-blur-md text-linen px-7 py-3.5 text-xs tracking-widest uppercase transition-all duration-300 hover:border-linen hover:bg-linen/20 hover:tracking-[0.22em]">
+            <Link href="/our-story" className="rounded-full border border-linen/40 bg-linen/10 backdrop-blur-md text-linen px-10 py-5 text-sm tracking-widest uppercase transition-all duration-300 hover:border-linen hover:bg-linen/20 hover:tracking-[0.22em]">
               Our Story
             </Link>
           </div>
@@ -75,7 +76,7 @@ export default async function HomePage() {
         >
           <span className="text-[10px] tracking-[0.25em] uppercase text-linen/50 rotate-90 origin-center mb-4">Scroll</span>
           <div className="w-px h-12 bg-linen/30 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full bg-fern animate-[fadeInUp_2s_ease-in-out_infinite]" style={{ height: "40%" }} />
+            <div className="absolute top-0 left-0 w-full bg-fern animate-[scrollDown_2s_ease-in-out_infinite]" style={{ height: "40%" }} />
           </div>
         </div>
       </section>
@@ -97,7 +98,7 @@ export default async function HomePage() {
         <AnimateOnScroll className="flex items-end justify-between mb-12">
           <div>
             <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Fresh in</p>
-            <h2 className="text-3xl md:text-4xl text-forest">New Arrivals</h2>
+            <h2 className="text-5xl md:text-7xl text-forest">New Arrivals</h2>
           </div>
           <Link
             href="/shop"
@@ -124,7 +125,7 @@ export default async function HomePage() {
         <section className="bg-sage py-24 overflow-hidden">
           <div className="page-container text-center px-6">
             <p className="text-xs tracking-[0.35em] uppercase text-linen/50 mb-5">Our commitment</p>
-            <h2 className="text-linen text-3xl md:text-5xl lg:text-6xl max-w-3xl mx-auto leading-tight font-display">
+            <h2 className="text-linen text-3xl md:text-5xl lg:text-6xl max-w-4xl mx-auto">
               Binatural materials,<br />made to last.
             </h2>
             <div className="mt-10 flex justify-center">
@@ -140,7 +141,7 @@ export default async function HomePage() {
       <section className="section-padding page-container">
         <AnimateOnScroll className="text-center mb-16">
           <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Why Fallowkind</p>
-          <h2 className="text-3xl md:text-4xl text-forest">What we stand for</h2>
+          <h2 className="text-5xl md:text-7xl text-forest">What we stand for</h2>
         </AnimateOnScroll>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -154,7 +155,7 @@ export default async function HomePage() {
                 <div className="w-6 h-6 mb-5">
                   <LeafIcon />
                 </div>
-                <h3 className="text-lg mb-3 font-display">{v.label}</h3>
+                <h3 className="text-2xl mb-3">{v.label}</h3>
                 <p className="text-forest/60 leading-relaxed text-sm">{v.body}</p>
               </div>
             </AnimateOnScroll>
@@ -166,7 +167,7 @@ export default async function HomePage() {
       <section className="section-padding page-container grid md:grid-cols-2 gap-16 items-center">
         <AnimateOnScroll delay={0} className="reveal-left">
           <p className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Who we are</p>
-          <h2 className="text-3xl md:text-4xl mb-7 leading-snug">Rooted in<br />the land.</h2>
+          <h2 className="text-5xl md:text-7xl mb-7">Rooted in<br />the land.</h2>
           <p className="text-forest/65 leading-relaxed mb-10 max-w-md">
             Fallowkind was born from a belief that clothing can be a gentle act — a choice that honours
             the soil, the seasons, and the people who work with their hands.
@@ -181,7 +182,7 @@ export default async function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-br from-fern/45 via-cream/30 to-sage/30 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute bottom-6 left-6 right-6 glass-panel p-5">
               <p className="text-xs tracking-[0.25em] uppercase text-forest/50 mb-1">Est. 2023</p>
-              <p className="text-forest/80 text-sm font-display italic leading-relaxed">
+              <p className="text-forest/80 text-sm font-serif italic leading-relaxed normal-case tracking-normal">
                 &ldquo;We started with one tee and a market stall.&rdquo;
               </p>
             </div>
@@ -196,7 +197,7 @@ export default async function HomePage() {
           <div className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-fern/25 blur-3xl" />
           <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
           <div className="relative page-container text-center max-w-3xl mx-auto">
-            <p className="text-4xl md:text-5xl text-forest font-display leading-snug">
+            <p className="text-4xl md:text-5xl text-forest font-serif italic leading-snug normal-case tracking-normal">
               &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
             </p>
             <p className="mt-6 text-xs tracking-[0.3em] uppercase text-moss">— Fallowkind</p>

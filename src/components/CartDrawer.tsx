@@ -132,13 +132,20 @@ function CartLineItem({
 
   return (
     <li className="flex gap-4">
-      {/* Image placeholder */}
+      {/* Product image (gradient fallback) */}
       <div
-        className="w-20 h-24 shrink-0 rounded-2xl border border-white/40 shadow-sm"
-        style={{
-          background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)`,
-        }}
-      />
+        className="w-20 h-24 shrink-0 rounded-2xl border border-white/40 shadow-sm overflow-hidden"
+        style={
+          item.imageUrl
+            ? undefined
+            : { background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)` }
+        }
+      >
+        {item.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+        )}
+      </div>
 
       {/* Details */}
       <div className="flex-1 min-w-0">

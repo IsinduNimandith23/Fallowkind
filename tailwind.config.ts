@@ -18,7 +18,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "Georgia", "serif"],
+        display: ["var(--font-display)", "Impact", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
       },
       keyframes: {
         fadeInUp: {
@@ -40,6 +41,12 @@ const config: Config = {
         marquee: {
           "0%":   { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
+        },
+        scrollDown: {
+          "0%":   { opacity: "0", transform: "translateY(-100%)" },
+          "30%":  { opacity: "1" },
+          "70%":  { opacity: "1" },
+          "100%": { opacity: "0", transform: "translateY(150%)" },
         },
       },
       animation: {

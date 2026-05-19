@@ -11,7 +11,7 @@ export default function ContactPage() {
         {/* Header */}
         <AnimateOnScroll className="mb-14">
           <p className="text-xs tracking-[0.3em] uppercase text-moss mb-4">Get in touch</p>
-          <h1 className="text-4xl md:text-6xl mb-6">Say hello.</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl mb-8 whitespace-nowrap">Say hello.</h1>
           <p className="text-forest/75 leading-relaxed max-w-md">
             Questions about an order, wholesale enquiries, or just want to talk about
             regenerative living — we&apos;re here for it.

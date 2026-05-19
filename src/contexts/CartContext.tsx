@@ -12,6 +12,7 @@ export type CartItem = {
   colorHex: string;
   size: string;
   quantity: number;
+  imageUrl?: string;
 };
 
 type CartContextType = {

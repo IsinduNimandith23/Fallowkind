@@ -458,9 +458,18 @@ export default function CheckoutPage() {
                   className="flex gap-4"
                 >
                   <div
-                    className="w-16 h-20 shrink-0 rounded-2xl border border-white/40 shadow-sm"
-                    style={{ background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)` }}
-                  />
+                    className="w-16 h-20 shrink-0 rounded-2xl border border-white/40 shadow-sm overflow-hidden"
+                    style={
+                      item.imageUrl
+                        ? undefined
+                        : { background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)` }
+                    }
+                  >
+                    {item.imageUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-forest leading-tight">{item.name}</p>
                     <p className="text-[11px] text-moss mt-0.5">{item.color} · Size {item.size}</p>

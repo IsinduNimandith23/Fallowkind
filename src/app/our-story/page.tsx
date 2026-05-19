@@ -36,7 +36,7 @@ export default function OurStoryPage() {
             Who we are
           </p>
           <h1
-            className="text-linen text-5xl md:text-7xl leading-tight mb-10 opacity-0 animate-fade-in-up"
+            className="text-linen text-5xl md:text-7xl lg:text-8xl mb-10 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
           >
             Rooted in<br />the land.
@@ -55,7 +55,7 @@ export default function OurStoryPage() {
       {/* ── Story body ── */}
       <section className="section-padding page-container grid md:grid-cols-2 gap-16 items-start">
         <AnimateOnScroll>
-          <h2 className="text-3xl mb-8">Where it started</h2>
+          <h2 className="text-5xl md:text-6xl mb-8">Where it started</h2>
           <div className="space-y-5 text-forest/65 leading-relaxed">
             <p>
               We grew up around fields — the kind that get left fallow between seasons so the soil
@@ -83,7 +83,7 @@ export default function OurStoryPage() {
             />
             <div className="absolute bottom-6 left-6 right-6 glass-panel p-5">
               <p className="text-[10px] tracking-widest uppercase text-moss mb-2">Our beginning</p>
-              <p className="text-forest/80 text-sm font-display italic leading-relaxed">
+              <p className="text-forest/80 text-sm font-serif italic leading-relaxed normal-case tracking-normal">
                 &ldquo;One tee. A market stall. A belief.&rdquo;
               </p>
             </div>
@@ -100,7 +100,7 @@ export default function OurStoryPage() {
         <div className="relative page-container">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Principles</p>
-            <h2 className="text-3xl md:text-4xl">What we stand for</h2>
+            <h2 className="text-5xl md:text-7xl">What we stand for</h2>
           </AnimateOnScroll>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -108,7 +108,7 @@ export default function OurStoryPage() {
               <AnimateOnScroll key={v.label} delay={i * 120}>
                 <div className="glass-card p-8 h-full">
                   <span className="inline-block w-8 h-px bg-sage mb-7" />
-                  <h3 className="text-lg mb-4 font-display">{v.label}</h3>
+                  <h3 className="text-2xl mb-4">{v.label}</h3>
                   <p className="text-forest/60 leading-relaxed text-sm">{v.body}</p>
                 </div>
               </AnimateOnScroll>
@@ -127,7 +127,7 @@ export default function OurStoryPage() {
             { number: "2026", label: "Founded" },
           ].map((s) => (
             <div key={s.label}>
-              <p className="text-4xl md:text-5xl font-display text-forest mb-2">{s.number}</p>
+              <p className="text-5xl md:text-7xl font-display text-forest mb-2 leading-none">{s.number}</p>
               <p className="text-xs tracking-widest uppercase text-moss">{s.label}</p>
             </div>
           ))}
@@ -142,7 +142,7 @@ export default function OurStoryPage() {
           <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
 
           <div className="relative page-container text-center max-w-3xl mx-auto">
-            <blockquote className="text-3xl md:text-5xl text-forest font-display leading-snug">
+            <blockquote className="text-3xl md:text-5xl text-forest font-serif italic leading-snug normal-case tracking-normal">
               &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
             </blockquote>
             <p className="mt-8 text-xs tracking-[0.3em] uppercase text-moss">— Fallowkind</p>

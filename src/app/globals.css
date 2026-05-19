@@ -4,7 +4,8 @@
 
 :root {
   --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Playfair Display", Georgia, serif;
+  --font-display: "Archivo Black", Impact, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
 }
 
 html {
@@ -27,7 +28,14 @@ html {
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-bold;
+    @apply font-display uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+  }
+
+  h3, h4, h5, h6 {
+    letter-spacing: 0.02em;
+    line-height: 1.1;
   }
 }
 

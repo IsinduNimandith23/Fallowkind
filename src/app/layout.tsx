@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import SiteChrome from "@/components/SiteChrome";
 import { CartProvider } from "@/contexts/CartContext";
@@ -9,8 +9,14 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
+const archivoBlack = Archivo_Black({
   variable: "--font-display",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-serif",
   subsets: ["latin"],
 });
 
@@ -25,7 +31,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable} antialiased`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${archivoBlack.variable} ${playfair.variable} antialiased`} suppressHydrationWarning>
         <CartProvider>
           <SiteChrome>{children}</SiteChrome>
         </CartProvider>

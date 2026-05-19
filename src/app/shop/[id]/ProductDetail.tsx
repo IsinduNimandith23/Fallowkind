@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/products";
 import { useCart } from "@/contexts/CartContext";
 
@@ -21,13 +22,9 @@ export default function ProductDetail({ product, allProducts }: Props) {
   const [added, setAdded] = useState(false);
 
   const { addItem, openCart } = useCart();
+  const router = useRouter();
 
-  function handleAddToCart() {
-    if (!selectedSize) {
-      setSizeError(true);
-      setTimeout(() => setSizeError(false), 1800);
-      return;
-    }
+  function addCurrentSelection() {
     addItem(
       {
         productId: product.id,
@@ -38,12 +35,32 @@ export default function ProductDetail({ product, allProducts }: Props) {
         color: selectedColor.name,
         colorHex: selectedColor.hex,
         size: selectedSize,
+        imageUrl: product.imageUrl,
       },
       qty
     );
+  }
+
+  function handleAddToCart() {
+    if (!selectedSize) {
+      setSizeError(true);
+      setTimeout(() => setSizeError(false), 1800);
+      return;
+    }
+    addCurrentSelection();
     setAdded(true);
     openCart();
     setTimeout(() => setAdded(false), 2000);
+  }
+
+  function handleBuyNow() {
+    if (!selectedSize) {
+      setSizeError(true);
+      setTimeout(() => setSizeError(false), 1800);
+      return;
+    }
+    addCurrentSelection();
+    router.push("/checkout");
   }
 
   const related = allProducts
@@ -259,12 +276,12 @@ export default function ProductDetail({ product, allProducts }: Props) {
             >
               {added ? "Added ✓" : "Add to Cart"}
             </button>
-            <Link
-              href="/checkout"
+            <button
+              onClick={handleBuyNow}
               className="flex-1 btn-outline text-xs tracking-widest uppercase text-center"
             >
               Buy Now
-            </Link>
+            </button>
           </div>
 
           {/* Product details accordion */}
