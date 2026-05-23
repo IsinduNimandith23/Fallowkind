@@ -5,7 +5,7 @@ import ProductDetail from "./ProductDetail";
 
 type Props = { params: Promise<{ id: string }> };
 
-export const revalidate = 0;
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
+import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = { title: "Contact" };
 
@@ -20,31 +21,7 @@ export default function ContactPage() {
 
         {/* Contact form */}
         <AnimateOnScroll delay={100}>
-          <form className="flex flex-col gap-7">
-            <div className="grid md:grid-cols-2 gap-6">
-              <FormField id="name"  label="Name"          type="text"  />
-              <FormField id="email" label="Email address"  type="email" />
-            </div>
-            <FormField id="subject" label="Subject" type="text" />
-            <div className="flex flex-col gap-2">
-              <label htmlFor="message" className="text-[10px] tracking-widest uppercase text-forest/75">
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={6}
-                required
-                className="glass-input-soft px-5 py-4 text-sm text-forest placeholder:text-forest/50 resize-none"
-                placeholder="Your message..."
-              />
-            </div>
-            <div>
-              <button type="submit" className="btn-primary">
-                Send message
-              </button>
-            </div>
-          </form>
+          <ContactForm />
         </AnimateOnScroll>
 
         {/* Divider */}
@@ -62,23 +39,7 @@ export default function ContactPage() {
                 fallowkind@gmail.com
               </a>
             </div>
-            <div>
-              <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Phone</p>
-              <div className="flex flex-col gap-1.5">
-                <a href="tel:+61407610465" className="text-forest/85 hover:text-forest transition-colors duration-200">
-                  +61 407 610 465
-                </a>
-                <a href="tel:+94767357660" className="text-forest/85 hover:text-forest transition-colors duration-200">
-                  +94 76 735 7660
-                </a>
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Address</p>
-              <p className="text-forest/85 leading-relaxed">
-                164/1, Rathmaldeniya Road,<br />Erewwala, Pannipitiya
-              </p>
-            </div>
+
             <div>
               <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Response time</p>
               <p className="text-forest/85">We reply within a day.</p>
@@ -86,24 +47,6 @@ export default function ContactPage() {
           </div>
         </AnimateOnScroll>
       </div>
-    </div>
-  );
-}
-
-function FormField({ id, label, type }: { id: string; label: string; type: string }) {
-  return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-[10px] tracking-widest uppercase text-forest/75">
-        {label}
-      </label>
-      <input
-        id={id}
-        name={id}
-        type={type}
-        required
-        className="glass-input px-5 py-3.5 text-sm text-forest placeholder:text-forest/50"
-        placeholder={label}
-      />
     </div>
   );
 }

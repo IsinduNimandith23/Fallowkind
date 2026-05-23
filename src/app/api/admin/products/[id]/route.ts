@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 
 type Params = { params: Promise<{ id: string }> };
@@ -35,6 +36,9 @@ export async function PATCH(request: Request, { params }: Params) {
     console.error("Update product error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  revalidatePath("/");
+  revalidatePath("/shop");
+  revalidatePath(`/shop/${numericId}`);
   return NextResponse.json({ ok: true });
 }
 
@@ -54,5 +58,8 @@ export async function DELETE(_request: Request, { params }: Params) {
     console.error("Delete product error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  revalidatePath("/");
+  revalidatePath("/shop");
+  revalidatePath(`/shop/${numericId}`);
   return NextResponse.json({ ok: true });
 }

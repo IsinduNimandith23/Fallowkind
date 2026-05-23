@@ -1,3 +1,41 @@
+# dependencies
 node_modules
+.pnp
+.pnp.js
+
+# build output
 .next
+out
+build
+dist
+
+# typescript build info
+*.tsbuildinfo
+next-env.d.ts
+
+# environment files
+.env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# debug / logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# deployment
+.vercel
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# test coverage
+coverage

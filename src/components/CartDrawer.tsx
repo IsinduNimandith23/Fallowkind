@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 
@@ -134,7 +135,7 @@ function CartLineItem({
     <li className="flex gap-4">
       {/* Product image (gradient fallback) */}
       <div
-        className="w-20 h-24 shrink-0 rounded-2xl border border-white/40 shadow-sm overflow-hidden"
+        className="relative w-20 h-24 shrink-0 rounded-2xl border border-white/40 shadow-sm overflow-hidden"
         style={
           item.imageUrl
             ? undefined
@@ -142,8 +143,13 @@ function CartLineItem({
         }
       >
         {item.imageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+          <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            sizes="80px"
+            className="object-cover"
+          />
         )}
       </div>
 

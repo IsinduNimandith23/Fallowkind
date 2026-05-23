@@ -1,5 +1,35 @@
 import Link from "next/link";
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+    </svg>
+  );
+}
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z" />
+    </svg>
+  );
+}
+
 export default function Footer() {
   return (
     <footer className="bg-forest text-linen">
@@ -13,14 +43,25 @@ export default function Footer() {
               Clothing rooted in the land. Made for those who believe the future is conscious.
             </p>
             <div className="flex gap-3 pt-1">
-              {["IG", "TK", "PN"].map((s) => (
-                <button
-                  key={s}
-                  className="rounded-full text-[10px] tracking-widest uppercase text-linen/55 hover:text-linen transition-all duration-200 bg-linen/10 backdrop-blur-md border border-linen/25 hover:bg-linen/20 hover:border-linen/45 w-10 h-10 flex items-center justify-center"
-                >
-                  {s}
-                </button>
-              ))}
+              <a
+                href="https://www.instagram.com/fallowkind"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="rounded-full text-[10px] tracking-widest uppercase text-linen/55 hover:text-linen transition-all duration-200 bg-linen/10 backdrop-blur-md border border-linen/25 hover:bg-linen/20 hover:border-linen/45 w-10 h-10 flex items-center justify-center"
+              >
+                <InstagramIcon className="w-4 h-4 text-linen" />
+              </a>
+
+              <a
+                href="https://www.tiktok.com/@fallowkind"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+                className="rounded-full text-[10px] tracking-widest uppercase text-linen/55 hover:text-linen transition-all duration-200 bg-linen/10 backdrop-blur-md border border-linen/25 hover:bg-linen/20 hover:border-linen/45 w-10 h-10 flex items-center justify-center"
+              >
+                <TikTokIcon className="w-4 h-4 text-linen" />
+              </a>
             </div>
           </div>
 

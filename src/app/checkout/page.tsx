@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
+import { clearPendingCoupon, getPendingCoupon } from "@/lib/pendingCoupon";
 
 const SHIPPING = 400;
 
@@ -39,6 +42,12 @@ type UploadedReceipt = {
   displayName: string;
 };
 
+type SuccessOrder = {
+  id: string;
+  number: string;
+  method: PaymentMethod;
+};
+
 const INITIAL_FORM: Form = {
   firstName: "", lastName: "", email: "", phone: "",
   address: "", city: "", postalCode: "", notes: "",
@@ -61,9 +70,38 @@ export default function CheckoutPage() {
   const [receiptError, setReceiptError] = useState("");
   const [receiptUploading, setReceiptUploading] = useState(false);
 
+  const [successOrder, setSuccessOrder] = useState<SuccessOrder | null>(null);
+
   useEffect(() => {
-    if (items.length === 0) router.replace("/shop");
-  }, [items, router]);
+    if (items.length === 0 && !successOrder) router.replace("/shop");
+  }, [items, router, successOrder]);
+
+  const autoAppliedRef = useRef(false);
+  useEffect(() => {
+    if (autoAppliedRef.current) return;
+    if (appliedCoupon || subtotal <= 0) return;
+    const pending = getPendingCoupon();
+    if (!pending) return;
+
+    autoAppliedRef.current = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/coupons/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: pending, subtotal }),
+        });
+        const data = await res.json();
+        if (data.valid) {
+          setAppliedCoupon(data.coupon);
+        } else {
+          clearPendingCoupon();
+        }
+      } catch {
+        autoAppliedRef.current = false;
+      }
+    })();
+  }, [subtotal, appliedCoupon]);
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const total = subtotal - discountAmount + SHIPPING;
@@ -169,8 +207,13 @@ export default function CheckoutPage() {
         return;
       }
 
+      setSuccessOrder({
+        id: data.orderId,
+        number: data.orderNumber,
+        method: paymentMethod,
+      });
       clearCart();
-      router.push(`/order-success?id=${data.orderId}&number=${data.orderNumber}&method=${paymentMethod}`);
+      clearPendingCoupon();
     } catch {
       setServerError("Network error. Please check your connection and try again.");
     } finally {
@@ -178,6 +221,7 @@ export default function CheckoutPage() {
     }
   }
 
+  if (successOrder) return <OrderSuccessModal order={successOrder} />;
   if (items.length === 0) return null;
 
   return (
@@ -193,7 +237,7 @@ export default function CheckoutPage() {
             <section>
               <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Contact</h2>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field label="First name" error={errors.firstName}>
                     <input
                       type="text"
@@ -247,7 +291,7 @@ export default function CheckoutPage() {
                     placeholder="123 Galle Road"
                   />
                 </Field>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field label="City" error={errors.city}>
                     <input
                       type="text"
@@ -301,7 +345,11 @@ export default function CheckoutPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => { setAppliedCoupon(null); setCouponInput(""); }}
+                    onClick={() => {
+                      setAppliedCoupon(null);
+                      setCouponInput("");
+                      clearPendingCoupon();
+                    }}
                     className="text-forest/35 hover:text-forest transition-colors duration-200 text-xs tracking-widest uppercase"
                   >
                     Remove
@@ -361,7 +409,7 @@ export default function CheckoutPage() {
                     <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
                       Transfer to this account
                     </p>
-                    <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-sm">
+                    <dl className="grid grid-cols-[auto_1fr] gap-x-4 sm:gap-x-6 gap-y-1.5 text-sm break-words">
                       <dt className="text-forest/75">Account name</dt>
                       <dd className="text-forest font-medium">{BANK_DETAILS.accountName}</dd>
                       <dt className="text-forest/75">Account number</dt>
@@ -458,7 +506,7 @@ export default function CheckoutPage() {
                   className="flex gap-4"
                 >
                   <div
-                    className="w-16 h-20 shrink-0 rounded-2xl border border-white/40 shadow-sm overflow-hidden"
+                    className="relative w-16 h-20 shrink-0 rounded-2xl border border-white/40 shadow-sm overflow-hidden"
                     style={
                       item.imageUrl
                         ? undefined
@@ -466,8 +514,13 @@ export default function CheckoutPage() {
                     }
                   >
                     {item.imageUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -579,6 +632,73 @@ function SummaryRow({ label, value, accent }: { label: string; value: string; ac
     <div className="flex justify-between">
       <span className="text-sm text-forest/75">{label}</span>
       <span className={`text-sm ${accent ? "text-sage" : "text-forest"}`}>{value}</span>
+    </div>
+  );
+}
+
+function OrderSuccessModal({ order }: { order: SuccessOrder }) {
+  const isBankTransfer = order.method === "bank_transfer";
+
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="order-success-title"
+    >
+      <div className="absolute inset-0 bg-forest/70 backdrop-blur-md" />
+
+      <div className="relative max-w-md w-full bg-linen border border-forest/15 shadow-2xl rounded-2xl p-8 sm:p-10 text-center">
+        <div className="w-20 h-20 rounded-full bg-sage/25 backdrop-blur-md border border-sage/30 shadow-lg flex items-center justify-center mx-auto mb-6 relative">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-fern/40 to-sage/0 blur-xl -z-10" />
+          <svg className="w-9 h-9 text-sage" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        </div>
+
+        <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">
+          {isBankTransfer ? "Receipt received" : "Order placed"}
+        </p>
+        <h2
+          id="order-success-title"
+          className="font-display text-3xl sm:text-4xl text-forest mb-3 leading-tight"
+        >
+          Order placed successfully!
+        </h2>
+
+        {order.number && (
+          <p className="text-lg text-sage font-medium mb-4">{order.number}</p>
+        )}
+
+        <p className="text-sm text-forest/75 leading-relaxed mb-6">
+          {isBankTransfer
+            ? "We've received your receipt and will verify your payment within 1–2 business days. A confirmation email is on its way."
+            : "Your order has been placed and our team will pack and ship it soon. You'll receive a confirmation email shortly."}
+        </p>
+
+        {order.id && (
+          <p className="text-[10px] tracking-widest uppercase text-forest/35 mb-8">
+            Order ID: {order.id.slice(0, 8).toUpperCase()}
+          </p>
+        )}
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link href="/shop" className="btn-primary text-xs tracking-widest uppercase">
+            Continue Shopping
+          </Link>
+          <Link href="/" className="btn-outline text-xs tracking-widest uppercase">
+            Back to Home
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

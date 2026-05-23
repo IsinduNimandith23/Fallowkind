@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { setShopBannerUrl } from "@/lib/siteSettings";
 
 export async function PUT(request: Request) {
@@ -8,6 +9,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
     await setShopBannerUrl(url.trim());
+    revalidatePath("/shop");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);

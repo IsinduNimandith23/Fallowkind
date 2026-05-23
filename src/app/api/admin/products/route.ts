@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 
 type ProductPayload = {
@@ -66,6 +67,8 @@ export async function POST(request: Request) {
       console.error("Create product error:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+    revalidatePath("/");
+    revalidatePath("/shop");
     return NextResponse.json({ id: data.id });
   } catch (e) {
     console.error(e);

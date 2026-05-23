@@ -134,21 +134,7 @@ export default function OurStoryPage() {
         </AnimateOnScroll>
       </section>
 
-      {/* ── Pull quote ── */}
-      <AnimateOnScroll>
-        <section className="relative section-padding overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-cream/60 via-linen/40 to-fern/25" />
-          <div className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-fern/25 blur-3xl" />
-          <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
-
-          <div className="relative page-container text-center max-w-3xl mx-auto">
-            <blockquote className="text-3xl md:text-5xl text-forest font-serif italic leading-snug normal-case tracking-normal">
-              &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
-            </blockquote>
-            <p className="mt-8 text-xs tracking-[0.3em] uppercase text-moss">— Fallowkind</p>
-          </div>
-        </section>
-      </AnimateOnScroll>
+      
     </>
   );
 }

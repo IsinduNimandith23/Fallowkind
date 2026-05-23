@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/siteSettings";
 import HeroVideoForm from "./HeroVideoForm";
+import HeroTextForm from "./HeroTextForm";
 import ShopBannerForm from "./ShopBannerForm";
 
 export const metadata: Metadata = { title: "Site" };
@@ -21,6 +22,18 @@ export default async function SiteSettingsPage() {
       <section className="mb-12">
         <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Home hero video</h2>
         <HeroVideoForm currentUrl={settings.heroVideoUrl} />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Home hero text</h2>
+        <p className="text-sm text-gray-500 mb-4 -mt-2">
+          Swap the headline for seasonal offers or campaigns. Leave the eyebrow blank to hide it.
+        </p>
+        <HeroTextForm
+          currentEyebrow={settings.heroEyebrow}
+          currentHeadingLine1={settings.heroHeadingLine1}
+          currentHeadingLine2={settings.heroHeadingLine2}
+        />
       </section>
 
       <section>

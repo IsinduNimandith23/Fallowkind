@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/products";
@@ -98,8 +99,14 @@ export default function ProductDetail({ product, allProducts }: Props) {
             style={product.imageUrl ? undefined : thumbStyles[activeThumb]}
           >
             {product.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                sizes="(min-width: 1024px) 60vw, 100vw"
+                priority
+                className="object-cover"
+              />
             ) : (
               <>
                 <button
@@ -126,7 +133,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
           </div>
 
           {!product.imageUrl && (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {thumbStyles.map((style, i) => (
                 <button
                   key={i}
@@ -349,10 +356,15 @@ export default function ProductDetail({ product, allProducts }: Props) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {related.map((p) => (
               <Link key={p.id} href={`/shop/${p.id}`} className="group">
-                <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 shadow-sm aspect-[3/4] mb-4">
+                <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 shadow-sm aspect-[3/4] mb-4 overflow-hidden">
                   {p.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                    <Image
+                      src={p.imageUrl}
+                      alt={p.name}
+                      fill
+                      sizes="(min-width: 768px) 25vw, 50vw"
+                      className="object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-fern/30 to-sage/15" />
                   )}

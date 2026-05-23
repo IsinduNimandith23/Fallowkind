@@ -99,36 +99,45 @@ export default function Navbar() {
           <span className={`block transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[7px]" : ""} w-5 h-px bg-forest mb-1.5`} />
           <span className={`block transition-all duration-300 ${menuOpen ? "opacity-0 scale-x-0" : ""} w-5 h-px bg-forest mb-1.5`} />
           <span className={`block transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[7px]" : ""} w-5 h-px bg-forest`} />
+          {totalItems > 0 && !menuOpen && (
+            <span
+              aria-label={`${totalItems} item${totalItems === 1 ? "" : "s"} in cart`}
+              className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"
+            />
+          )}
         </button>
       </div>
 
       {/* Mobile menu */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
-          menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+        className={`md:hidden overflow-hidden px-4 transition-[max-height] duration-500 ease-in-out ${
+          menuOpen ? "max-h-96" : "max-h-0"
         }`}
       >
-        <div className="bg-linen/95 backdrop-blur-md border-b border-cream px-8 pb-8 pt-4 flex flex-col gap-1">
+        <div className="bg-white/25 backdrop-blur-xl border border-white/50 rounded-3xl shadow-lg px-7 pb-6 pt-5 flex flex-col gap-1">
           {links.map((l, i) => (
             <Link
               key={l.href}
               href={l.href}
               style={{ transitionDelay: menuOpen ? `${i * 60}ms` : "0ms" }}
-              className={`py-3 text-xs tracking-widest uppercase border-b border-cream/60 last:border-0 transition-all duration-300 ${
+              className={`py-3 text-xs tracking-widest uppercase border-b border-forest/10 last:border-0 transition-all duration-300 ${
                 menuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
-              } ${pathname === l.href ? "text-forest font-semibold" : "text-forest/60 hover:text-forest"}`}
+              } ${pathname === l.href ? "text-forest font-semibold" : "text-forest/65 hover:text-forest"}`}
             >
               {l.label}
             </Link>
           ))}
           <button
             onClick={() => { setMenuOpen(false); openCart(); }}
-            className="flex items-center gap-2 pt-4 text-forest/60 hover:text-forest transition-colors duration-200"
+            className="flex items-center gap-2 pt-4 text-forest/70 hover:text-forest transition-colors duration-200"
             aria-label="Open cart"
           >
             <CartIcon className="w-4 h-4" />
+            <span className="text-xs tracking-widest uppercase">Cart</span>
             {totalItems > 0 && (
-              <span className="text-xs text-moss">({totalItems})</span>
+              <span className="ml-1 min-w-[18px] h-[18px] px-1 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center leading-none font-semibold">
+                {totalItems > 9 ? "9+" : totalItems}
+              </span>
             )}
           </button>
         </div>

@@ -43,17 +43,27 @@ function fmt(value: number): string {
   return "Rs. " + value.toLocaleString("en-LK");
 }
 
+function esc(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return "";
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function itemRows(items: OrderItem[]): string {
   return items
     .map(
       (item) => `
     <tr>
       <td style="padding:10px 12px;border-bottom:1px solid #EDE6D3;vertical-align:top">
-        <span style="font-weight:600;color:#2A3D2A">${item.product_name}</span><br>
-        <span style="color:#7A9070;font-size:12px">${item.color} &middot; Size ${item.size}</span>
+        <span style="font-weight:600;color:#2A3D2A">${esc(item.product_name)}</span><br>
+        <span style="color:#7A9070;font-size:12px">${esc(item.color)} &middot; Size ${esc(item.size)}</span>
       </td>
-      <td style="padding:10px 12px;border-bottom:1px solid #EDE6D3;text-align:center;color:#4F6B4A">${item.quantity}</td>
-      <td style="padding:10px 12px;border-bottom:1px solid #EDE6D3;text-align:right;color:#2A3D2A">${item.price_display}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #EDE6D3;text-align:center;color:#4F6B4A">${esc(item.quantity)}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #EDE6D3;text-align:right;color:#2A3D2A">${esc(item.price_display)}</td>
     </tr>`
     )
     .join("");
@@ -84,7 +94,7 @@ function baseLayout(content: string): string {
 }
 
 function customerContent(order: OrderEmailData): string {
-  const firstName = order.customer_name.split(" ")[0];
+  const firstName = esc(order.customer_name.split(" ")[0]);
   const paymentLabel =
     order.payment_method === "cod"
       ? "Cash on Delivery &mdash; pay when your order arrives"
@@ -102,7 +112,7 @@ function customerContent(order: OrderEmailData): string {
 
   return `
     <p style="color:#7A9070;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">Order Confirmed</p>
-    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 6px;font-weight:400">${order.order_number}</h2>
+    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 6px;font-weight:400">${esc(order.order_number)}</h2>
     <p style="color:#5a6a5a;font-size:15px;margin:0 0 32px">Hi ${firstName}, your order has been received and is being prepared.</p>
 
     <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
@@ -124,7 +134,7 @@ function customerContent(order: OrderEmailData): string {
       ${
         order.discount_amount > 0
           ? `<tr>
-        <td style="padding:6px 0;color:#5a6a5a;font-size:14px">Discount${order.coupon_code ? ` (${order.coupon_code})` : ""}</td>
+        <td style="padding:6px 0;color:#5a6a5a;font-size:14px">Discount${order.coupon_code ? ` (${esc(order.coupon_code)})` : ""}</td>
         <td style="padding:6px 0;text-align:right;color:#4F6B4A;font-size:14px">&minus;${fmt(order.discount_amount)}</td>
       </tr>`
           : ""
@@ -142,7 +152,7 @@ function customerContent(order: OrderEmailData): string {
     <div style="background:#F5F0E5;padding:20px;margin-bottom:24px">
       <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">Shipping to</p>
       <p style="color:#2A3D2A;font-size:14px;margin:0;line-height:1.8">
-        ${order.customer_name}<br>${order.address}<br>${order.city}, ${order.postal_code}<br>Sri Lanka
+        ${esc(order.customer_name)}<br>${esc(order.address)}<br>${esc(order.city)}, ${esc(order.postal_code)}<br>Sri Lanka
       </p>
     </div>
 
@@ -158,19 +168,19 @@ function customerContent(order: OrderEmailData): string {
 function ownerContent(order: OrderEmailData): string {
   return `
     <p style="color:#7A9070;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">New Order</p>
-    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 32px;font-weight:400">${order.order_number}</h2>
+    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 32px;font-weight:400">${esc(order.order_number)}</h2>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
       <div style="background:#F5F0E5;padding:18px">
         <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">Customer</p>
         <p style="color:#2A3D2A;font-size:14px;margin:0;line-height:1.9">
-          <strong>${order.customer_name}</strong><br>${order.customer_email}<br>${order.customer_phone}
+          <strong>${esc(order.customer_name)}</strong><br>${esc(order.customer_email)}<br>${esc(order.customer_phone)}
         </p>
       </div>
       <div style="background:#F5F0E5;padding:18px">
         <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">Ship to</p>
         <p style="color:#2A3D2A;font-size:14px;margin:0;line-height:1.9">
-          ${order.address}<br>${order.city}, ${order.postal_code}<br>Sri Lanka
+          ${esc(order.address)}<br>${esc(order.city)}, ${esc(order.postal_code)}<br>Sri Lanka
         </p>
       </div>
     </div>
@@ -223,7 +233,61 @@ function ownerContent(order: OrderEmailData): string {
           : ""
       }
     </div>
-    ${order.notes ? `<p style="color:#5a6a5a;font-size:14px;margin:20px 0 0"><strong>Customer note:</strong> ${order.notes}</p>` : ""}`;
+    ${order.notes ? `<p style="color:#5a6a5a;font-size:14px;margin:20px 0 0"><strong>Customer note:</strong> ${esc(order.notes)}</p>` : ""}`;
+}
+
+function processingContent(
+  customerName: string,
+  orderNumber: string,
+  trackingCode: string
+): string {
+  const firstName = esc(customerName.split(" ")[0]);
+  const trackUrl = `https://domex.lk/Order-Details.php?wbno=${encodeURIComponent(trackingCode)}`;
+  return `
+    <p style="color:#7A9070;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">Order Processing</p>
+    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 24px;font-weight:400">${esc(orderNumber)}</h2>
+
+    <p style="color:#5a6a5a;font-size:15px;line-height:1.8;margin:0 0 16px">Hi ${firstName},</p>
+    <p style="color:#5a6a5a;font-size:15px;line-height:1.8;margin:0 0 16px">
+      Thank you for shopping with Fallowkind. We truly appreciate your order and support.
+    </p>
+    <p style="color:#5a6a5a;font-size:15px;line-height:1.8;margin:0 0 24px">
+      Your order has been confirmed and is now being processed.
+    </p>
+
+    <div style="background:#F5F0E5;padding:20px;margin-bottom:24px">
+      <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 8px">Tracking Code</p>
+      <p style="color:#2A3D2A;font-size:18px;margin:0;font-weight:600;letter-spacing:1px">${esc(trackingCode)}</p>
+    </div>
+
+    <p style="color:#5a6a5a;font-size:14px;line-height:1.8;margin:0 0 8px">You can track your order here:</p>
+    <p style="margin:0 0 28px">
+      <a href="${esc(trackUrl)}" style="color:#2A3D2A;font-size:14px;word-break:break-all">${esc(trackUrl)}</a>
+    </p>
+
+    <p style="color:#5a6a5a;font-size:14px;line-height:1.8;margin:0 0 16px">
+      We&rsquo;ll make sure your order reaches you as soon as possible. If you have any questions, feel free to reply to this email.
+    </p>
+    <p style="color:#5a6a5a;font-size:14px;line-height:1.8;margin:0 0 24px">
+      Thank you once again for choosing Fallowkind.
+    </p>
+    <p style="color:#2A3D2A;font-size:14px;line-height:1.8;margin:0">
+      Regards,<br>Fallowkind Team
+    </p>`;
+}
+
+export async function sendOrderProcessingEmail(params: {
+  customer_name: string;
+  customer_email: string;
+  order_number: string;
+  tracking_number: string;
+}) {
+  return resend.emails.send({
+    from: FROM_ADDRESS,
+    to: params.customer_email,
+    subject: `Your Fallowkind order is being processed — ${params.order_number}`,
+    html: baseLayout(processingContent(params.customer_name, params.order_number, params.tracking_number)),
+  });
 }
 
 export async function sendOrderConfirmationEmail(order: OrderEmailData) {
@@ -232,6 +296,45 @@ export async function sendOrderConfirmationEmail(order: OrderEmailData) {
     to: order.customer_email,
     subject: `Your Fallowkind order is confirmed — ${order.order_number}`,
     html: baseLayout(customerContent(order)),
+  });
+}
+
+function contactMessageContent(params: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): string {
+  const safeMessage = esc(params.message).replace(/\n/g, "<br>");
+  return `
+    <p style="color:#7A9070;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">New Contact Message</p>
+    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 24px;font-weight:400">${esc(params.subject)}</h2>
+
+    <div style="background:#F5F0E5;padding:18px;margin-bottom:24px">
+      <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">From</p>
+      <p style="color:#2A3D2A;font-size:14px;margin:0;line-height:1.9">
+        <strong>${esc(params.name)}</strong><br>${esc(params.email)}
+      </p>
+    </div>
+
+    <div>
+      <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">Message</p>
+      <p style="color:#2A3D2A;font-size:14px;line-height:1.8;margin:0;white-space:pre-wrap">${safeMessage}</p>
+    </div>`;
+}
+
+export async function sendContactMessageEmail(params: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}) {
+  return resend.emails.send({
+    from: FROM_ADDRESS,
+    to: process.env.CONTACT_EMAIL || process.env.OWNER_EMAIL!,
+    replyTo: params.email,
+    subject: `Contact form — ${params.subject}`,
+    html: baseLayout(contactMessageContent(params)),
   });
 }
 

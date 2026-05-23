@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
-import type { Product, ProductColor } from "@/lib/products";
+import type { Product } from "@/lib/products";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name-asc";
 
@@ -29,9 +30,8 @@ function sortSizes(sizes: string[]): string[] {
 
 export default function ShopGrid({ products, bannerUrl }: { products: Product[]; bannerUrl: string }) {
   const [query, setQuery] = useState("");
-  const [openMenu, setOpenMenu] = useState<null | "category" | "color" | "size" | "price" | "sort">(null);
+  const [openMenu, setOpenMenu] = useState<null | "category" | "size" | "price" | "sort">(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [sort, setSort] = useState<SortKey>("default");
@@ -63,12 +63,6 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
     return Array.from(set).sort();
   }, [products]);
 
-  const allColors = useMemo(() => {
-    const map = new Map<string, ProductColor>();
-    products.forEach((p) => p.colors.forEach((c) => map.set(c.name, c)));
-    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [products]);
-
   const allSizes = useMemo(() => {
     const set = new Set<string>();
     products.forEach((p) => p.sizes.forEach((s) => set.add(s)));
@@ -87,7 +81,6 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
     let list = products.filter((p) => {
       if (q && !p.name.toLowerCase().includes(q)) return false;
       if (selectedCategories.length > 0 && !selectedCategories.includes(p.category)) return false;
-      if (selectedColors.length > 0 && !p.colors.some((c) => selectedColors.includes(c.name))) return false;
       if (selectedSizes.length > 0 && !p.sizes.some((s) => selectedSizes.includes(s))) return false;
       if (selectedPrice) {
         const range = PRICE_RANGES.find((r) => r.label === selectedPrice);
@@ -102,17 +95,16 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
 
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products, query, selectedCategories, selectedColors, selectedSizes, selectedPrice, sort]);
+  }, [products, query, selectedCategories, selectedSizes, selectedPrice, sort]);
 
   const toggle = (arr: string[], val: string) =>
     arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val];
 
   const activeFilterCount =
-    selectedCategories.length + selectedColors.length + selectedSizes.length + (selectedPrice ? 1 : 0);
+    selectedCategories.length + selectedSizes.length + (selectedPrice ? 1 : 0);
 
   const clearAll = () => {
     setSelectedCategories([]);
-    setSelectedColors([]);
     setSelectedSizes([]);
     setSelectedPrice(null);
     setQuery("");
@@ -122,12 +114,14 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
     <>
       {/* Hero banner — admin-managed image, extends under the navbar like the homepage hero */}
       <section className="relative -mt-20 h-[460px] md:h-[560px] overflow-hidden bg-linen">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           key={bannerUrl}
           src={bannerUrl}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover"
         />
       </section>
 
@@ -157,44 +151,6 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
                   label={c}
                 />
               ))}
-            </div>
-          </FilterDropdown>
-
-          <FilterDropdown
-            label="Color"
-            active={selectedColors.length}
-            open={openMenu === "color"}
-            onToggle={() => setOpenMenu(openMenu === "color" ? null : "color")}
-          >
-            <div className="py-3 min-w-[180px]">
-              <p className="px-4 pb-2 text-[10px] tracking-[0.25em] uppercase text-forest/45">Colors</p>
-              {allColors.length === 0 && (
-                <p className="px-4 py-2 text-xs text-forest/40">No colors</p>
-              )}
-              {allColors.map((c) => {
-                const selected = selectedColors.includes(c.name);
-                return (
-                  <button
-                    key={c.name}
-                    type="button"
-                    onClick={() => setSelectedColors(toggle(selectedColors, c.name))}
-                    className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition-colors ${
-                      selected ? "bg-fern/25 text-forest" : "text-forest/80 hover:bg-white/40"
-                    }`}
-                  >
-                    <span
-                      className="inline-block w-4 h-4 rounded-full border border-forest/20"
-                      style={{ backgroundColor: c.hex }}
-                    />
-                    <span className="flex-1">{c.name}</span>
-                    {selected && (
-                      <svg className="w-3.5 h-3.5 text-sage" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </button>
-                );
-              })}
             </div>
           </FilterDropdown>
 
@@ -308,9 +264,6 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
             {selectedCategories.map((c) => (
               <Chip key={`cat-${c}`} label={c} onClear={() => setSelectedCategories(selectedCategories.filter((v) => v !== c))} />
             ))}
-            {selectedColors.map((c) => (
-              <Chip key={`col-${c}`} label={c} onClear={() => setSelectedColors(selectedColors.filter((v) => v !== c))} />
-            ))}
             {selectedSizes.map((s) => (
               <Chip key={`sz-${s}`} label={s} onClear={() => setSelectedSizes(selectedSizes.filter((v) => v !== s))} />
             ))}
@@ -330,10 +283,15 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
           {filtered.map((p, i) => (
             <AnimateOnScroll key={p.id} delay={i * 50}>
               <Link href={`/shop/${p.id}`} className="group block">
-                <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 shadow-sm aspect-[4/5] mb-4">
+                <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 shadow-sm aspect-[4/5] mb-4 overflow-hidden">
                   {p.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                    <Image
+                      src={p.imageUrl}
+                      alt={p.name}
+                      fill
+                      sizes="(min-width: 768px) 33vw, 50vw"
+                      className="object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-fern/30 to-sage/15" />
                   )}
@@ -346,25 +304,17 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
                     View Product
                   </div>
                 </div>
-                <p className="text-sm text-forest group-hover:text-sage transition-colors duration-200">
-                  {p.name}
-                </p>
-                <p className="text-sm text-forest/70 mt-1">{p.price}</p>
-                {p.colors.length > 0 && (
-                  <div className="flex items-center gap-1.5 mt-2">
-                    {p.colors.slice(0, 5).map((c) => (
-                      <span
-                        key={c.name}
-                        title={c.name}
-                        className="inline-block w-3 h-3 rounded-full border border-forest/20"
-                        style={{ backgroundColor: c.hex }}
-                      />
-                    ))}
-                    {p.colors.length > 5 && (
-                      <span className="text-[10px] text-forest/50 ml-1">+{p.colors.length - 5}</span>
+                <div className="px-3 flex items-baseline justify-between gap-3">
+                  <p className="text-sm text-forest group-hover:text-sage transition-colors duration-200">
+                    {p.name}
+                  </p>
+                  <p className="text-sm text-forest/70 whitespace-nowrap">
+                    {p.price}
+                    {p.originalPrice && (
+                      <span className="ml-2 text-forest/40 line-through">{p.originalPrice}</span>
                     )}
-                  </div>
-                )}
+                  </p>
+                </div>
               </Link>
             </AnimateOnScroll>
           ))}

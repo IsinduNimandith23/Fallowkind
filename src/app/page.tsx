@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { getAllProducts } from "@/lib/products";
@@ -6,8 +7,8 @@ import { getSiteSettings } from "@/lib/siteSettings";
 
 export const metadata: Metadata = { title: "Home" };
 
-// Always render fresh — hero video / product edits should appear immediately.
-export const revalidate = 0;
+// Cache the rendered page. Admin mutations call revalidatePath("/") to bust it.
+export const revalidate = 3600;
 
 const marqueeItems = [
   "Binatural Materials",
@@ -23,8 +24,11 @@ export default async function HomePage() {
     getAllProducts(),
     getSiteSettings(),
   ]);
-  const featured = products.slice(0, 4);
+  const featured = products.slice(0, 3);
   const heroVideo = settings.heroVideoUrl || "/mp5.mp4";
+  const heroEyebrow      = settings.heroEyebrow;
+  const heroHeadingLine1 = settings.heroHeadingLine1;
+  const heroHeadingLine2 = settings.heroHeadingLine2;
 
   return (
     <>
@@ -43,18 +47,24 @@ export default async function HomePage() {
         </div>
 
         <div className="relative section-padding w-full mr-auto pt-24">
-          <p
-            className="text-xs tracking-[0.35em] uppercase text-fern mb-6 opacity-0 animate-fade-in"
-            style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
-          >
-            The Fallowkind Issue — Regenerative Living
-          </p>
+          {heroEyebrow && (
+            <p
+              className="text-xs tracking-[0.35em] uppercase text-fern mb-6 opacity-0 animate-fade-in"
+              style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
+            >
+              {heroEyebrow}
+            </p>
+          )}
           <h1
-            className="text-linen text-5xl md:text-7xl lg:text-8xl xl:text-9xl leading-[0.95] font-bold tracking-tight mb-10 opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.5s", animationFillMode: "forwards" }}
+            className="text-linen text-[2.6rem] sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl leading-[0.95] font-bold tracking-tight mb-10 opacity-0 animate-fade-in-up"
+            style={{
+              animationDelay: "0.5s",
+              animationFillMode: "forwards",
+              fontFamily: '"Myriad Pro", "Myriad Pro Regular", Myriad, "Helvetica Neue", Helvetica, Arial, sans-serif',
+            }}
           >
-            <span className="block whitespace-nowrap">The Future</span>
-            <span className="block whitespace-nowrap">is Conscious.</span>
+            {heroHeadingLine1 && <span className="block whitespace-nowrap">{heroHeadingLine1}</span>}
+            {heroHeadingLine2 && <span className="block whitespace-nowrap">{heroHeadingLine2}</span>}
           </h1>
           <div
             className="flex flex-wrap gap-4 opacity-0 animate-fade-in-up"
@@ -71,7 +81,7 @@ export default async function HomePage() {
 
         {/* Scroll indicator */}
         <div
-          className="absolute bottom-8 right-10 flex flex-col items-center gap-2 opacity-0 animate-fade-in"
+          className="absolute bottom-28 right-10 flex flex-col items-center gap-2 opacity-0 animate-fade-in"
           style={{ animationDelay: "1.2s", animationFillMode: "forwards" }}
         >
           <span className="text-[10px] tracking-[0.25em] uppercase text-linen/50 rotate-90 origin-center mb-4">Scroll</span>
@@ -109,10 +119,10 @@ export default async function HomePage() {
           </Link>
         </AnimateOnScroll>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-10 md:gap-x-8 md:gap-y-14">
           {featured.map((item, i) => (
             <AnimateOnScroll key={item.id} delay={i * 100}>
-              <Link href={`/shop/${item.id}`}>
+              <Link href={`/shop/${item.id}`} className="group block">
                 <ProductCard {...item} />
               </Link>
             </AnimateOnScroll>
@@ -208,13 +218,18 @@ export default async function HomePage() {
   );
 }
 
-function ProductCard({ name, category, price, tag, imageUrl }: { name: string; category: string; price: string; tag?: string; imageUrl?: string }) {
+function ProductCard({ name, price, originalPrice, tag, imageUrl }: { name: string; category: string; price: string; originalPrice?: string; tag?: string; imageUrl?: string }) {
   return (
-    <div className="group cursor-pointer">
-      <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 aspect-[3/4] mb-4 shadow-sm">
+    <>
+      <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 shadow-sm aspect-[4/5] mb-4 overflow-hidden">
         {imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+          <Image
+            src={imageUrl}
+            alt={name}
+            fill
+            sizes="(min-width: 768px) 33vw, 50vw"
+            className="object-cover"
+          />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-fern/30 to-sage/15" />
         )}
@@ -223,17 +238,20 @@ function ProductCard({ name, category, price, tag, imageUrl }: { name: string; c
             {tag}
           </span>
         )}
-        {/* Quick add — slides up on hover */}
         <div className="absolute bottom-0 inset-x-0 bg-forest/80 backdrop-blur-md text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          Quick Add
+          View Product
         </div>
       </div>
-      <p className="text-[10px] tracking-widest uppercase text-moss mb-1">{category}</p>
-      <div className="flex justify-between items-baseline">
-        <p className="text-sm font-medium text-forest group-hover:text-sage transition-colors duration-200">{name}</p>
-        <p className="text-sm text-sage">{price}</p>
+      <div className="px-3 flex items-baseline justify-between gap-3">
+        <p className="text-sm text-forest group-hover:text-sage transition-colors duration-200">{name}</p>
+        <p className="text-sm text-forest/70 whitespace-nowrap">
+          {price}
+          {originalPrice && (
+            <span className="ml-2 text-forest/40 line-through">{originalPrice}</span>
+          )}
+        </p>
       </div>
-    </div>
+    </>
   );
 }
 

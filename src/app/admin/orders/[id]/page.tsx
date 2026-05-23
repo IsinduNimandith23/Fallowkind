@@ -113,7 +113,11 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           {/* Update Status */}
           <section className="bg-white rounded-lg border border-gray-100 shadow-sm px-6 py-5">
             <h2 className="font-semibold text-gray-800 text-sm mb-4">Update Order Status</h2>
-            <StatusUpdater orderId={order.id} currentStatus={order.order_status} />
+            <StatusUpdater
+              orderId={order.id}
+              currentStatus={order.order_status}
+              currentTrackingNumber={order.tracking_number ?? null}
+            />
           </section>
         </div>
 
@@ -215,6 +219,19 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 <span className="text-gray-500">Order ID</span>
                 <span className="text-gray-400 text-xs font-mono">{order.id.slice(0, 8)}…</span>
               </div>
+              {order.tracking_number && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-gray-500">Tracking</span>
+                  <a
+                    href={`https://domex.lk/Order-Details.php?wbno=${encodeURIComponent(order.tracking_number)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-forest font-mono text-xs hover:underline truncate"
+                  >
+                    {order.tracking_number}
+                  </a>
+                </div>
+              )}
             </div>
           </section>
         </div>

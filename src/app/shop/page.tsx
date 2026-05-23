@@ -4,7 +4,7 @@ import { getSiteSettings } from "@/lib/siteSettings";
 import ShopGrid from "./ShopGrid";
 
 export const metadata: Metadata = { title: "Shop" };
-export const revalidate = 0;
+export const revalidate = 3600;
 
 export default async function ShopPage() {
   const [products, settings] = await Promise.all([
