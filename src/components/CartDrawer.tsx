@@ -8,7 +8,7 @@ import { useCart, type CartItem } from "@/contexts/CartContext";
 const SHIPPING = 400;
 
 export default function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQty, subtotal, totalItems } = useCart();
+  const { items, isOpen, closeCart, removeItem, updateQty, clearCart, subtotal, totalItems } = useCart();
 
   // Lock body scroll when open
   useEffect(() => {
@@ -72,16 +72,28 @@ export default function CartDrawer() {
               </button>
             </div>
           ) : (
-            <ul className="space-y-5">
-              {items.map((item) => (
-                <CartLineItem
-                  key={`${item.productId}-${item.color}-${item.size}`}
-                  item={item}
-                  onRemove={() => removeItem(item.productId, item.color, item.size)}
-                  onUpdateQty={(qty) => updateQty(item.productId, item.color, item.size, qty)}
-                />
-              ))}
-            </ul>
+            <>
+              <div className="flex justify-end mb-3">
+                <button
+                  onClick={() => {
+                    if (window.confirm("Remove all items from your cart?")) clearCart();
+                  }}
+                  className="text-[10px] tracking-widest uppercase text-forest/40 hover:text-forest underline underline-offset-4 transition-colors duration-200"
+                >
+                  Clear all
+                </button>
+              </div>
+              <ul className="space-y-5">
+                {items.map((item) => (
+                  <CartLineItem
+                    key={`${item.productId}-${item.color}-${item.size}`}
+                    item={item}
+                    onRemove={() => removeItem(item.productId, item.color, item.size)}
+                    onUpdateQty={(qty) => updateQty(item.productId, item.color, item.size, qty)}
+                  />
+                ))}
+              </ul>
+            </>
           )}
         </div>
 

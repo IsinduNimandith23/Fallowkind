@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -34,11 +35,17 @@ export default function Footer() {
   return (
     <footer className="bg-forest text-linen">
       <div className="page-container section-padding">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
 
           {/* Brand */}
           <div className="flex flex-col gap-4">
-            <p className="tracking-[0.2em] text-sm font-semibold uppercase">Fallowkind</p>
+            <Image
+              src="/Untitled design.png"
+              alt="Fallowkind"
+              width={300}
+              height={300}
+              className="w-56 h-56 object-contain -ml-6 -mt-[6.5rem] -mb-12 brightness-0 invert"
+            />
             <p className="text-linen/60 text-sm leading-relaxed max-w-xs">
               Clothing rooted in the land. Made for those who believe the future is conscious.
             </p>
@@ -73,6 +80,41 @@ export default function Footer() {
               { href: "/shop",      label: "Shop"      },
               { href: "/our-story", label: "Our Story" },
               { href: "/contact",   label: "Contact"   },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-sm text-linen/70 hover:text-linen transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Customer care links */}
+          <div className="flex flex-col gap-3">
+            <p className="text-xs tracking-widest uppercase text-linen/40 mb-1">Customer Service</p>
+            {[
+              { href: "/shipping", label: "Shipping" },
+              { href: "/faq",      label: "FAQ"      },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-sm text-linen/70 hover:text-linen transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Info links */}
+          <div className="flex flex-col gap-3">
+            <p className="text-xs tracking-widest uppercase text-linen/40 mb-1">Info</p>
+            {[
+              { href: "/returns", label: "Return Policy"      },
+              { href: "/privacy", label: "Privacy Policy"     },
+              { href: "/terms",   label: "Terms & Conditions" },
             ].map((l) => (
               <Link
                 key={l.href}

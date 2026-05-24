@@ -161,10 +161,38 @@ html {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee 28s linear infinite;
+  animation: marquee 90s linear infinite;
 }
 
 @keyframes marquee {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+/* Testimonials slow scroll */
+.testimonial-track {
+  display: flex;
+  width: max-content;
+  animation: testimonial-scroll 70s linear infinite;
+}
+
+.testimonial-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes testimonial-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Edge fade mask for the testimonial rail */
+.testimonial-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+
+/* Vertical reading label (used on hero edge) */
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }

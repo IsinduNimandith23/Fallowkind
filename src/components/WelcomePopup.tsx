@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { clearPendingCoupon, setPendingCoupon } from "@/lib/pendingCoupon";
+import { clearPendingCoupon, getPendingCoupon, setPendingCoupon } from "@/lib/pendingCoupon";
 
 type WelcomeCoupon = {
   code: string;
@@ -10,9 +10,28 @@ type WelcomeCoupon = {
   discountValue: number;
   minOrderValue: number;
   remaining: number | null;
+  usedCount: number;
+  maxUses: number | null;
 };
 
 const SKIP_PATHS = ["/checkout", "/order-success", "/admin"];
+const AUTO_SHOWN_KEY = "fk_welcome_shown";
+
+function wasAutoShown(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem(AUTO_SHOWN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markAutoShown() {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(AUTO_SHOWN_KEY, "1");
+  } catch {}
+}
 
 export default function WelcomePopup() {
   const pathname = usePathname();
@@ -43,6 +62,12 @@ export default function WelcomePopup() {
     if (skipped) return;
     if (typeof window === "undefined") return;
 
+    // Sync claimed state with the actual stored coupon. If the user removed it
+    // from the checkout page, this resets the FAB so they can re-claim.
+    setClaimed(!!getPendingCoupon());
+    // If the popup already auto-opened earlier this session, don't open again on reload.
+    if (wasAutoShown()) autoShownRef.current = true;
+
     fetchCoupon();
 
     function onVisible() {
@@ -61,6 +86,7 @@ export default function WelcomePopup() {
       const trigger = window.innerHeight * 0.3;
       if (scrolled >= trigger) {
         autoShownRef.current = true;
+        markAutoShown();
         setVisible(true);
         window.removeEventListener("scroll", checkScroll);
       }
@@ -130,7 +156,7 @@ export default function WelcomePopup() {
       {visible && (
         <div
           className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-200 ${
-            closing ? "opacity-0" : "opacity-100"
+            closing ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
           onClick={close}
           role="dialog"
@@ -177,7 +203,7 @@ export default function WelcomePopup() {
                 </>
               ) : (
                 <>
-                  We&apos;re giving the first {coupon.remaining ?? "few"} customers a
+                  We&apos;re giving the first {coupon.maxUses ?? "few"} customers a
                   little something to say thanks for being early.
                   {coupon.minOrderValue > 0 && (
                     <>
@@ -188,6 +214,12 @@ export default function WelcomePopup() {
                 </>
               )}
             </p>
+
+            {coupon.maxUses !== null && (
+              <p className="text-[11px] tracking-widest uppercase text-forest/55 mb-5">
+                {coupon.usedCount} of {coupon.maxUses} claimed
+              </p>
+            )}
 
             {claimed ? (
               <button

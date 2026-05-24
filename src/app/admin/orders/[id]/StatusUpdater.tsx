@@ -76,8 +76,9 @@ export default function StatusUpdater({
           type="text"
           value={tracking}
           onChange={(e) => { setTracking(e.target.value); setSaved(false); setError(null); }}
-          placeholder="Tracking number"
-          className="border border-gray-200 rounded px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-forest/50 flex-1 min-w-[180px]"
+          placeholder={status === "pending" ? "Move to Processing to enter tracking" : "Tracking number"}
+          disabled={status === "pending" || !!currentTrackingNumber}
+          className="border border-gray-200 rounded px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-forest/50 flex-1 min-w-[180px] disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
         />
 
         <button

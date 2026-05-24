@@ -47,11 +47,11 @@ export default function CouponRowActions({ coupon }: { coupon: CouponInitial }) 
 
       {editing && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 overflow-y-auto"
+          className="fixed inset-0 z-[240] flex items-start justify-center bg-black/40 p-4 overflow-y-auto"
           onClick={() => setEditing(false)}
         >
           <div
-            className="mt-16 w-full max-w-2xl"
+            className="mt-6 md:mt-16 w-full max-w-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">

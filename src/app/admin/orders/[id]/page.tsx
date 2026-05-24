@@ -51,30 +51,30 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   }
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-4 md:p-8 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-6 md:mb-8">
         <Link href="/admin/orders" className="text-sm text-gray-400 hover:text-forest transition-colors">
           ← Orders
         </Link>
-        <span className="text-gray-200">/</span>
-        <h1 className="text-2xl font-semibold text-gray-900">{order.order_number}</h1>
+        <span className="text-gray-200 hidden md:inline">/</span>
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900 break-all">{order.order_number}</h1>
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium capitalize ${statusBadge(order.order_status)}`}>
           {order.order_status}
         </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
           <section className="bg-white rounded-lg border border-gray-100 shadow-sm">
-            <h2 className="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">
+            <h2 className="px-4 md:px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">
               Items ({orderItems.length})
             </h2>
             <div className="divide-y divide-gray-50">
               {orderItems.map((item) => (
-                <div key={item.id} className="px-6 py-4 flex items-center justify-between">
+                <div key={item.id} className="px-4 md:px-6 py-4 flex items-center justify-between gap-3">
                   <div>
                     <p className="font-medium text-gray-800 text-sm">{item.product_name}</p>
                     <p className="text-xs text-gray-400 mt-0.5">
@@ -88,7 +88,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               ))}
             </div>
             {/* Totals */}
-            <div className="px-6 py-4 border-t border-gray-100 space-y-2">
+            <div className="px-4 md:px-6 py-4 border-t border-gray-100 space-y-2">
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Subtotal</span>
                 <span>Rs. {Number(order.subtotal).toLocaleString("en-LK")}</span>
@@ -111,7 +111,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </section>
 
           {/* Update Status */}
-          <section className="bg-white rounded-lg border border-gray-100 shadow-sm px-6 py-5">
+          <section className="bg-white rounded-lg border border-gray-100 shadow-sm px-4 md:px-6 py-5">
             <h2 className="font-semibold text-gray-800 text-sm mb-4">Update Order Status</h2>
             <StatusUpdater
               orderId={order.id}
@@ -125,8 +125,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         <div className="space-y-6">
           {/* Customer */}
           <section className="bg-white rounded-lg border border-gray-100 shadow-sm">
-            <h2 className="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Customer</h2>
-            <div className="px-6 py-4 space-y-2 text-sm">
+            <h2 className="px-4 md:px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Customer</h2>
+            <div className="px-4 md:px-6 py-4 space-y-2 text-sm">
               <p className="font-medium text-gray-800">{order.customer_name}</p>
               <p className="text-gray-500">{order.customer_email}</p>
               <p className="text-gray-500">{order.customer_phone}</p>
@@ -135,8 +135,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
           {/* Shipping Address */}
           <section className="bg-white rounded-lg border border-gray-100 shadow-sm">
-            <h2 className="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Shipping Address</h2>
-            <div className="px-6 py-4 text-sm text-gray-600 space-y-0.5">
+            <h2 className="px-4 md:px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Shipping Address</h2>
+            <div className="px-4 md:px-6 py-4 text-sm text-gray-600 space-y-0.5">
               <p>{order.address}</p>
               <p>{order.city}{order.postal_code ? `, ${order.postal_code}` : ""}</p>
             </div>
@@ -144,8 +144,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
           {/* Payment */}
           <section className="bg-white rounded-lg border border-gray-100 shadow-sm">
-            <h2 className="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Payment</h2>
-            <div className="px-6 py-4 text-sm space-y-3">
+            <h2 className="px-4 md:px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Payment</h2>
+            <div className="px-4 md:px-6 py-4 text-sm space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-500">Method</span>
                 <span className="font-medium text-gray-800">
@@ -194,15 +194,15 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           {/* Notes */}
           {order.notes && (
             <section className="bg-white rounded-lg border border-gray-100 shadow-sm">
-              <h2 className="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Notes</h2>
-              <p className="px-6 py-4 text-sm text-gray-600">{order.notes}</p>
+              <h2 className="px-4 md:px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Notes</h2>
+              <p className="px-4 md:px-6 py-4 text-sm text-gray-600">{order.notes}</p>
             </section>
           )}
 
           {/* Meta */}
           <section className="bg-white rounded-lg border border-gray-100 shadow-sm">
-            <h2 className="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Order Info</h2>
-            <div className="px-6 py-4 text-sm space-y-2">
+            <h2 className="px-4 md:px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 text-sm">Order Info</h2>
+            <div className="px-4 md:px-6 py-4 text-sm space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-500">Placed</span>
                 <span className="text-gray-700">

@@ -257,12 +257,12 @@ function processingContent(
 
     <div style="background:#F5F0E5;padding:20px;margin-bottom:24px">
       <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 8px">Tracking Code</p>
-      <p style="color:#2A3D2A;font-size:18px;margin:0;font-weight:600;letter-spacing:1px">${esc(trackingCode)}</p>
+      <p style="color:#2A3D2A;font-size:16px;margin:0;font-family:Arial,Helvetica,sans-serif;font-weight:500">${esc(trackingCode)}</p>
     </div>
 
     <p style="color:#5a6a5a;font-size:14px;line-height:1.8;margin:0 0 8px">You can track your order here:</p>
     <p style="margin:0 0 28px">
-      <a href="${esc(trackUrl)}" style="color:#2A3D2A;font-size:14px;word-break:break-all">${esc(trackUrl)}</a>
+      <a href="${esc(trackUrl)}" style="color:#2A3D2A;font-size:14px;font-family:Arial,Helvetica,sans-serif;word-break:break-all">${esc(trackUrl)}</a>
     </p>
 
     <p style="color:#5a6a5a;font-size:14px;line-height:1.8;margin:0 0 16px">

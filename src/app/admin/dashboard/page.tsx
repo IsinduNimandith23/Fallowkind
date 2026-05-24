@@ -101,16 +101,16 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+    <div className="p-4 md:p-8">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Dashboard</h1>
         <p className="text-sm text-gray-500 mt-1">
           {new Date().toLocaleDateString("en-LK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4 mb-8 md:mb-10">
         {stats.map((s) => (
           <div key={s.label} className={`bg-white rounded-lg p-5 border-l-4 ${s.color} shadow-sm`}>
             <div className="flex items-center justify-between mb-3">
@@ -125,7 +125,7 @@ export default async function DashboardPage() {
 
       {/* Recent orders */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-gray-100">
           <h2 className="font-semibold text-gray-800">Recent Orders</h2>
           <Link href="/admin/orders" className="text-xs text-forest hover:underline">
             View all →
@@ -149,7 +149,7 @@ export default async function DashboardPage() {
               <tbody>
                 {(recentOrders ?? []).map((order) => (
                   <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3">
+                    <td className="px-4 md:px-6 py-3">
                       <Link href={`/admin/orders/${order.id}`} className="font-medium text-forest hover:underline">
                         {order.order_number}
                       </Link>
@@ -161,12 +161,12 @@ export default async function DashboardPage() {
                     <td className="px-6 py-3 font-medium text-gray-800">
                       Rs. {Number(order.total).toLocaleString("en-LK")}
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-4 md:px-6 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${paymentBadge(order.payment_method, order.payment_status)}`}>
                         {paymentLabel(order.payment_method, order.payment_status)}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-4 md:px-6 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${statusBadge(order.order_status)}`}>
                         {order.order_status}
                       </span>
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+    <th className="px-4 md:px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
       {children}
     </th>
   );

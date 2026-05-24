@@ -1,13 +1,24 @@
-let pendingCoupon: string | null = null;
+const KEY = "fk_pending_coupon";
 
 export function setPendingCoupon(code: string) {
-  pendingCoupon = code;
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(KEY, code);
+  } catch {}
 }
 
 export function getPendingCoupon(): string | null {
-  return pendingCoupon;
+  if (typeof window === "undefined") return null;
+  try {
+    return sessionStorage.getItem(KEY);
+  } catch {
+    return null;
+  }
 }
 
 export function clearPendingCoupon() {
-  pendingCoupon = null;
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(KEY);
+  } catch {}
 }

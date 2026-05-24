@@ -75,9 +75,9 @@ export default function CouponForm({ mode, initial, onDone, onCancel }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white border border-gray-100 rounded-lg shadow-sm p-6 grid grid-cols-2 gap-4"
+      className="bg-white border border-gray-100 rounded-lg shadow-sm p-4 md:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4"
     >
-      <div className="col-span-2 sm:col-span-1">
+      <div className="sm:col-span-1">
         <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Code</label>
         <input
           required
@@ -88,7 +88,7 @@ export default function CouponForm({ mode, initial, onDone, onCancel }: Props) {
         />
       </div>
 
-      <div className="col-span-2 sm:col-span-1">
+      <div className="sm:col-span-1">
         <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Discount Type</label>
         <select
           value={form.discount_type}
@@ -149,9 +149,9 @@ export default function CouponForm({ mode, initial, onDone, onCancel }: Props) {
         />
       </div>
 
-      {error && <p className="col-span-2 text-xs text-red-600">{error}</p>}
+      {error && <p className="sm:col-span-2 text-xs text-red-600">{error}</p>}
 
-      <div className="col-span-2 flex justify-end gap-2">
+      <div className="sm:col-span-2 flex justify-end gap-2">
         <button
           type="button"
           onClick={onCancel}

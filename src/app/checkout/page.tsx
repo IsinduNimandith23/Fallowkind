@@ -323,7 +323,7 @@ export default function CheckoutPage() {
                 value={form.notes}
                 onChange={(e) => setField("notes", e.target.value)}
                 rows={3}
-                className="w-full glass-input-soft px-4 py-3 text-sm text-forest placeholder:text-forest/50 resize-none"
+                className="w-full glass-input-soft px-4 py-3 text-sm text-forest placeholder:text-forest/50 resize-none border-forest/30 hover:border-forest/50"
                 placeholder="Special instructions, delivery notes…"
               />
             </section>
@@ -363,7 +363,7 @@ export default function CheckoutPage() {
                       value={couponInput}
                       onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyCoupon())}
-                      className="flex-1 glass-input px-5 py-3 text-sm text-forest placeholder:text-forest/50 uppercase tracking-widest"
+                      className="flex-1 glass-input px-5 py-3 text-sm text-forest placeholder:text-forest/50 uppercase tracking-widest border-forest/30 hover:border-forest/50"
                       placeholder="ENTER CODE"
                     />
                     <button
@@ -573,7 +573,7 @@ export default function CheckoutPage() {
 // ── Small helpers ────────────────────────────────────────────────
 
 function inputCls(hasError: boolean) {
-  return `w-full glass-input px-5 py-3 text-sm text-forest placeholder:text-forest/50 ${hasError ? "!border-red-400/70" : ""}`;
+  return `w-full glass-input px-5 py-3 text-sm text-forest placeholder:text-forest/50 border-forest/30 hover:border-forest/50 ${hasError ? "!border-red-400/70" : ""}`;
 }
 
 function Field({

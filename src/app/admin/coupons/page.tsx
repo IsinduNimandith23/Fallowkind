@@ -15,10 +15,10 @@ export default async function CouponsPage() {
   const rows = coupons ?? [];
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex items-center justify-between mb-6 md:mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Coupons</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Coupons</h1>
           <p className="text-sm text-gray-500 mt-1">{rows.length} coupon{rows.length !== 1 ? "s" : ""}</p>
         </div>
       </div>
@@ -51,7 +51,7 @@ export default async function CouponsPage() {
 
                   return (
                     <tr key={coupon.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3.5">
+                      <td className="px-4 md:px-6 py-3.5">
                         <span className="font-mono font-semibold text-gray-800 tracking-wider">{coupon.code}</span>
                         {(expired || maxedOut) && (
                           <span className="ml-2 text-[10px] bg-red-50 text-red-400 px-1.5 py-0.5 rounded">
@@ -59,29 +59,29 @@ export default async function CouponsPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-3.5 text-gray-700">
+                      <td className="px-4 md:px-6 py-3.5 text-gray-700">
                         {coupon.discount_type === "percentage"
                           ? `${coupon.discount_value}% off`
                           : `Rs. ${Number(coupon.discount_value).toLocaleString("en-LK")} off`}
                       </td>
-                      <td className="px-6 py-3.5 text-gray-500">
+                      <td className="px-4 md:px-6 py-3.5 text-gray-500">
                         {coupon.min_order_value > 0
                           ? `Rs. ${Number(coupon.min_order_value).toLocaleString("en-LK")}`
                           : "—"}
                       </td>
-                      <td className="px-6 py-3.5 text-gray-500">
+                      <td className="px-4 md:px-6 py-3.5 text-gray-500">
                         {coupon.used_count}
                         {coupon.max_uses != null ? ` / ${coupon.max_uses}` : " / ∞"}
                       </td>
-                      <td className="px-6 py-3.5 text-gray-500">
+                      <td className="px-4 md:px-6 py-3.5 text-gray-500">
                         {coupon.expires_at
                           ? new Date(coupon.expires_at).toLocaleDateString("en-LK")
                           : "Never"}
                       </td>
-                      <td className="px-6 py-3.5">
+                      <td className="px-4 md:px-6 py-3.5">
                         <ToggleButton id={coupon.id} active={coupon.active} />
                       </td>
-                      <td className="px-6 py-3.5">
+                      <td className="px-4 md:px-6 py-3.5">
                         <CouponRowActions
                           coupon={{
                             id: coupon.id,
@@ -108,7 +108,7 @@ export default async function CouponsPage() {
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+    <th className="px-4 md:px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
       {children}
     </th>
   );

@@ -29,25 +29,18 @@ export default function OurStoryPage() {
         <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full border border-fern/10" />
 
         <div className="page-container max-w-3xl relative">
-          <p
-            className="text-xs tracking-[0.35em] uppercase text-fern mb-7 opacity-0 animate-fade-in"
-            style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}
-          >
-            Who we are
-          </p>
           <h1
             className="text-linen text-5xl md:text-7xl lg:text-8xl mb-10 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
           >
-            Rooted in<br />the land.
+            Our Vision
           </h1>
           <p
             className="text-linen/65 text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
           >
-            Fallowkind began as a question: what would clothing look like if it honoured the earth
-            it came from? The answer is a small, considered brand — built season by season, stitch
-            by stitch.
+            To shape a future where what we wear honours the earth that made it - clothing crafted
+            with intention, worn with meaning, and made to leave the land better than we found it.
           </p>
         </div>
       </section>
@@ -134,7 +127,20 @@ export default function OurStoryPage() {
         </AnimateOnScroll>
       </section>
 
-      
+      {/* ── Pull quote ── */}
+      <AnimateOnScroll>
+        <section className="relative section-padding overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-cream/60 via-linen/40 to-fern/25" />
+          <div className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-fern/25 blur-3xl" />
+          <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
+          <div className="relative page-container text-center max-w-3xl mx-auto">
+            <p className="text-4xl md:text-5xl text-forest font-serif italic leading-snug normal-case tracking-normal">
+              &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
+            </p>
+            <p className="mt-6 text-xs tracking-[0.3em] uppercase text-moss">— Fallowkind</p>
+          </div>
+        </section>
+      </AnimateOnScroll>
     </>
   );
 }

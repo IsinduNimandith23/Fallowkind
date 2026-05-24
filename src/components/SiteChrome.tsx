@@ -9,8 +9,9 @@ import WelcomePopup from "./WelcomePopup";
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin") ?? false;
+  const isComingSoon = pathname === "/coming-soon";
 
-  if (isAdmin) {
+  if (isAdmin || isComingSoon) {
     return <>{children}</>;
   }
 

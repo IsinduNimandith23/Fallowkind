@@ -264,7 +264,7 @@ export default function ProductForm({ mode, product }: Props) {
 
       {/* Image */}
       <Section title="Product image">
-        <div className="flex items-start gap-6">
+        <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
           <div className="w-32 h-40 bg-cream rounded overflow-hidden flex items-center justify-center flex-shrink-0">
             {imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -466,7 +466,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
+    <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-4 md:p-6">
       <div className="mb-4">
         <h2 className="text-sm font-semibold text-gray-800 uppercase tracking-wider">{title}</h2>
         {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}

@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const navItems = [
   {
@@ -55,6 +57,22 @@ type Props = { pendingCount: number };
 
 export default function AdminSidebar({ pendingCount }: Props) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  // Close drawer on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll while drawer is open on mobile
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -63,12 +81,19 @@ export default function AdminSidebar({ pendingCount }: Props) {
     window.location.assign("/admin/login");
   }
 
-  return (
-    <aside className="w-56 shrink-0 bg-forest flex flex-col h-full">
+  const sidebarBody = (
+    <>
       {/* Brand */}
-      <div className="px-6 py-7 border-b border-white/10">
-        <p className="text-linen font-display text-lg leading-tight">Fallowkind</p>
-        <p className="text-fern/60 text-[10px] tracking-[0.3em] uppercase mt-0.5">Admin</p>
+      <div className="border-b border-white/10 flex flex-col items-center overflow-hidden">
+        <Image
+          src="/Untitled design.png"
+          alt="Fallowkind"
+          width={500}
+          height={500}
+          className="w-72 h-72 object-contain brightness-0 invert -my-24"
+          priority
+        />
+        <p className="text-fern/60 text-[10px] tracking-[0.3em] uppercase pb-3">Admin</p>
       </div>
 
       {/* Nav */}
@@ -120,6 +145,43 @@ export default function AdminSidebar({ pendingCount }: Props) {
           Log out
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar (hamburger + title) */}
+      <div className="md:hidden fixed top-0 inset-x-0 h-14 bg-forest flex items-center justify-between px-4 z-[210]">
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+          className="text-linen p-2 -ml-2"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+          </svg>
+        </button>
+        <p className="text-linen text-xs tracking-[0.3em] uppercase">Admin</p>
+        <div className="w-6" />
+      </div>
+
+      {/* Backdrop (mobile only, when drawer is open) */}
+      {open && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-[220]"
+          onClick={() => setOpen(false)}
+          aria-hidden
+        />
+      )}
+
+      {/* Sidebar — static on md+, slide-in drawer on mobile */}
+      <aside
+        className={`bg-forest flex flex-col z-[230] transition-transform duration-200 ease-out
+          fixed inset-y-0 left-0 w-64 md:w-56 md:static md:translate-x-0 md:shrink-0 md:h-full
+          ${open ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        {sidebarBody}
+      </aside>
+    </>
   );
 }

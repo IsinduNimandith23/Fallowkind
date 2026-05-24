@@ -34,6 +34,8 @@ export async function GET() {
       discountValue: data.discount_value,
       minOrderValue: data.min_order_value,
       remaining,
+      usedCount: data.used_count ?? 0,
+      maxUses: data.max_uses,
     },
   });
 }

@@ -60,7 +60,7 @@ export default function ContactForm() {
           rows={6}
           required
           maxLength={5000}
-          className="glass-input-soft px-5 py-4 text-sm text-forest placeholder:text-forest/50 resize-none"
+          className="glass-input-soft px-5 py-4 text-sm text-forest placeholder:text-forest/50 resize-none border-forest/30 hover:border-forest/50"
           placeholder="Your message..."
         />
       </div>
@@ -90,7 +90,7 @@ function FormField({ id, label, type }: { id: string; label: string; type: strin
         name={id}
         type={type}
         required
-        className="glass-input px-5 py-3.5 text-sm text-forest placeholder:text-forest/50"
+        className="glass-input px-5 py-3.5 text-sm text-forest placeholder:text-forest/50 border-forest/30 hover:border-forest/50"
         placeholder={label}
       />
     </div>
