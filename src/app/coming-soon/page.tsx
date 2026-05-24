@@ -56,21 +56,21 @@ export default function ComingSoonPage() {
         <Image
           src="/Untitled design.png"
           alt="Fallowkind"
-          width={320}
-          height={320}
+          width={640}
+          height={640}
           priority
-          className="w-44 h-44 md:w-56 md:h-56 object-contain brightness-0 invert -mb-6"
+          className="w-[18rem] md:w-[26rem] h-24 md:h-36 object-cover brightness-0 invert"
         />
 
-        <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-linen/55 mb-6">
+        <h1 className="font-display text-5xl md:text-8xl tracking-tight uppercase text-linen mt-8 mb-6 leading-[0.95]">
           Launching Soon
-        </p>
-
-        <h1 className="font-display uppercase text-5xl md:text-7xl leading-[0.95] tracking-tight text-linen">
-          Rooted in the Land
         </h1>
 
-        <p className="mt-8 max-w-md text-linen/70 text-base md:text-lg leading-relaxed">
+        <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-linen/55">
+          Rooted in the Land
+        </p>
+
+        <p className="mt-6 max-w-md text-linen/70 text-base md:text-lg leading-relaxed">
           Fallowkind is preparing something honest, slow, and made to last.
           Clothing for those who believe the future is conscious.
         </p>
