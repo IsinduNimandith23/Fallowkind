@@ -1,11 +1,8 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { getAllProducts } from "@/lib/products";
 import { getSiteSettings } from "@/lib/siteSettings";
-
-export const metadata: Metadata = { title: "Home" };
 
 // Cache the rendered page. Admin mutations call revalidatePath("/") to bust it.
 export const revalidate = 3600;
