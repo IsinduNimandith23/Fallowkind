@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Launching soon | Fallowkind",
+  title: "Launching soon",
   description: "Clothing rooted in the land. Fallowkind is launching soon.",
   robots: { index: false, follow: false },
 };
