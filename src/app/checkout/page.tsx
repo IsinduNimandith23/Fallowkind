@@ -8,6 +8,7 @@ import { useCart } from "@/contexts/CartContext";
 import { clearPendingCoupon, getPendingCoupon } from "@/lib/pendingCoupon";
 
 const SHIPPING = 400;
+const SAVED_INFO_KEY = "fallowkind_saved_checkout_info";
 
 const BANK_DETAILS = {
   accountName: "S sepala dahanayake",
@@ -71,10 +72,21 @@ export default function CheckoutPage() {
   const [receiptUploading, setReceiptUploading] = useState(false);
 
   const [successOrder, setSuccessOrder] = useState<SuccessOrder | null>(null);
+  const [saveInfo, setSaveInfo] = useState(false);
 
   useEffect(() => {
     if (items.length === 0 && !successOrder) router.replace("/shop");
   }, [items, router, successOrder]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SAVED_INFO_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as Partial<Form>;
+      setForm((f) => ({ ...f, ...saved }));
+      setSaveInfo(true);
+    } catch {}
+  }, []);
 
   const autoAppliedRef = useRef(false);
   useEffect(() => {
@@ -214,6 +226,23 @@ export default function CheckoutPage() {
       });
       clearCart();
       clearPendingCoupon();
+
+      try {
+        if (saveInfo) {
+          const toSave = {
+            firstName: form.firstName,
+            lastName: form.lastName,
+            email: form.email,
+            phone: form.phone,
+            address: form.address,
+            city: form.city,
+            postalCode: form.postalCode,
+          };
+          localStorage.setItem(SAVED_INFO_KEY, JSON.stringify(toSave));
+        } else {
+          localStorage.removeItem(SAVED_INFO_KEY);
+        }
+      } catch {}
     } catch {
       setServerError("Network error. Please check your connection and try again.");
     } finally {
@@ -244,7 +273,7 @@ export default function CheckoutPage() {
                       value={form.firstName}
                       onChange={(e) => setField("firstName", e.target.value)}
                       className={inputCls(!!errors.firstName)}
-                      placeholder="Kamal"
+                      placeholder="Your first name"
                     />
                   </Field>
                   <Field label="Last name" error={errors.lastName}>
@@ -253,7 +282,7 @@ export default function CheckoutPage() {
                       value={form.lastName}
                       onChange={(e) => setField("lastName", e.target.value)}
                       className={inputCls(!!errors.lastName)}
-                      placeholder="Perera"
+                      placeholder="Your last name"
                     />
                   </Field>
                 </div>
@@ -263,7 +292,7 @@ export default function CheckoutPage() {
                     value={form.email}
                     onChange={(e) => setField("email", e.target.value)}
                     className={inputCls(!!errors.email)}
-                    placeholder="kamal@example.com"
+                    placeholder="you@example.com"
                   />
                 </Field>
                 <Field label="Phone number" error={errors.phone}>
@@ -272,7 +301,7 @@ export default function CheckoutPage() {
                     value={form.phone}
                     onChange={(e) => setField("phone", e.target.value)}
                     className={inputCls(!!errors.phone)}
-                    placeholder="077 123 4567"
+                    placeholder="+94 7X XXX XXXX"
                   />
                 </Field>
               </div>
@@ -288,7 +317,7 @@ export default function CheckoutPage() {
                     value={form.address}
                     onChange={(e) => setField("address", e.target.value)}
                     className={inputCls(!!errors.address)}
-                    placeholder="123 Galle Road"
+                    placeholder="Street address"
                   />
                 </Field>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -298,7 +327,7 @@ export default function CheckoutPage() {
                       value={form.city}
                       onChange={(e) => setField("city", e.target.value)}
                       className={inputCls(!!errors.city)}
-                      placeholder="Colombo"
+                      placeholder="Your city"
                     />
                   </Field>
                   <Field label="Postal code" error={errors.postalCode}>
@@ -307,10 +336,32 @@ export default function CheckoutPage() {
                       value={form.postalCode}
                       onChange={(e) => setField("postalCode", e.target.value)}
                       className={inputCls(!!errors.postalCode)}
-                      placeholder="00300"
+                      placeholder="Postal code"
                     />
                   </Field>
                 </div>
+                <label className="flex items-center gap-3 pt-2 cursor-pointer select-none group">
+                  <span
+                    className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors duration-200 ${
+                      saveInfo
+                        ? "bg-forest border-forest"
+                        : "bg-white/40 border-forest/30 group-hover:border-forest/55"
+                    }`}
+                  >
+                    {saveInfo && (
+                      <svg className="w-3 h-3 text-linen" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    )}
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={saveInfo}
+                    onChange={(e) => setSaveInfo(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <span className="text-sm text-forest/80">Save this information for next time</span>
+                </label>
               </div>
             </section>
 
@@ -500,7 +551,9 @@ export default function CheckoutPage() {
             <h2 className="text-xs tracking-[0.3em] uppercase text-moss mb-6">Order summary</h2>
 
             <ul className="space-y-4 mb-6">
-              {items.map((item) => (
+              {items.map((item) => {
+                const summaryImage = item.imageUrl2 ?? item.imageUrl;
+                return (
                 <li
                   key={`${item.productId}-${item.color}-${item.size}`}
                   className="flex gap-4"
@@ -508,14 +561,14 @@ export default function CheckoutPage() {
                   <div
                     className="relative w-16 h-20 shrink-0 rounded-2xl border border-white/40 shadow-sm overflow-hidden"
                     style={
-                      item.imageUrl
+                      summaryImage
                         ? undefined
                         : { background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)` }
                     }
                   >
-                    {item.imageUrl && (
+                    {summaryImage && (
                       <Image
-                        src={item.imageUrl}
+                        src={summaryImage}
                         alt={item.name}
                         fill
                         sizes="64px"
@@ -534,7 +587,8 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
 
             <div className="border-t border-forest/10 pt-5 space-y-2.5">

@@ -220,7 +220,7 @@ export default async function HomePage() {
             <img
               src={commitmentBanner}
               alt=""
-              className="w-full h-auto block object-center"
+              className="block w-full h-[220px] object-cover object-center sm:h-auto"
             />
           )}
         </section>

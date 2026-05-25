@@ -13,6 +13,7 @@ export type CartItem = {
   size: string;
   quantity: number;
   imageUrl?: string;
+  imageUrl2?: string;
 };
 
 type CartContextType = {

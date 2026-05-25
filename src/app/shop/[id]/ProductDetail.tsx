@@ -47,6 +47,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
         colorHex: selectedColor.hex,
         size: selectedSize,
         imageUrl: product.imageUrl,
+        imageUrl2: product.imageUrl2,
       },
       qty
     );

@@ -142,6 +142,7 @@ function CartLineItem({
   onUpdateQty: (qty: number) => void;
 }) {
   const lineTotal = item.priceValue * item.quantity;
+  const displayImage = item.imageUrl2 ?? item.imageUrl;
 
   return (
     <li className="flex gap-4">
@@ -149,14 +150,14 @@ function CartLineItem({
       <div
         className="relative w-20 h-24 shrink-0 rounded-2xl border border-white/40 shadow-sm overflow-hidden"
         style={
-          item.imageUrl
+          displayImage
             ? undefined
             : { background: `linear-gradient(145deg, ${item.colorHex}66, ${item.colorHex}22)` }
         }
       >
-        {item.imageUrl && (
+        {displayImage && (
           <Image
-            src={item.imageUrl}
+            src={displayImage}
             alt={item.name}
             fill
             sizes="80px"
