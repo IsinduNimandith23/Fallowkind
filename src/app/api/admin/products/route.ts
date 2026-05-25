@@ -13,11 +13,11 @@ type ProductPayload = {
   in_stock?: boolean;
   material?: string;
   fit?: string;
-  care?: string;
   origin?: string;
   colors?: { name: string; hex: string }[];
   sizes?: string[];
   image_url?: string | null;
+  image_url_2?: string | null;
   sort_order?: number;
 };
 
@@ -53,11 +53,11 @@ export async function POST(request: Request) {
         in_stock: body.in_stock ?? true,
         material: body.material ?? "",
         fit: body.fit ?? "",
-        care: body.care ?? "",
         origin: body.origin ?? "",
         colors: body.colors ?? [],
         sizes: body.sizes ?? ["S", "M", "L", "XL", "XXL"],
         image_url: body.image_url || null,
+        image_url_2: body.image_url_2 || null,
         sort_order: body.sort_order ?? 0,
       })
       .select("id")

@@ -12,6 +12,17 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Belt-and-braces: never let stray decorative elements (off-canvas blobs,
+   absolutely-positioned circles, etc.) trigger horizontal scrolling on mobile. */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Hide floating UI (welcome-coupon FAB) while a full-screen drawer is open */
+body.drawer-open .welcome-fab { display: none; }
+
 /* Subtle custom scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #F5F0E5; }
@@ -62,7 +73,7 @@ html {
   }
 
   .section-padding {
-    @apply px-6 py-20 md:px-12 lg:px-24;
+    @apply px-5 py-14 sm:px-6 sm:py-16 md:py-20 md:px-12 lg:px-24;
   }
 
   .page-container {
@@ -183,6 +194,16 @@ html {
 @keyframes testimonial-scroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+/* Filter button click pulse */
+@keyframes filter-pulse {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(1.35); opacity: 0;   }
+}
+
+.animate-filter-pulse {
+  animation: filter-pulse 450ms ease-out forwards;
 }
 
 /* Edge fade mask for the testimonial rail */

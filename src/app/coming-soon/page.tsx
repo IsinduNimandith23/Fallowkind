@@ -59,18 +59,18 @@ export default function ComingSoonPage() {
           width={640}
           height={640}
           priority
-          className="w-[18rem] md:w-[26rem] h-24 md:h-36 object-cover brightness-0 invert"
+          className="w-[14rem] sm:w-[18rem] md:w-[26rem] h-20 sm:h-24 md:h-36 object-cover brightness-0 invert"
         />
 
-        <h1 className="font-display text-5xl md:text-8xl tracking-tight uppercase text-linen mt-8 mb-6 leading-[0.95]">
+        <h1 className="font-display text-4xl sm:text-5xl md:text-8xl tracking-tight uppercase text-linen mt-6 sm:mt-8 mb-5 sm:mb-6 leading-[0.95]">
           Launching Soon
         </h1>
 
-        <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-linen/55">
+        <p className="text-[10px] sm:text-xs md:text-sm tracking-[0.3em] sm:tracking-[0.4em] uppercase text-linen/55 px-2">
           Kind to your Skin, Kinder to the Earth
         </p>
 
-        <p className="mt-6 max-w-md text-linen/70 text-base md:text-lg leading-relaxed">
+        <p className="mt-5 sm:mt-6 max-w-md text-linen/70 text-sm sm:text-base md:text-lg leading-relaxed">
           Fallowkind is preparing something honest, slow, and made to last.
           Clothing for those who believe the future is conscious.
         </p>

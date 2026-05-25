@@ -3,8 +3,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product, ProductColor } from "@/lib/products";
+import { SIZE_OPTIONS } from "@/lib/sizes";
 
-const SIZE_OPTIONS = ["S", "M", "L", "XL"];
 const CATEGORY_OPTIONS = ["T-Shirts", "Graphic", "Heavyweight", "Oversized"];
 const TAG_OPTIONS = ["", "New", "Bestseller", "Sale", "Limited"];
 
@@ -24,7 +24,8 @@ function parsePriceDigits(s: string): number {
 
 export default function ProductForm({ mode, product }: Props) {
   const router = useRouter();
-  const fileRef = useRef<HTMLInputElement>(null);
+  const fileRef1 = useRef<HTMLInputElement>(null);
+  const fileRef2 = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(product?.name ?? "");
   const [category, setCategory] = useState(product?.category ?? "T-Shirts");
@@ -36,19 +37,19 @@ export default function ProductForm({ mode, product }: Props) {
   const [originalPrice, setOriginalPrice] = useState(product?.originalPrice ?? "");
   const [tag, setTag] = useState(product?.tag ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
-  const [inStock, setInStock] = useState(product?.inStock ?? true);
   const [material, setMaterial] = useState(product?.details.material ?? "");
   const [fit, setFit] = useState(product?.details.fit ?? "");
-  const [care, setCare] = useState(product?.details.care ?? "");
   const [origin, setOrigin] = useState(product?.details.origin ?? "Responsibly made in Sri Lanka");
   const [colors, setColors] = useState<ProductColor[]>(
-    product?.colors ?? [{ name: "Natural", hex: "#EDE6D3" }]
+    product?.colors ?? [{ name: "", hex: "#EDE6D3" }]
   );
   const [sizes, setSizes] = useState<string[]>(
     product?.sizes ?? ["S", "M", "L", "XL"]
   );
   const [imageUrl, setImageUrl] = useState(product?.imageUrl ?? "");
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageUrl2, setImageUrl2] = useState(product?.imageUrl2 ?? "");
+  const [uploadingImage1, setUploadingImage1] = useState(false);
+  const [uploadingImage2, setUploadingImage2] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -76,11 +77,18 @@ export default function ProductForm({ mode, product }: Props) {
     );
   }
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImageUpload(
+    e: React.ChangeEvent<HTMLInputElement>,
+    slot: 1 | 2
+  ) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadingImage(true);
+    const setUploading = slot === 1 ? setUploadingImage1 : setUploadingImage2;
+    const setUrl = slot === 1 ? setImageUrl : setImageUrl2;
+    const inputRef = slot === 1 ? fileRef1 : fileRef2;
+
+    setUploading(true);
     setError("");
     try {
       const fd = new FormData();
@@ -89,13 +97,13 @@ export default function ProductForm({ mode, product }: Props) {
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Upload failed");
-      setImageUrl(json.url);
+      setUrl(json.url);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed";
       setError(msg);
     } finally {
-      setUploadingImage(false);
-      if (fileRef.current) fileRef.current.value = "";
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
     }
   }
 
@@ -112,7 +120,6 @@ export default function ProductForm({ mode, product }: Props) {
     if (!priceDisplay.trim()) return setError("Price (display) is required");
     if (priceValue <= 0) return setError("Price value must be greater than zero");
     if (cleanColors.length === 0) return setError("Add at least one colour");
-    if (sizes.length === 0) return setError("Choose at least one size");
 
     const payload = {
       name: name.trim(),
@@ -122,14 +129,14 @@ export default function ProductForm({ mode, product }: Props) {
       original_price: originalPrice.trim() || null,
       tag: tag.trim() || null,
       description: description.trim(),
-      in_stock: inStock,
+      in_stock: sizes.length > 0,
       material: material.trim(),
       fit: fit.trim(),
-      care: care.trim(),
       origin: origin.trim(),
       colors: cleanColors,
       sizes,
       image_url: imageUrl.trim() || null,
+      image_url_2: imageUrl2.trim() || null,
     };
 
     setSubmitting(true);
@@ -198,17 +205,6 @@ export default function ProductForm({ mode, product }: Props) {
               ))}
             </select>
           </Field>
-          <Field label="In stock">
-            <label className="flex items-center gap-2 text-sm text-gray-700 pt-2">
-              <input
-                type="checkbox"
-                checked={inStock}
-                onChange={(e) => setInStock(e.target.checked)}
-                className="w-4 h-4 accent-forest"
-              />
-              Available for purchase
-            </label>
-          </Field>
         </Grid>
       </Section>
 
@@ -262,42 +258,25 @@ export default function ProductForm({ mode, product }: Props) {
         </Field>
       </Section>
 
-      {/* Image */}
-      <Section title="Product image">
-        <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-          <div className="w-32 h-40 bg-cream rounded overflow-hidden flex items-center justify-center flex-shrink-0">
-            {imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={imageUrl} alt="" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-[10px] text-forest/30 tracking-wider uppercase text-center px-2">
-                No image
-              </span>
-            )}
-          </div>
-          <div className="flex-1 space-y-3">
-            <Field label="Upload">
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:uppercase file:tracking-wider file:bg-forest file:text-linen hover:file:bg-forest/90 cursor-pointer"
-              />
-              {uploadingImage && (
-                <p className="text-xs text-gray-500 mt-1">Uploading…</p>
-              )}
-            </Field>
-            <Field label="Or paste an image URL">
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://…"
-                className="input"
-              />
-            </Field>
-          </div>
+      {/* Images */}
+      <Section title="Product images" subtitle="Primary is required-ish; secondary is optional">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ImageSlot
+            label="Primary image"
+            value={imageUrl}
+            onChange={setImageUrl}
+            uploading={uploadingImage1}
+            inputRef={fileRef1}
+            onFile={(e) => handleImageUpload(e, 1)}
+          />
+          <ImageSlot
+            label="Secondary image"
+            value={imageUrl2}
+            onChange={setImageUrl2}
+            uploading={uploadingImage2}
+            inputRef={fileRef2}
+            onFile={(e) => handleImageUpload(e, 2)}
+          />
         </div>
       </Section>
 
@@ -305,12 +284,12 @@ export default function ProductForm({ mode, product }: Props) {
       <Section title="Colours" subtitle="At least one">
         <div className="space-y-2">
           {colors.map((c, idx) => (
-            <div key={idx} className="flex items-center gap-3">
+            <div key={idx} className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
               <input
                 type="color"
                 value={c.hex}
                 onChange={(e) => updateColor(idx, { hex: e.target.value })}
-                className="w-12 h-10 border border-gray-200 rounded cursor-pointer"
+                className="w-12 h-10 border border-gray-200 rounded cursor-pointer flex-shrink-0"
                 aria-label="Colour swatch"
               />
               <input
@@ -318,19 +297,19 @@ export default function ProductForm({ mode, product }: Props) {
                 value={c.hex}
                 onChange={(e) => updateColor(idx, { hex: e.target.value })}
                 placeholder="#EDE6D3"
-                className="input flex-shrink-0 w-32 font-mono uppercase"
+                className="w-28 flex-shrink-0 border border-gray-200 rounded px-3 py-2 text-sm font-mono uppercase bg-white text-gray-800 focus:outline-none focus:border-forest"
               />
               <input
                 type="text"
                 value={c.name}
                 onChange={(e) => updateColor(idx, { name: e.target.value })}
-                placeholder="Colour name"
-                className="input flex-1"
+                placeholder="Colour name (e.g. Natural)"
+                className="flex-1 min-w-0 border border-gray-200 rounded px-3 py-2 text-sm bg-white text-gray-800 focus:outline-none focus:border-forest"
               />
               <button
                 type="button"
                 onClick={() => removeColor(idx)}
-                className="text-xs text-red-600 hover:underline px-2"
+                className="text-xs text-red-600 hover:underline px-2 flex-shrink-0"
                 disabled={colors.length <= 1}
               >
                 Remove
@@ -348,22 +327,45 @@ export default function ProductForm({ mode, product }: Props) {
       </Section>
 
       {/* Sizes */}
-      <Section title="Sizes" subtitle="At least one">
+      <Section
+        title="Sizes"
+        subtitle="Ticked = in stock. Untick to mark a size as sold out — it still shows on the product page with a strikethrough. If all sizes are unticked the product is marked Out of Stock."
+      >
         <div className="flex gap-2 flex-wrap">
-          {SIZE_OPTIONS.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => toggleSize(s)}
-              className={`min-w-[48px] px-4 py-2 text-xs font-semibold uppercase tracking-wider border rounded transition-colors ${
-                sizes.includes(s)
-                  ? "bg-forest text-linen border-forest"
-                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
-              }`}
-            >
-              {s}
-            </button>
-          ))}
+          {SIZE_OPTIONS.map((s) => {
+            const inStock = sizes.includes(s);
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => toggleSize(s)}
+                title={inStock ? "In stock — click to mark sold out" : "Sold out — click to mark in stock"}
+                className={`min-w-[48px] px-4 py-2 text-xs font-semibold uppercase tracking-wider border-2 rounded transition-colors ${
+                  inStock
+                    ? "bg-forest text-linen border-forest"
+                    : "bg-red-50 text-red-700/70 border-red-200 line-through decoration-2 hover:border-red-300"
+                }`}
+              >
+                {s}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-4 flex items-center gap-4 flex-wrap text-[11px] text-gray-500">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded bg-forest" />
+            In stock
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded bg-red-50 border-2 border-red-200" />
+            Sold out
+          </span>
+          <span className="ml-auto flex items-center gap-2 font-semibold uppercase tracking-wider">
+            <span className={`w-2 h-2 rounded-full ${sizes.length > 0 ? "bg-emerald-500" : "bg-red-500"}`} />
+            <span className={sizes.length > 0 ? "text-emerald-700" : "text-red-600"}>
+              Product status: {sizes.length > 0 ? "In Stock" : "Out of Stock"}
+            </span>
+          </span>
         </div>
       </Section>
 
@@ -385,15 +387,6 @@ export default function ProductForm({ mode, product }: Props) {
               value={fit}
               onChange={(e) => setFit(e.target.value)}
               placeholder="Regular fit — true to size"
-              className="input"
-            />
-          </Field>
-          <Field label="Care">
-            <input
-              type="text"
-              value={care}
-              onChange={(e) => setCare(e.target.value)}
-              placeholder="Machine wash cold, tumble dry low"
               className="input"
             />
           </Field>
@@ -425,7 +418,7 @@ export default function ProductForm({ mode, product }: Props) {
         </button>
         <button
           type="submit"
-          disabled={submitting || uploadingImage}
+          disabled={submitting || uploadingImage1 || uploadingImage2}
           className="bg-forest text-linen px-6 py-2.5 rounded text-xs font-semibold uppercase tracking-wider hover:bg-forest/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting
@@ -478,6 +471,74 @@ function Section({
 
 function Grid({ children }: { children: React.ReactNode }) {
   return <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>;
+}
+
+function ImageSlot({
+  label,
+  value,
+  onChange,
+  uploading,
+  inputRef,
+  onFile,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  uploading: boolean;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  onFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="border border-gray-100 rounded p-4 bg-gray-50/40">
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        {label}
+      </p>
+      <div className="flex flex-col sm:flex-row items-start gap-4">
+        <div className="w-28 h-36 bg-cream rounded overflow-hidden flex items-center justify-center flex-shrink-0">
+          {value ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={value} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-[10px] text-forest/30 tracking-wider uppercase text-center px-2">
+              No image
+            </span>
+          )}
+        </div>
+        <div className="flex-1 w-full space-y-3">
+          <Field label="Upload">
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              onChange={onFile}
+              className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:uppercase file:tracking-wider file:bg-forest file:text-linen hover:file:bg-forest/90 cursor-pointer"
+            />
+            {uploading && (
+              <p className="text-xs text-gray-500 mt-1">Uploading…</p>
+            )}
+          </Field>
+          <Field label="Or paste an image URL">
+            <input
+              type="url"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder="https://…"
+              className="input"
+            />
+          </Field>
+          {value && (
+            <button
+              type="button"
+              onClick={() => onChange("")}
+              className="text-xs text-red-600 hover:underline"
+            >
+              Remove image
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function Field({

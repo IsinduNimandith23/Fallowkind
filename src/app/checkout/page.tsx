@@ -227,10 +227,10 @@ export default function CheckoutPage() {
   return (
     <div className="section-padding page-container">
       <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Secure checkout</p>
-      <h1 className="font-display text-3xl md:text-4xl text-forest mb-12">Checkout</h1>
+      <h1 className="font-display text-3xl md:text-4xl text-forest mb-10 md:mb-12">Checkout</h1>
 
       <form onSubmit={handleSubmit} noValidate>
-        <div className="grid lg:grid-cols-[3fr_2fr] gap-12 xl:gap-20">
+        <div className="grid lg:grid-cols-[3fr_2fr] gap-10 md:gap-12 xl:gap-20">
           {/* ── Left: Form ── */}
           <div className="space-y-10">
             {/* Contact */}
@@ -405,7 +405,7 @@ export default function CheckoutPage() {
               {paymentMethod === "bank_transfer" && (
                 <div className="mt-5 space-y-5">
                   {/* Bank details panel */}
-                  <div className="glass-card p-6">
+                  <div className="glass-card p-5 sm:p-6">
                     <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
                       Transfer to this account
                     </p>
@@ -413,7 +413,7 @@ export default function CheckoutPage() {
                       <dt className="text-forest/75">Account name</dt>
                       <dd className="text-forest font-medium">{BANK_DETAILS.accountName}</dd>
                       <dt className="text-forest/75">Account number</dt>
-                      <dd className="text-forest font-medium font-mono">{BANK_DETAILS.accountNumber}</dd>
+                      <dd className="text-forest font-medium font-mono break-all">{BANK_DETAILS.accountNumber}</dd>
                       <dt className="text-forest/75">Bank</dt>
                       <dd className="text-forest font-medium">{BANK_DETAILS.bank}</dd>
                       <dt className="text-forest/75">Branch</dt>
@@ -656,7 +656,7 @@ function OrderSuccessModal({ order }: { order: SuccessOrder }) {
     >
       <div className="absolute inset-0 bg-forest/70 backdrop-blur-md" />
 
-      <div className="relative max-w-md w-full bg-linen border border-forest/15 shadow-2xl rounded-2xl p-8 sm:p-10 text-center">
+      <div className="relative max-w-md w-full bg-linen border border-forest/15 shadow-2xl rounded-2xl p-6 sm:p-10 text-center">
         <div className="w-20 h-20 rounded-full bg-sage/25 backdrop-blur-md border border-sage/30 shadow-lg flex items-center justify-center mx-auto mb-6 relative">
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-fern/40 to-sage/0 blur-xl -z-10" />
           <svg className="w-9 h-9 text-sage" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">

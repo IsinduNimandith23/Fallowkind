@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
       ? [{ protocol: "https", hostname: supabaseHostname, pathname: "/storage/v1/object/**" }]
       : [],
     formats: ["image/avif", "image/webp"],
+    qualities: [75, 95],
   },
   async headers() {
     return [

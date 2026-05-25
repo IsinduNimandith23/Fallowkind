@@ -16,10 +16,10 @@ export default function FaqItem({
     <div className="border-b border-forest/15">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full text-left flex items-center justify-between gap-6 py-6 group"
+        className="w-full text-left flex items-start sm:items-center justify-between gap-4 sm:gap-6 py-5 sm:py-6 group"
         aria-expanded={open}
       >
-        <span className="text-lg md:text-xl text-forest font-semibold transition-colors group-hover:text-moss">
+        <span className="text-base sm:text-lg md:text-xl text-forest font-semibold transition-colors group-hover:text-moss">
           {q}
         </span>
         <span

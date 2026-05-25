@@ -28,13 +28,13 @@ export default function ReturnsPage() {
             Customer care
           </p>
           <h1
-            className="text-linen text-5xl md:text-7xl lg:text-8xl mb-10 opacity-0 animate-fade-in-up"
+            className="text-linen text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-8 md:mb-10 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
           >
             Return<br />policy.
           </h1>
           <p
-            className="text-linen/65 text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
+            className="text-linen/65 text-base sm:text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
           >
             We want you to be happy with our products, just like we enjoy making them.
@@ -67,7 +67,7 @@ export default function ReturnsPage() {
         </AnimateOnScroll>
 
         <AnimateOnScroll delay={100}>
-          <div className="glass-card p-8 md:p-10">
+          <div className="glass-card p-6 sm:p-8 md:p-10">
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Eligibility
             </p>
@@ -84,7 +84,7 @@ export default function ReturnsPage() {
         </AnimateOnScroll>
 
         <AnimateOnScroll delay={120} className="mt-12">
-          <div className="glass-card p-8 md:p-10">
+          <div className="glass-card p-6 sm:p-8 md:p-10">
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Returns process
             </p>
@@ -135,7 +135,7 @@ export default function ReturnsPage() {
         </AnimateOnScroll>
 
         <AnimateOnScroll delay={150} className="mt-12">
-          <div className="border border-forest/15 rounded-2xl p-8 md:p-10 bg-cream/40">
+          <div className="border border-forest/15 rounded-2xl p-6 sm:p-8 md:p-10 bg-cream/40">
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Exchanges
             </p>
@@ -148,7 +148,7 @@ export default function ReturnsPage() {
         </AnimateOnScroll>
 
         <AnimateOnScroll delay={200} className="mt-12">
-          <div className="glass-card p-8 md:p-10">
+          <div className="glass-card p-6 sm:p-8 md:p-10">
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Refunds
             </p>
@@ -169,7 +169,7 @@ export default function ReturnsPage() {
         </AnimateOnScroll>
 
         <AnimateOnScroll delay={250} className="mt-12">
-          <div className="border border-forest/15 rounded-2xl p-8 md:p-10 bg-cream/40">
+          <div className="border border-forest/15 rounded-2xl p-6 sm:p-8 md:p-10 bg-cream/40">
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Issues
             </p>

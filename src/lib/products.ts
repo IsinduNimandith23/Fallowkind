@@ -21,7 +21,6 @@ export type ProductColor = {
 export type ProductDetails = {
   material: string;
   fit: string;
-  care: string;
   origin: string;
 };
 
@@ -38,6 +37,7 @@ export type Product = {
   sizes: string[];
   inStock: boolean;
   imageUrl?: string;
+  imageUrl2?: string;
   details: ProductDetails;
 };
 
@@ -53,11 +53,11 @@ type ProductRow = {
   in_stock: boolean;
   material: string;
   fit: string;
-  care: string;
   origin: string;
   colors: ProductColor[] | null;
   sizes: string[] | null;
   image_url: string | null;
+  image_url_2: string | null;
   sort_order: number;
 };
 
@@ -75,10 +75,10 @@ function rowToProduct(row: ProductRow): Product {
     sizes: sortSizes(row.sizes ?? []),
     inStock: row.in_stock,
     imageUrl: row.image_url ?? undefined,
+    imageUrl2: row.image_url_2 ?? undefined,
     details: {
       material: row.material,
       fit: row.fit,
-      care: row.care,
       origin: row.origin,
     },
   };

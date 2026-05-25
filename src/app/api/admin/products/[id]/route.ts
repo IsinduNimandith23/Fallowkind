@@ -16,14 +16,14 @@ export async function PATCH(request: Request, { params }: Params) {
   const fields = [
     "name", "category", "price_display", "price_value",
     "original_price", "tag", "description", "in_stock",
-    "material", "fit", "care", "origin",
-    "colors", "sizes", "image_url", "sort_order",
+    "material", "fit", "origin",
+    "colors", "sizes", "image_url", "image_url_2", "sort_order",
   ];
   for (const f of fields) {
     if (f in body) allowed[f] = body[f];
   }
   // Normalize empty strings on nullable text fields
-  for (const f of ["original_price", "tag", "image_url"]) {
+  for (const f of ["original_price", "tag", "image_url", "image_url_2"]) {
     if (allowed[f] === "") allowed[f] = null;
   }
 

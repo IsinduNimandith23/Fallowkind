@@ -30,13 +30,13 @@ export default function OurStoryPage() {
 
         <div className="page-container max-w-3xl relative">
           <h1
-            className="text-linen text-5xl md:text-7xl lg:text-8xl mb-10 opacity-0 animate-fade-in-up"
+            className="text-linen text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-8 md:mb-10 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
           >
             Our Vision
           </h1>
           <p
-            className="text-linen/65 text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
+            className="text-linen/65 text-base sm:text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
           >
             To shape a future where what we wear honours the earth that made it - clothing crafted
@@ -46,9 +46,9 @@ export default function OurStoryPage() {
       </section>
 
       {/* ── Story body ── */}
-      <section className="section-padding page-container grid md:grid-cols-2 gap-16 items-start">
+      <section className="section-padding page-container grid md:grid-cols-2 gap-12 md:gap-16 items-start">
         <AnimateOnScroll>
-          <h2 className="text-5xl md:text-6xl mb-8">Where it started</h2>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl mb-7 md:mb-8">Where it started</h2>
           <div className="space-y-5 text-forest/65 leading-relaxed">
             <p>
               We grew up around fields — the kind that get left fallow between seasons so the soil
@@ -93,7 +93,7 @@ export default function OurStoryPage() {
         <div className="relative page-container">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Principles</p>
-            <h2 className="text-5xl md:text-7xl">What we stand for</h2>
+            <h2 className="text-4xl sm:text-5xl md:text-7xl">What we stand for</h2>
           </AnimateOnScroll>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -112,7 +112,7 @@ export default function OurStoryPage() {
 
       {/* ── Stats ── */}
       <section className="section-padding page-container">
-        <AnimateOnScroll className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <AnimateOnScroll className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
           {[
             { number: "100%", label: "Natural fibres" },
             { number: "12",   label: "Workshop partners" },
@@ -120,8 +120,8 @@ export default function OurStoryPage() {
             { number: "2026", label: "Founded" },
           ].map((s) => (
             <div key={s.label}>
-              <p className="text-5xl md:text-7xl font-display text-forest mb-2 leading-none">{s.number}</p>
-              <p className="text-xs tracking-widest uppercase text-moss">{s.label}</p>
+              <p className="text-4xl sm:text-5xl md:text-7xl font-display text-forest mb-2 leading-none">{s.number}</p>
+              <p className="text-[11px] sm:text-xs tracking-widest uppercase text-moss">{s.label}</p>
             </div>
           ))}
         </AnimateOnScroll>
@@ -134,7 +134,7 @@ export default function OurStoryPage() {
           <div className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-fern/25 blur-3xl" />
           <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
           <div className="relative page-container text-center max-w-3xl mx-auto">
-            <p className="text-4xl md:text-5xl text-forest font-serif italic leading-snug normal-case tracking-normal">
+            <p className="text-2xl sm:text-4xl md:text-5xl text-forest font-serif italic leading-snug normal-case tracking-normal">
               &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
             </p>
             <p className="mt-6 text-xs tracking-[0.3em] uppercase text-moss">— Fallowkind</p>

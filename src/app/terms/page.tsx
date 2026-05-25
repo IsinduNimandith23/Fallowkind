@@ -62,13 +62,13 @@ export default function TermsPage() {
             Legal
           </p>
           <h1
-            className="text-linen text-5xl md:text-7xl lg:text-8xl mb-10 opacity-0 animate-fade-in-up"
+            className="text-linen text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-8 md:mb-10 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
           >
             Terms &amp;<br />conditions.
           </h1>
           <p
-            className="text-linen/65 text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
+            className="text-linen/65 text-base sm:text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
           >
             The fine print that keeps everything fair. These terms cover how you
@@ -90,7 +90,7 @@ export default function TermsPage() {
         <div className="space-y-6">
           {sections.map((s, i) => (
             <AnimateOnScroll key={s.label} delay={i * 60}>
-              <div className="glass-card p-8">
+              <div className="glass-card p-6 sm:p-8">
                 <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
                   {s.label}
                 </p>
@@ -101,7 +101,7 @@ export default function TermsPage() {
         </div>
 
         <AnimateOnScroll delay={200} className="mt-14">
-          <div className="border border-forest/15 rounded-2xl p-8 md:p-10 bg-cream/40">
+          <div className="border border-forest/15 rounded-2xl p-6 sm:p-8 md:p-10 bg-cream/40">
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Get in touch
             </p>

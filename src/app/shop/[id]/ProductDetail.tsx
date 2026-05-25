@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/products";
+import { SIZE_OPTIONS } from "@/lib/sizes";
 import { useCart } from "@/contexts/CartContext";
 
 type Props = {
@@ -13,17 +14,26 @@ type Props = {
 };
 
 export default function ProductDetail({ product, allProducts }: Props) {
+  const productImages = [product.imageUrl2, product.imageUrl].filter(
+    (u): u is string => Boolean(u)
+  );
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState("");
   const [qty, setQty] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
   const [activeThumb, setActiveThumb] = useState(0);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [washingOpen, setWashingOpen] = useState(false);
+  const [shippingOpen, setShippingOpen] = useState(false);
   const [sizeError, setSizeError] = useState(false);
   const [added, setAdded] = useState(false);
 
   const { addItem, openCart } = useCart();
   const router = useRouter();
+
+  const selectedSizeOutOfStock = !!selectedSize && !product.sizes.includes(selectedSize);
+  const purchaseDisabled = selectedSizeOutOfStock;
 
   function addCurrentSelection() {
     addItem(
@@ -48,6 +58,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
       setTimeout(() => setSizeError(false), 1800);
       return;
     }
+    if (purchaseDisabled) return;
     addCurrentSelection();
     setAdded(true);
     openCart();
@@ -60,6 +71,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
       setTimeout(() => setSizeError(false), 1800);
       return;
     }
+    if (purchaseDisabled) return;
     addCurrentSelection();
     router.push("/checkout");
   }
@@ -83,30 +95,54 @@ export default function ProductDetail({ product, allProducts }: Props) {
       {showSizeGuide && <SizeGuideModal onClose={() => setShowSizeGuide(false)} />}
 
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-[10px] tracking-widest uppercase text-forest/40 mb-10">
+      <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] tracking-widest uppercase text-forest/40 mb-8 md:mb-10">
         <Link href="/" className="hover:text-forest transition-colors duration-200">Home</Link>
         <span>/</span>
         <Link href="/shop" className="hover:text-forest transition-colors duration-200">Shop</Link>
         <span>/</span>
-        <span className="text-forest/70">{product.name}</span>
+        <span className="text-forest/70 break-words">{product.name}</span>
       </nav>
 
-      <div className="grid lg:grid-cols-[3fr_2fr] gap-10 xl:gap-20">
+      <div className="grid lg:grid-cols-[3fr_2fr] gap-8 md:gap-10 xl:gap-20">
         {/* ── Gallery ── */}
         <div>
           <div
             className="aspect-[3/4] w-full mb-3 relative overflow-hidden rounded-3xl bg-cream/40 backdrop-blur-sm border border-white/40 shadow-md"
-            style={product.imageUrl ? undefined : thumbStyles[activeThumb]}
+            style={productImages.length === 0 ? thumbStyles[activeThumb] : undefined}
           >
-            {product.imageUrl ? (
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                fill
-                sizes="(min-width: 1024px) 60vw, 100vw"
-                priority
-                className="object-cover"
-              />
+            {productImages.length > 0 ? (
+              <>
+                <Image
+                  src={productImages[activeImage] ?? productImages[0]}
+                  alt={product.name}
+                  fill
+                  sizes="(min-width: 1024px) 60vw, 100vw"
+                  priority
+                  className="object-cover"
+                />
+                {productImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={() =>
+                        setActiveImage((i) => (i - 1 + productImages.length) % productImages.length)
+                      }
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/45 backdrop-blur-md border border-white/60 flex items-center justify-center hover:bg-white/65 transition-colors duration-200 text-forest text-xl leading-none shadow-sm"
+                      aria-label="Previous image"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      onClick={() =>
+                        setActiveImage((i) => (i + 1) % productImages.length)
+                      }
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/45 backdrop-blur-md border border-white/60 flex items-center justify-center hover:bg-white/65 transition-colors duration-200 text-forest text-xl leading-none shadow-sm"
+                      aria-label="Next image"
+                    >
+                      ›
+                    </button>
+                  </>
+                )}
+              </>
             ) : (
               <>
                 <button
@@ -132,7 +168,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
             )}
           </div>
 
-          {!product.imageUrl && (
+          {productImages.length === 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {thumbStyles.map((style, i) => (
                 <button
@@ -227,29 +263,64 @@ export default function ProductDetail({ product, allProducts }: Props) {
               </button>
             </div>
             <div className={`flex flex-wrap gap-2 transition-all duration-200 ${sizeError ? "ring-2 ring-red-400/60 ring-offset-2 rounded-2xl p-1" : ""}`}>
-              {product.sizes.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => { setSelectedSize(s); setSizeError(false); }}
-                  className={`min-w-[44px] px-4 py-2 text-xs rounded-full backdrop-blur-md border transition-all duration-200 ${
-                    selectedSize === s
-                      ? "bg-forest text-linen border-forest"
-                      : "bg-white/30 border-white/55 text-forest/65 hover:bg-white/50 hover:text-forest hover:border-forest/40"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+              {SIZE_OPTIONS.map((s) => {
+                const available = product.sizes.includes(s);
+                const isSelected = selectedSize === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => { setSelectedSize(s); setSizeError(false); }}
+                    title={available ? undefined : "Sold out"}
+                    aria-label={available ? s : `${s} — sold out`}
+                    className={
+                      available
+                        ? `min-w-[44px] px-4 py-2 text-xs rounded-full backdrop-blur-md border transition-all duration-200 ${
+                            isSelected
+                              ? "bg-forest text-linen border-forest"
+                              : "bg-white/30 border-white/55 text-forest/65 hover:bg-white/50 hover:text-forest hover:border-forest/40"
+                          }`
+                        : `min-w-[44px] px-4 py-2 text-xs rounded-full backdrop-blur-md border line-through decoration-2 transition-all duration-200 ${
+                            isSelected
+                              ? "bg-red-50/80 border-red-400/60 text-red-700/80"
+                              : "bg-cream/50 border-forest/25 text-forest/45 hover:bg-cream/70 hover:border-forest/40"
+                          }`
+                    }
+                  >
+                    {s}
+                  </button>
+                );
+              })}
             </div>
             {sizeError && (
               <p className="text-xs text-red-500/70 mt-1.5">Please select a size before adding to cart.</p>
+            )}
+            {selectedSizeOutOfStock && (
+              <p className="text-xs text-red-600/85 mt-2 flex items-center gap-1.5 font-medium">
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                Size {selectedSize} is sold out. Please choose another size.
+              </p>
             )}
           </div>
 
           {/* Availability */}
           <div className="flex items-center gap-2 mb-6">
-            <span className={`w-2 h-2 rounded-full ${product.inStock ? "bg-moss" : "bg-forest/20"}`} />
-            <span className="text-xs text-forest/55 tracking-wide">
+            <span
+              className={`relative inline-flex w-2.5 h-2.5 rounded-full ${
+                product.inStock ? "bg-moss" : "bg-red-500"
+              }`}
+            >
+              {product.inStock && (
+                <span className="absolute inset-0 rounded-full bg-moss/60 animate-ping" aria-hidden="true" />
+              )}
+            </span>
+            <span
+              className={`text-[11px] tracking-[0.18em] uppercase font-semibold ${
+                product.inStock ? "text-moss" : "text-red-600"
+              }`}
+            >
               {product.inStock ? "In Stock" : "Out of Stock"}
             </span>
           </div>
@@ -276,16 +347,28 @@ export default function ProductDetail({ product, allProducts }: Props) {
           </div>
 
           {/* Add to Cart + Buy Now */}
-          <div className="flex gap-3 mb-8">
+          <div className="flex flex-col sm:flex-row gap-3 mb-8">
             <button
               onClick={handleAddToCart}
-              className={`flex-1 btn-primary text-xs tracking-widest uppercase transition-all duration-200 ${added ? "opacity-80" : ""}`}
+              disabled={purchaseDisabled}
+              className={`flex-1 btn-primary text-xs tracking-widest uppercase transition-all duration-200 ${
+                purchaseDisabled
+                  ? "opacity-50 cursor-not-allowed hover:!bg-forest/90 hover:!tracking-widest hover:!shadow-sm"
+                  : added
+                  ? "opacity-80"
+                  : ""
+              }`}
             >
-              {added ? "Added ✓" : "Add to Cart"}
+              {purchaseDisabled ? "Out of Stock" : added ? "Added ✓" : "Add to Cart"}
             </button>
             <button
               onClick={handleBuyNow}
-              className="flex-1 btn-outline text-xs tracking-widest uppercase text-center"
+              disabled={purchaseDisabled}
+              className={`flex-1 btn-outline text-xs tracking-widest uppercase text-center transition-all duration-200 ${
+                purchaseDisabled
+                  ? "opacity-50 cursor-not-allowed hover:!bg-white/30 hover:!text-forest hover:!border-forest/50 hover:!tracking-widest"
+                  : ""
+              }`}
             >
               Buy Now
             </button>
@@ -313,7 +396,6 @@ export default function ProductDetail({ product, allProducts }: Props) {
                 {[
                   { label: "Material", value: product.details.material },
                   { label: "Fit",      value: product.details.fit      },
-                  { label: "Care",     value: product.details.care     },
                   { label: "Origin",   value: product.details.origin   },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex gap-3">
@@ -325,24 +407,73 @@ export default function ProductDetail({ product, allProducts }: Props) {
             )}
           </div>
 
-          {/* Shipping info */}
-          <div className="border-t border-forest/15 py-3">
-            <div className="flex items-center gap-3 px-4 py-3 glass-card rounded-full">
+          {/* Washing & Care accordion */}
+          <div className="border-t border-forest/15">
+            <button
+              onClick={() => setWashingOpen((o) => !o)}
+              className="flex items-center justify-between w-full py-4"
+            >
+              <span className="text-sm font-medium text-forest">Washing & Care</span>
               <svg
-                className="w-5 h-5 text-forest/40 shrink-0"
+                className={`w-4 h-4 text-forest/40 transition-transform duration-200 ${washingOpen ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.5}
                 viewBox="0 0 24 24"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
               </svg>
-              <span className="text-sm text-forest/60">Standard shipping: Rs. 400</span>
-            </div>
+            </button>
+            {washingOpen && (
+              <ul className="pb-5 space-y-2 text-sm text-forest/65 list-disc pl-5 marker:text-forest/30">
+                <li>Wash on gentle with like colors</li>
+                <li>Wash on cold</li>
+                <li>Hang dry only to avoid shrinking — do not place in the dryer</li>
+                <li>For best results, allow to dry in the sun</li>
+              </ul>
+            )}
+          </div>
+
+          {/* Shipping & Returns accordion */}
+          <div className="border-t border-forest/15">
+            <button
+              onClick={() => setShippingOpen((o) => !o)}
+              className="flex items-center justify-between w-full py-4"
+            >
+              <span className="text-sm font-medium text-forest">Shipping & Returns</span>
+              <svg
+                className={`w-4 h-4 text-forest/40 transition-transform duration-200 ${shippingOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            </button>
+            {shippingOpen && (
+              <div className="pb-5 space-y-4 text-sm text-forest/65">
+                <div>
+                  <p className="text-forest mb-2">Shipping</p>
+                  <ul className="space-y-2 list-disc pl-5 marker:text-forest/30">
+                    <li>Standard shipping: Rs. 400</li>
+                    <li>All orders ship within 1–5 business days</li>
+                    <li>Island-wide delivery available</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-forest mb-2">Returns</p>
+                  <ul className="space-y-2 list-disc pl-5 marker:text-forest/30">
+                    <li>
+                      We have a 7-day return policy, which means you have 7 days after receiving your item to request a return.
+                    </li>
+                    <li>
+                      Item must be in the same condition that you received it, unworn or unused, with tags, and in its original packaging.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
           <div className="border-t border-forest/15" />
         </div>
@@ -399,11 +530,11 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-forest/40 backdrop-blur-md p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-forest/40 backdrop-blur-md p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="glass-panel max-w-md w-full p-8 relative"
+        className="glass-panel max-w-md w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -424,27 +555,29 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
           <p className="text-[10px] tracking-widest uppercase text-forest/30">Size chart image coming soon</p>
         </div>
 
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-forest/10">
-              {["Size", "Chest (cm)", "Length (cm)", "Shoulder (cm)"].map((h) => (
-                <th key={h} className="text-left pb-2.5 pr-3 text-[10px] tracking-widest uppercase text-forest/35 font-normal">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.size} className="border-b border-forest/5">
-                <td className="py-2.5 pr-3 font-semibold text-forest">{row.size}</td>
-                <td className="py-2.5 pr-3 text-forest/65">{row.chest}</td>
-                <td className="py-2.5 pr-3 text-forest/65">{row.length}</td>
-                <td className="py-2.5 text-forest/65">{row.shoulder}</td>
+        <div className="overflow-x-auto -mx-1">
+          <table className="w-full text-sm min-w-[360px]">
+            <thead>
+              <tr className="border-b border-forest/10">
+                {["Size", "Chest (cm)", "Length (cm)", "Shoulder (cm)"].map((h) => (
+                  <th key={h} className="text-left pb-2.5 pr-3 text-[10px] tracking-widest uppercase text-forest/35 font-normal whitespace-nowrap">
+                    {h}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.size} className="border-b border-forest/5">
+                  <td className="py-2.5 pr-3 font-semibold text-forest">{row.size}</td>
+                  <td className="py-2.5 pr-3 text-forest/65">{row.chest}</td>
+                  <td className="py-2.5 pr-3 text-forest/65">{row.length}</td>
+                  <td className="py-2.5 text-forest/65">{row.shoulder}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <p className="text-xs text-forest/35 mt-5 leading-relaxed">
           All measurements are in centimetres. Measure over light clothing for the most accurate fit.

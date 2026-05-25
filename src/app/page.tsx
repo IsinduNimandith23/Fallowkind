@@ -73,7 +73,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative -mt-20 h-screen min-h-[680px] overflow-hidden bg-forest">
+      <section className="relative -mt-20 h-screen min-h-[600px] sm:min-h-[680px] overflow-hidden bg-forest">
         <div className="absolute inset-0">
           <video
             key={heroVideo}
@@ -89,7 +89,7 @@ export default async function HomePage() {
         </div>
 
         {/* Main content */}
-        <div className="relative h-full section-padding flex flex-col justify-center pt-48 pb-24 max-w-[1400px]">
+        <div className="relative h-full flex flex-col items-center md:items-start justify-center text-center md:text-left px-4 sm:px-6 md:px-12 lg:px-24 pt-32 pb-20 sm:pt-48 sm:pb-24 max-w-[1400px]">
           {heroEyebrow && (
             <div
               className="flex items-center gap-4 mb-8 opacity-0 animate-fade-in"
@@ -103,7 +103,7 @@ export default async function HomePage() {
           )}
 
           <h1
-            className="text-linen mb-12 max-w-5xl font-bold"
+            className="text-linen mb-10 md:mb-12 max-w-5xl font-bold"
             style={{
               fontFamily:
                 '"Myriad Pro", "Myriad Pro Regular", Myriad, "Helvetica Neue", Helvetica, Arial, sans-serif',
@@ -111,7 +111,7 @@ export default async function HomePage() {
           >
             {heroHeadingLine1 && (
               <span
-                className="block uppercase whitespace-nowrap leading-[0.92] tracking-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7rem] opacity-0 animate-fade-in-up"
+                className="block uppercase whitespace-nowrap leading-[0.92] tracking-tight text-[clamp(2.1rem,9.2vw,3.6rem)] sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7rem] opacity-0 animate-fade-in-up"
                 style={{ animationDelay: "0.5s", animationFillMode: "forwards" }}
               >
                 {heroHeadingLine1}
@@ -119,7 +119,7 @@ export default async function HomePage() {
             )}
             {heroHeadingLine2 && (
               <span
-                className="block italic normal-case leading-[1.05] tracking-tight text-[1.75rem] sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.75rem] text-linen/95 mt-3 md:mt-4 opacity-0 animate-fade-in-up"
+                className="block italic normal-case leading-[1.05] tracking-tight text-[clamp(1.35rem,5.6vw,2.1rem)] sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.75rem] text-linen/95 mt-3 md:mt-4 opacity-0 animate-fade-in-up"
                 style={{ animationDelay: "0.75s", animationFillMode: "forwards" }}
               >
                 {heroHeadingLine2}
@@ -128,15 +128,15 @@ export default async function HomePage() {
           </h1>
 
           <div
-            className="flex flex-wrap items-center gap-x-10 gap-y-5 opacity-0 animate-fade-in-up"
+            className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-4 sm:gap-x-10 sm:gap-y-5 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "1s", animationFillMode: "forwards" }}
           >
             <Link
               href="/shop"
-              className="group inline-flex items-center gap-3 rounded-full bg-linen text-forest pl-7 pr-2 py-2 text-xs tracking-[0.22em] uppercase shadow-lg shadow-forest/30 transition-all duration-300 hover:bg-fern hover:shadow-xl hover:shadow-forest/40"
+              className="group inline-flex items-center gap-3 rounded-full bg-linen text-forest pl-5 sm:pl-7 pr-2 py-2 text-[10px] sm:text-xs tracking-[0.22em] uppercase shadow-lg shadow-forest/30 transition-all duration-300 hover:bg-fern hover:shadow-xl hover:shadow-forest/40"
             >
               <span>Shop the Collection</span>
-              <span className="flex items-center justify-center w-10 h-10 rounded-full bg-forest text-linen transition-transform duration-300 group-hover:translate-x-1">
+              <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-forest text-linen transition-transform duration-300 group-hover:translate-x-1">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
@@ -187,14 +187,14 @@ export default async function HomePage() {
 
       {/* ── New Arrivals ── */}
       <section className="section-padding page-container">
-        <AnimateOnScroll className="flex items-end justify-between mb-12">
-          <div>
+        <AnimateOnScroll className="flex items-end justify-between mb-10 md:mb-12 gap-4">
+          <div className="min-w-0">
             <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Fresh in</p>
-            <h2 className="text-5xl md:text-7xl text-forest">New Arrivals</h2>
+            <h2 className="text-4xl sm:text-5xl md:text-7xl text-forest">New Arrivals</h2>
           </div>
           <Link
             href="/shop"
-            className="text-xs tracking-widest uppercase text-sage hover:text-forest transition-colors duration-200 group flex items-center gap-2"
+            className="shrink-0 text-[11px] sm:text-xs tracking-widest uppercase text-sage hover:text-forest transition-colors duration-200 group flex items-center gap-2"
           >
             View all
             <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
@@ -230,7 +230,7 @@ export default async function HomePage() {
       {/* ── Values row ── */}
       <section className="section-padding page-container">
         <AnimateOnScroll className="text-center mb-16">
-          <h2 className="text-5xl md:text-7xl text-forest">What we stand for</h2>
+          <h2 className="text-4xl sm:text-5xl md:text-7xl text-forest">What we stand for</h2>
         </AnimateOnScroll>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -256,7 +256,7 @@ export default async function HomePage() {
       <section className="section-padding page-container grid md:grid-cols-2 gap-16 items-center">
         <AnimateOnScroll delay={0} className="reveal-left">
           <p className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Who we are</p>
-          <h2 className="text-5xl md:text-7xl mb-7">Rooted in<br />the land.</h2>
+          <h2 className="text-4xl sm:text-5xl md:text-7xl mb-7">Rooted in<br />the land.</h2>
           <p className="text-forest/65 leading-relaxed mb-10 max-w-md text-justify">
             Most modern clothing contains synthetic materials like polyester and nylon, which release
             microplastics over time. These fabrics often rely on heavy chemical processing and artificial
@@ -286,7 +286,7 @@ export default async function HomePage() {
       <section className="bg-cream/40 py-24 overflow-hidden">
         <AnimateOnScroll className="text-center mb-14 px-6">
           <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Kind words</p>
-          <h2 className="text-5xl md:text-7xl text-forest">From our community</h2>
+          <h2 className="text-4xl sm:text-5xl md:text-7xl text-forest">From our community</h2>
           <p className="text-forest/60 leading-relaxed mt-5 max-w-xl mx-auto text-sm">
             Early voices from supporters who have lived with the pieces.
           </p>
@@ -320,18 +320,33 @@ export default async function HomePage() {
   );
 }
 
-function ProductCard({ name, price, originalPrice, tag, imageUrl }: { name: string; category: string; price: string; originalPrice?: string; tag?: string; imageUrl?: string }) {
+function ProductCard({ name, price, originalPrice, tag, imageUrl, imageUrl2 }: { name: string; category: string; price: string; originalPrice?: string; tag?: string; imageUrl?: string; imageUrl2?: string }) {
   return (
     <>
       <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 shadow-sm aspect-[4/5] mb-4 overflow-hidden">
         {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={name}
-            fill
-            sizes="(min-width: 768px) 33vw, 50vw"
-            className="object-cover"
-          />
+          <>
+            <Image
+              src={imageUrl}
+              alt={name}
+              fill
+              sizes="(min-width: 768px) 33vw, 50vw"
+              className={`object-cover transition-all duration-500 ease-out ${
+                imageUrl2
+                  ? "group-hover:opacity-0 group-hover:scale-105"
+                  : "group-hover:scale-105"
+              }`}
+            />
+            {imageUrl2 && (
+              <Image
+                src={imageUrl2}
+                alt=""
+                fill
+                sizes="(min-width: 768px) 33vw, 50vw"
+                className="object-cover opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 ease-out"
+              />
+            )}
+          </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-fern/30 to-sage/15" />
         )}
@@ -340,13 +355,13 @@ function ProductCard({ name, price, originalPrice, tag, imageUrl }: { name: stri
             {tag}
           </span>
         )}
-        <div className="absolute bottom-0 inset-x-0 bg-forest/80 backdrop-blur-md text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+        <div className="absolute bottom-0 inset-x-0 bg-forest/80 backdrop-blur-md text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
           View Product
         </div>
       </div>
-      <div className="px-3 flex items-baseline justify-between gap-3">
+      <div className="px-3 space-y-1">
         <p className="text-sm text-forest group-hover:text-sage transition-colors duration-200">{name}</p>
-        <p className="text-sm text-forest/70 whitespace-nowrap">
+        <p className="text-sm text-forest/70">
           {price}
           {originalPrice && (
             <span className="ml-2 text-forest/40 line-through">{originalPrice}</span>

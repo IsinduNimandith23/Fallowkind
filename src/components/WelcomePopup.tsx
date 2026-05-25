@@ -131,7 +131,7 @@ export default function WelcomePopup() {
           type="button"
           onClick={open}
           aria-label={claimed ? "View your welcome discount" : "Claim your welcome discount"}
-          className="fixed bottom-6 right-6 z-[90] group flex items-center gap-3 pl-4 pr-5 py-3 rounded-full bg-forest text-linen shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+          className="welcome-fab fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] group flex items-center gap-2 sm:gap-3 pl-3 sm:pl-4 pr-4 sm:pr-5 py-2.5 sm:py-3 rounded-full bg-forest text-linen shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
         >
           <span className="relative flex items-center justify-center w-6 h-6">
             {claimed ? (
@@ -147,7 +147,7 @@ export default function WelcomePopup() {
               </>
             )}
           </span>
-          <span className="text-[11px] tracking-widest uppercase font-medium">
+          <span className="text-[10px] sm:text-[11px] tracking-widest uppercase font-medium">
             {claimed ? "Discount saved" : `${discountLabel}`}
           </span>
         </button>
@@ -167,7 +167,7 @@ export default function WelcomePopup() {
 
           <div
             onClick={(e) => e.stopPropagation()}
-            className={`relative max-w-md w-full bg-linen border border-forest/15 shadow-2xl rounded-2xl p-8 sm:p-10 text-center transition-all duration-300 ${
+            className={`relative max-w-md w-full bg-linen border border-forest/15 shadow-2xl rounded-2xl p-6 sm:p-10 text-center transition-all duration-300 ${
               closing ? "scale-95" : "scale-100"
             }`}
           >

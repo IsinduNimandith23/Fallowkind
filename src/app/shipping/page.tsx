@@ -37,13 +37,13 @@ export default function ShippingPage() {
             Customer care
           </p>
           <h1
-            className="text-linen text-5xl md:text-7xl lg:text-8xl mb-10 opacity-0 animate-fade-in-up"
+            className="text-linen text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-8 md:mb-10 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
           >
             Shipping.
           </h1>
           <p
-            className="text-linen/65 text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
+            className="text-linen/65 text-base sm:text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
           >
             Each order is packed by hand in recyclable materials. Here&apos;s what to
@@ -57,7 +57,7 @@ export default function ShippingPage() {
         <div className="space-y-6">
           {details.map((d, i) => (
             <AnimateOnScroll key={d.label} delay={i * 80}>
-              <div className="glass-card p-8">
+              <div className="glass-card p-6 sm:p-8">
                 <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
                   {d.label}
                 </p>
@@ -68,7 +68,7 @@ export default function ShippingPage() {
         </div>
 
         <AnimateOnScroll delay={200} className="mt-14">
-          <div className="border border-forest/15 rounded-2xl p-8 md:p-10 bg-cream/40">
+          <div className="border border-forest/15 rounded-2xl p-6 sm:p-8 md:p-10 bg-cream/40">
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Lost or delayed?
             </p>

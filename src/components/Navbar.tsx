@@ -30,28 +30,30 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-0 inset-x-0 z-40">
-      <div className="flex items-center justify-between px-6 md:px-10 h-20 max-w-7xl mx-auto">
+      <div className="relative flex items-center justify-between px-4 sm:px-12 md:px-32 h-20">
 
         {/* Logo */}
         <Link href="/" className="relative flex items-center gap-2 z-10">
           <span
             aria-hidden
-            className={`absolute left-1/2 top-[calc(50%+2px)] -translate-x-1/2 -translate-y-1/2 w-36 h-9 rounded-full bg-white/35 backdrop-blur-md border border-white/60 shadow-md transition-opacity duration-300 ${
+            className={`absolute left-1/2 top-[calc(50%+2px)] -translate-x-1/2 -translate-y-1/2 w-44 h-10 sm:w-44 sm:h-10 md:w-52 md:h-10 rounded-full bg-white/35 backdrop-blur-md border border-white/60 shadow-md transition-opacity duration-300 ${
               scrolled ? "opacity-100" : "opacity-0"
             }`}
           />
           <Image
             src="/Untitled design.png"
             alt="Fallowkind"
-            width={200}
-            height={200}
-            className="w-44 h-44 object-contain relative"
+            width={520}
+            height={520}
+            sizes="(min-width: 768px) 240px, 208px"
+            quality={95}
+            className="w-52 h-52 sm:w-52 sm:h-52 md:w-60 md:h-60 object-contain relative"
             priority
           />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1 bg-white/35 backdrop-blur-md border border-white/60 rounded-full px-2 py-1.5 shadow-md">
+        <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 bg-white/35 backdrop-blur-md border border-white/60 rounded-full px-2 py-1.5 shadow-md">
           {links.map((l) => {
             const isActive = pathname === l.href;
             return (
@@ -75,15 +77,15 @@ export default function Navbar() {
           <button
             onClick={openCart}
             aria-label="Open cart"
-            className={`hover:text-sage transition-all duration-300 relative w-10 h-10 flex items-center justify-center rounded-full ${
+            className={`hover:text-sage transition-all duration-300 relative w-12 h-12 flex items-center justify-center rounded-full ${
               scrolled
                 ? "bg-white/35 backdrop-blur-md border border-white/60 shadow-md"
                 : "bg-transparent border border-transparent"
             }`}
           >
-            <CartIcon className="w-5 h-5" />
+            <CartIcon className="w-6 h-6" />
             {totalItems > 0 && (
-              <span className="absolute top-0 right-0 w-4 h-4 bg-sage rounded-full text-[8px] text-linen flex items-center justify-center leading-none font-medium">
+              <span className="absolute top-0 right-0 w-[18px] h-[18px] bg-sage rounded-full text-[9px] text-linen flex items-center justify-center leading-none font-medium">
                 {totalItems > 9 ? "9+" : totalItems}
               </span>
             )}
@@ -92,17 +94,21 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-forest p-1 relative z-10"
+          className={`md:hidden text-forest relative z-10 w-11 h-11 flex flex-col items-center justify-center rounded-full transition-all duration-300 ${
+            scrolled || menuOpen
+              ? "bg-white/35 backdrop-blur-md border border-white/60 shadow-md"
+              : "bg-transparent border border-transparent"
+          }`}
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle menu"
         >
-          <span className={`block transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[7px]" : ""} w-5 h-px bg-forest mb-1.5`} />
-          <span className={`block transition-all duration-300 ${menuOpen ? "opacity-0 scale-x-0" : ""} w-5 h-px bg-forest mb-1.5`} />
-          <span className={`block transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[7px]" : ""} w-5 h-px bg-forest`} />
+          <span className={`block transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[6px]" : ""} w-5 h-[2px] bg-forest rounded-full mb-1`} />
+          <span className={`block transition-all duration-300 ${menuOpen ? "opacity-0 scale-x-0" : ""} w-5 h-[2px] bg-forest rounded-full mb-1`} />
+          <span className={`block transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""} w-5 h-[2px] bg-forest rounded-full`} />
           {totalItems > 0 && !menuOpen && (
             <span
               aria-label={`${totalItems} item${totalItems === 1 ? "" : "s"} in cart`}
-              className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"
+              className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-linen"
             />
           )}
         </button>

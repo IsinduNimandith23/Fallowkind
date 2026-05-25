@@ -35,16 +35,16 @@ export default function Footer() {
   return (
     <footer className="bg-forest text-linen">
       <div className="page-container section-padding">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 md:gap-12">
 
           {/* Brand */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 sm:col-span-2 lg:col-span-1">
             <Image
               src="/Untitled design.png"
               alt="Fallowkind"
               width={300}
               height={300}
-              className="w-56 h-56 object-contain -ml-6 -mt-[6.5rem] -mb-12 brightness-0 invert"
+              className="w-44 h-32 sm:w-56 sm:h-56 object-contain -ml-3 sm:-ml-6 -mt-10 sm:-mt-[6.5rem] -mb-4 sm:-mb-12 brightness-0 invert"
             />
             <p className="text-linen/60 text-sm leading-relaxed max-w-xs">
               Clothing rooted in the land. Made for those who believe the future is conscious.

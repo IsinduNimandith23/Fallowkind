@@ -32,6 +32,8 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
   const [query, setQuery] = useState("");
   const [sortOpen, setSortOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileFiltersVisible, setMobileFiltersVisible] = useState(false);
+  const [filterBtnPulse, setFilterBtnPulse] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
@@ -49,7 +51,8 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setSortOpen(false);
-        setMobileFiltersOpen(false);
+        setMobileFiltersVisible(false);
+        window.setTimeout(() => setMobileFiltersOpen(false), 300);
       }
     };
     document.addEventListener("mousedown", onDocClick);
@@ -59,6 +62,33 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
       document.removeEventListener("keydown", onKey);
     };
   }, []);
+
+  // Drive enter/exit transition for the mobile filter drawer
+  useEffect(() => {
+    if (mobileFiltersOpen) {
+      const id = requestAnimationFrame(() => setMobileFiltersVisible(true));
+      return () => cancelAnimationFrame(id);
+    }
+    setMobileFiltersVisible(false);
+  }, [mobileFiltersOpen]);
+
+  // Signal to global floating UI (e.g. welcome-coupon FAB) to hide while drawer is open
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    document.body.classList.add("drawer-open");
+    return () => document.body.classList.remove("drawer-open");
+  }, [mobileFiltersOpen]);
+
+  const openMobileFilters = () => {
+    setFilterBtnPulse(true);
+    setMobileFiltersOpen(true);
+    window.setTimeout(() => setFilterBtnPulse(false), 450);
+  };
+
+  const closeMobileFilters = () => {
+    setMobileFiltersVisible(false);
+    window.setTimeout(() => setMobileFiltersOpen(false), 300);
+  };
 
   // Derive filter options from products
   const allCategories = useMemo(() => {
@@ -117,7 +147,7 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
   return (
     <>
       {/* Hero banner — admin-managed image, extends under the navbar like the homepage hero */}
-      <section className="relative -mt-20 h-[460px] md:h-[560px] overflow-hidden bg-linen">
+      <section className="relative -mt-20 h-[340px] sm:h-[460px] md:h-[560px] overflow-hidden bg-linen">
         <Image
           key={bannerUrl}
           src={bannerUrl}
@@ -151,15 +181,29 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
           {/* Main column */}
           <div className="min-w-0">
             {/* Toolbar */}
-            <div className="flex items-center gap-3 mb-6 md:mb-8">
+            <div className="flex flex-wrap items-center gap-3 mb-6 md:mb-8">
               {/* Mobile filters trigger */}
               <button
                 type="button"
-                onClick={() => setMobileFiltersOpen(true)}
-                className="md:hidden inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/55 backdrop-blur-md border border-white/70 text-sm text-forest"
+                onClick={openMobileFilters}
+                className="md:hidden relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/55 backdrop-blur-md border border-white/70 text-sm text-forest transition-transform duration-200 ease-out hover:scale-[1.03] active:scale-95"
                 aria-label="Open filters"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                <span
+                  className={`pointer-events-none absolute inset-0 rounded-full border border-forest/40 ${
+                    filterBtnPulse ? "animate-filter-pulse" : "opacity-0"
+                  }`}
+                  aria-hidden="true"
+                />
+                <svg
+                  className={`w-3.5 h-3.5 transition-transform duration-300 ease-out ${
+                    filterBtnPulse ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.75}
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M6 12h12M10 18h4" />
                 </svg>
                 <span>Filters</span>
@@ -171,7 +215,7 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
               </button>
 
               {/* Search */}
-              <div className="relative flex-1 max-w-md group">
+              <div className="relative flex-1 min-w-[180px] max-w-md group order-last sm:order-none w-full sm:w-auto">
                 <svg
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-forest pointer-events-none z-10"
                   fill="none"
@@ -274,13 +318,28 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
               <Link href={`/shop/${p.id}`} className="group block">
                 <div className="relative card-img bg-cream/40 backdrop-blur-sm border border-white/40 shadow-sm aspect-[4/5] mb-4 overflow-hidden">
                   {p.imageUrl ? (
-                    <Image
-                      src={p.imageUrl}
-                      alt={p.name}
-                      fill
-                      sizes="(min-width: 768px) 33vw, 50vw"
-                      className="object-cover"
-                    />
+                    <>
+                      <Image
+                        src={p.imageUrl}
+                        alt={p.name}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 50vw"
+                        className={`object-cover transition-all duration-500 ease-out ${
+                          p.imageUrl2
+                            ? "group-hover:opacity-0 group-hover:scale-105"
+                            : "group-hover:scale-105"
+                        }`}
+                      />
+                      {p.imageUrl2 && (
+                        <Image
+                          src={p.imageUrl2}
+                          alt=""
+                          fill
+                          sizes="(min-width: 768px) 33vw, 50vw"
+                          className="object-cover opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 ease-out"
+                        />
+                      )}
+                    </>
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-fern/30 to-sage/15" />
                   )}
@@ -289,15 +348,15 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
                       {p.tag}
                     </span>
                   )}
-                  <div className="absolute bottom-0 inset-x-0 bg-forest/80 backdrop-blur-md text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <div className="absolute bottom-0 inset-x-0 bg-forest/80 backdrop-blur-md text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
                     View Product
                   </div>
                 </div>
-                <div className="px-3 flex items-baseline justify-between gap-3">
+                <div className="px-3 space-y-1">
                   <p className="text-sm text-forest group-hover:text-sage transition-colors duration-200">
                     {p.name}
                   </p>
-                  <p className="text-sm text-forest/70 whitespace-nowrap">
+                  <p className="text-sm text-forest/70">
                     {p.price}
                     {p.originalPrice && (
                       <span className="ml-2 text-forest/40 line-through">{p.originalPrice}</span>
@@ -334,15 +393,21 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
           <div
-            className="absolute inset-0 bg-forest/40 backdrop-blur-sm"
-            onClick={() => setMobileFiltersOpen(false)}
+            className={`absolute inset-0 bg-forest/40 backdrop-blur-sm transition-opacity duration-300 ease-out ${
+              mobileFiltersVisible ? "opacity-100" : "opacity-0"
+            }`}
+            onClick={closeMobileFilters}
           />
-          <div className="absolute inset-y-0 left-0 w-[85%] max-w-sm bg-linen shadow-xl flex flex-col">
+          <div
+            className={`absolute inset-y-0 left-0 w-[85%] max-w-sm bg-linen shadow-xl flex flex-col transform transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0.24,1)] ${
+              mobileFiltersVisible ? "translate-x-0" : "-translate-x-full"
+            }`}
+          >
             <div className="flex items-center justify-between px-6 py-4 border-b border-forest/10">
               <span className="text-xs tracking-[0.28em] uppercase text-forest">Filters</span>
               <button
                 type="button"
-                onClick={() => setMobileFiltersOpen(false)}
+                onClick={closeMobileFilters}
                 className="text-forest/60 hover:text-forest"
                 aria-label="Close filters"
               >
@@ -362,13 +427,14 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
                 onToggleCategory={(c) => setSelectedCategories(toggle(selectedCategories, c))}
                 onToggleSize={(s) => setSelectedSizes(toggle(selectedSizes, s))}
                 onSelectPrice={(p) => setSelectedPrice(p)}
+                showHeading={false}
               />
             </div>
             <div className="px-6 py-4 border-t border-forest/10">
               <button
                 type="button"
-                onClick={() => setMobileFiltersOpen(false)}
-                className="w-full py-3 rounded-full bg-forest text-linen text-xs tracking-[0.2em] uppercase"
+                onClick={closeMobileFilters}
+                className="w-full py-3 rounded-full bg-forest text-linen text-xs tracking-[0.2em] uppercase transition-transform duration-200 ease-out active:scale-[0.98]"
               >
                 View {filtered.length} {filtered.length === 1 ? "item" : "items"}
               </button>
@@ -392,6 +458,7 @@ function FilterSidebar({
   onToggleCategory,
   onToggleSize,
   onSelectPrice,
+  showHeading = true,
 }: {
   allCategories: string[];
   allSizes: string[];
@@ -402,10 +469,13 @@ function FilterSidebar({
   onToggleCategory: (c: string) => void;
   onToggleSize: (s: string) => void;
   onSelectPrice: (p: string | null) => void;
+  showHeading?: boolean;
 }) {
   return (
     <div className="space-y-8">
-      <h2 className="text-xs tracking-[0.28em] uppercase text-forest">Filter</h2>
+      {showHeading && (
+        <h2 className="text-xs tracking-[0.28em] uppercase text-forest">Filter</h2>
+      )}
 
       <FilterSection title="Category">
         {allCategories.length === 0 ? (

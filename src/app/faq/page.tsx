@@ -51,13 +51,13 @@ export default function FaqPage() {
             Good to know
           </p>
           <h1
-            className="text-linen text-5xl md:text-7xl lg:text-8xl mb-10 opacity-0 animate-fade-in-up"
+            className="text-linen text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-8 md:mb-10 opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
           >
             Questions,<br />answered.
           </h1>
           <p
-            className="text-linen/65 text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
+            className="text-linen/65 text-base sm:text-lg leading-relaxed max-w-xl opacity-0 animate-fade-in-up"
             style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
           >
             A few of the things people ask us most. Can&apos;t find what you&apos;re looking
