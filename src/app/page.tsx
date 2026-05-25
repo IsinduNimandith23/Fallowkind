@@ -214,14 +214,13 @@ export default async function HomePage() {
 
       {/* ── Commitment strip ── */}
       <AnimateOnScroll>
-        <section className="relative bg-sage overflow-hidden h-[300px] md:h-[324px] lg:h-[348px]">
+        <section className="relative bg-linen overflow-hidden">
           {commitmentBanner && (
-            <Image
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={commitmentBanner}
               alt=""
-              fill
-              sizes="100vw"
-              className="object-cover"
+              className="w-full h-auto block object-center"
             />
           )}
         </section>
