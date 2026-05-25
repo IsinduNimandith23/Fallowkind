@@ -67,7 +67,7 @@ export default function ComingSoonPage() {
         </h1>
 
         <p className="text-xs md:text-sm tracking-[0.4em] uppercase text-linen/55">
-          Rooted in the Land
+          Kind to your Skin, Kinder to the Earth
         </p>
 
         <p className="mt-6 max-w-md text-linen/70 text-base md:text-lg leading-relaxed">
