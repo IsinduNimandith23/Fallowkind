@@ -22,7 +22,12 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: { default: "Fallowkind", template: "%s | Fallowkind" },
-  description: "Clothing rooted in the land. Regenerative living.",
+  description: "Kind to your skin, Kinder to the Earth",
+  openGraph: {
+    title: "Fallowkind",
+    description: "Kind to your skin, Kinder to the Earth",
+    images: ["/logo with background.png"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
