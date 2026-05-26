@@ -54,15 +54,14 @@ export default function ReturnsPage() {
           </p>
           <p className="mt-5 text-forest/75 leading-relaxed">
             Return requests must be submitted within{" "}
-            <span className="text-forest font-semibold">7 days of delivery</span> by emailing
-            our support at{" "}
+            <span className="text-forest font-semibold">7 days of delivery</span>. See{" "}
             <a
-              href="mailto:fallowkind@gmail.com"
+              href="#how-to-start-a-return"
               className="text-forest underline decoration-sage decoration-2 underline-offset-4 hover:decoration-forest transition-colors"
             >
-              fallowkind@gmail.com
-            </a>
-            .
+              how to start a return
+            </a>{" "}
+            below.
           </p>
         </AnimateOnScroll>
 
@@ -88,11 +87,13 @@ export default function ReturnsPage() {
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Returns process
             </p>
-            <h3 className="text-2xl md:text-3xl mb-5">How to start a return</h3>
+            <h3 id="how-to-start-a-return" className="scroll-mt-24 text-2xl md:text-3xl mb-5">How to start a return</h3>
             <p className="text-forest/75 leading-relaxed">
               To begin, email us at{" "}
               <a
-                href="mailto:fallowkind@gmail.com"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=fallowkind@gmail.com&su=Return%20request"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-forest underline decoration-sage decoration-2 underline-offset-4 hover:decoration-forest transition-colors"
               >
                 fallowkind@gmail.com
@@ -177,7 +178,9 @@ export default function ReturnsPage() {
             <p className="text-forest/75 leading-relaxed">
               Please email us at{" "}
               <a
-                href="mailto:fallowkind@gmail.com"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=fallowkind@gmail.com&su=Damaged%20or%20incorrect%20order"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-forest underline decoration-sage decoration-2 underline-offset-4 hover:decoration-forest transition-colors"
               >
                 fallowkind@gmail.com
@@ -208,7 +211,9 @@ export default function ReturnsPage() {
           <p className="text-forest/65 text-sm">
             Still have questions?{" "}
             <a
-              href="mailto:fallowkind@gmail.com"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=fallowkind@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-forest underline decoration-sage decoration-2 underline-offset-4 hover:decoration-forest transition-colors"
             >
               Email our team

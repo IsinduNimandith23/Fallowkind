@@ -33,7 +33,9 @@ export default function ContactPage() {
             <div>
               <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Email</p>
               <a
-                href="mailto:fallowkind@gmail.com"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=fallowkind@gmail.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-forest/85 hover:text-forest transition-colors duration-200"
               >
                 fallowkind@gmail.com

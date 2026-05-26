@@ -6,7 +6,7 @@ import type { Product, ProductColor } from "@/lib/products";
 import { SIZE_OPTIONS } from "@/lib/sizes";
 
 const CATEGORY_OPTIONS = ["T-Shirts", "Graphic", "Heavyweight", "Oversized"];
-const TAG_OPTIONS = ["", "New", "Bestseller", "Sale", "Limited"];
+const TAG_OPTIONS = ["", "New", "Bestseller", "Offer", "Limited"];
 
 type Props = {
   mode: "create" | "edit";

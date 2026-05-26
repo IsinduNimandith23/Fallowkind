@@ -193,7 +193,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
           {/* Tag */}
           {product.tag && (
             <div className="flex items-center gap-3 mb-3">
-              <span className="tag-pill">{product.tag}</span>
+              <span className="tag-pill">{product.tag === "Sale" ? "Offer" : product.tag}</span>
             </div>
           )}
 
@@ -494,7 +494,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
                   )}
                   {p.tag && (
                     <span className="absolute top-3 left-3 tag-pill z-10">
-                      {p.tag}
+                      {p.tag === "Sale" ? "Offer" : p.tag}
                     </span>
                   )}
                 </div>

@@ -70,7 +70,7 @@ export default async function ProductsPage() {
                     <td className="px-4 md:px-6 py-3">
                       {p.tag ? (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider bg-forest text-linen">
-                          {p.tag}
+                          {p.tag === "Sale" ? "Offer" : p.tag}
                         </span>
                       ) : (
                         <span className="text-gray-300">—</span>

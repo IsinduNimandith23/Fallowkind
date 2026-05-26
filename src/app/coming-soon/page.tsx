@@ -100,7 +100,9 @@ export default function ComingSoonPage() {
             </a>
           </div>
           <a
-            href="mailto:fallowkind@gmail.com"
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=fallowkind@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-xs tracking-[0.3em] uppercase text-linen/50 hover:text-linen transition-colors"
           >
             fallowkind@gmail.com

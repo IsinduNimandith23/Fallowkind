@@ -17,6 +17,12 @@ const SORT_LABELS: Record<SortKey, string> = {
 
 const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 
+const ALL_TAGS = ["New", "Bestseller", "Offer", "Limited"];
+
+function displayTag(t: string): string {
+  return t === "Sale" ? "Offer" : t;
+}
+
 function sortSizes(sizes: string[]): string[] {
   return [...sizes].sort((a, b) => {
     const ai = SIZE_ORDER.indexOf(a);
@@ -36,7 +42,8 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
   const [filterBtnPulse, setFilterBtnPulse] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedAvailability, setSelectedAvailability] = useState<"in" | "out" | null>(null);
   const [sort, setSort] = useState<SortKey>("default");
 
   const sortRef = useRef<HTMLDivElement>(null);
@@ -103,23 +110,15 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
     return sortSizes(Array.from(set));
   }, [products]);
 
-  const PRICE_RANGES = [
-    { label: "Under LKR 5,000", min: 0, max: 5000 },
-    { label: "LKR 5,000 – 10,000", min: 5000, max: 10000 },
-    { label: "LKR 10,000 – 20,000", min: 10000, max: 20000 },
-    { label: "Over LKR 20,000", min: 20000, max: Infinity },
-  ];
-
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let list = products.filter((p) => {
       if (q && !p.name.toLowerCase().includes(q)) return false;
       if (selectedCategories.length > 0 && !selectedCategories.includes(p.category)) return false;
       if (selectedSizes.length > 0 && !p.sizes.some((s) => selectedSizes.includes(s))) return false;
-      if (selectedPrice) {
-        const range = PRICE_RANGES.find((r) => r.label === selectedPrice);
-        if (range && (p.priceValue < range.min || p.priceValue > range.max)) return false;
-      }
+      if (selectedTags.length > 0 && (!p.tag || !selectedTags.includes(displayTag(p.tag)))) return false;
+      if (selectedAvailability === "in" && !p.inStock) return false;
+      if (selectedAvailability === "out" && p.inStock) return false;
       return true;
     });
 
@@ -128,19 +127,19 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
     else if (sort === "name-asc") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
 
     return list;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products, query, selectedCategories, selectedSizes, selectedPrice, sort]);
+  }, [products, query, selectedCategories, selectedSizes, selectedTags, selectedAvailability, sort]);
 
   const toggle = (arr: string[], val: string) =>
     arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val];
 
   const activeFilterCount =
-    selectedCategories.length + selectedSizes.length + (selectedPrice ? 1 : 0);
+    selectedCategories.length + selectedSizes.length + selectedTags.length + (selectedAvailability ? 1 : 0);
 
   const clearAll = () => {
     setSelectedCategories([]);
     setSelectedSizes([]);
-    setSelectedPrice(null);
+    setSelectedTags([]);
+    setSelectedAvailability(null);
     setQuery("");
   };
 
@@ -167,13 +166,15 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
               <FilterSidebar
                 allCategories={allCategories}
                 allSizes={allSizes}
-                priceRanges={PRICE_RANGES}
+                allTags={ALL_TAGS}
                 selectedCategories={selectedCategories}
                 selectedSizes={selectedSizes}
-                selectedPrice={selectedPrice}
+                selectedTags={selectedTags}
+                selectedAvailability={selectedAvailability}
                 onToggleCategory={(c) => setSelectedCategories(toggle(selectedCategories, c))}
                 onToggleSize={(s) => setSelectedSizes(toggle(selectedSizes, s))}
-                onSelectPrice={(p) => setSelectedPrice(p)}
+                onToggleTag={(t) => setSelectedTags(toggle(selectedTags, t))}
+                onSelectAvailability={(a) => setSelectedAvailability(a)}
               />
             </div>
           </aside>
@@ -289,13 +290,21 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
             {/* Active filter chips */}
             {activeFilterCount > 0 && (
               <div className="flex flex-wrap items-center gap-2 mb-6 md:mb-8">
+                {selectedAvailability && (
+                  <Chip
+                    label={selectedAvailability === "in" ? "In Stock" : "Out of Stock"}
+                    onClear={() => setSelectedAvailability(null)}
+                  />
+                )}
                 {selectedCategories.map((c) => (
                   <Chip key={`cat-${c}`} label={c} onClear={() => setSelectedCategories(selectedCategories.filter((v) => v !== c))} />
                 ))}
                 {selectedSizes.map((s) => (
                   <Chip key={`sz-${s}`} label={s} onClear={() => setSelectedSizes(selectedSizes.filter((v) => v !== s))} />
                 ))}
-                {selectedPrice && <Chip label={selectedPrice} onClear={() => setSelectedPrice(null)} />}
+                {selectedTags.map((t) => (
+                  <Chip key={`tg-${t}`} label={displayTag(t)} onClear={() => setSelectedTags(selectedTags.filter((v) => v !== t))} />
+                ))}
                 <button
                   type="button"
                   onClick={clearAll}
@@ -343,14 +352,21 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-fern/30 to-sage/15" />
                   )}
-                  {p.tag && (
+                  {p.inStock && p.tag && (
                     <span className="absolute top-3 left-3 tag-pill z-10">
-                      {p.tag}
+                      {displayTag(p.tag)}
                     </span>
                   )}
-                  <div className="absolute bottom-0 inset-x-0 bg-forest/80 backdrop-blur-md text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
-                    View Product
-                  </div>
+                  {!p.inStock && (
+                    <span className="absolute top-3 left-3 tag-pill z-10 !bg-red-700/85">
+                      Sold Out
+                    </span>
+                  )}
+                  {p.inStock && (
+                    <div className="absolute bottom-0 inset-x-0 bg-forest/80 backdrop-blur-md text-linen text-[10px] tracking-widest uppercase text-center py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
+                      View Product
+                    </div>
+                  )}
                 </div>
                 <div className="px-3 space-y-1">
                   <p className="text-sm text-forest group-hover:text-sage transition-colors duration-200">
@@ -420,13 +436,15 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
               <FilterSidebar
                 allCategories={allCategories}
                 allSizes={allSizes}
-                priceRanges={PRICE_RANGES}
+                allTags={ALL_TAGS}
                 selectedCategories={selectedCategories}
                 selectedSizes={selectedSizes}
-                selectedPrice={selectedPrice}
+                selectedTags={selectedTags}
+                selectedAvailability={selectedAvailability}
                 onToggleCategory={(c) => setSelectedCategories(toggle(selectedCategories, c))}
                 onToggleSize={(s) => setSelectedSizes(toggle(selectedSizes, s))}
-                onSelectPrice={(p) => setSelectedPrice(p)}
+                onToggleTag={(t) => setSelectedTags(toggle(selectedTags, t))}
+                onSelectAvailability={(a) => setSelectedAvailability(a)}
                 showHeading={false}
               />
             </div>
@@ -446,29 +464,31 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
   );
 }
 
-type PriceRange = { label: string; min: number; max: number };
-
 function FilterSidebar({
   allCategories,
   allSizes,
-  priceRanges,
+  allTags,
   selectedCategories,
   selectedSizes,
-  selectedPrice,
+  selectedTags,
+  selectedAvailability,
   onToggleCategory,
   onToggleSize,
-  onSelectPrice,
+  onToggleTag,
+  onSelectAvailability,
   showHeading = true,
 }: {
   allCategories: string[];
   allSizes: string[];
-  priceRanges: PriceRange[];
+  allTags: string[];
   selectedCategories: string[];
   selectedSizes: string[];
-  selectedPrice: string | null;
+  selectedTags: string[];
+  selectedAvailability: "in" | "out" | null;
   onToggleCategory: (c: string) => void;
   onToggleSize: (s: string) => void;
-  onSelectPrice: (p: string | null) => void;
+  onToggleTag: (t: string) => void;
+  onSelectAvailability: (a: "in" | "out" | null) => void;
   showHeading?: boolean;
 }) {
   return (
@@ -476,6 +496,27 @@ function FilterSidebar({
       {showHeading && (
         <h2 className="text-xs tracking-[0.28em] uppercase text-forest">Filter</h2>
       )}
+
+      <FilterSection title="Availability">
+        <ul className="space-y-1">
+          <li>
+            <SidebarCheck
+              checked={selectedAvailability === "in"}
+              onClick={() => onSelectAvailability(selectedAvailability === "in" ? null : "in")}
+              label="In Stock"
+              circle
+            />
+          </li>
+          <li>
+            <SidebarCheck
+              checked={selectedAvailability === "out"}
+              onClick={() => onSelectAvailability(selectedAvailability === "out" ? null : "out")}
+              label="Out of Stock"
+              circle
+            />
+          </li>
+        </ul>
+      </FilterSection>
 
       <FilterSection title="Category">
         {allCategories.length === 0 ? (
@@ -521,19 +562,22 @@ function FilterSidebar({
         )}
       </FilterSection>
 
-      <FilterSection title="Price">
-        <ul className="space-y-1">
-          {priceRanges.map((r) => (
-            <li key={r.label}>
-              <SidebarCheck
-                checked={selectedPrice === r.label}
-                onClick={() => onSelectPrice(selectedPrice === r.label ? null : r.label)}
-                label={r.label}
-                circle
-              />
-            </li>
-          ))}
-        </ul>
+      <FilterSection title="Tag">
+        {allTags.length === 0 ? (
+          <p className="text-xs text-forest/40">No tags</p>
+        ) : (
+          <ul className="space-y-1">
+            {allTags.map((t) => (
+              <li key={t}>
+                <SidebarCheck
+                  checked={selectedTags.includes(t)}
+                  onClick={() => onToggleTag(t)}
+                  label={displayTag(t)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </FilterSection>
     </div>
   );

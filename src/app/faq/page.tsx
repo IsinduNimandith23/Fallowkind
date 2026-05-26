@@ -61,7 +61,7 @@ export default function FaqPage() {
             style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
           >
             A few of the things people ask us most. Can&apos;t find what you&apos;re looking
-            for? Send us an email — we read every one.
+            for? Send us an email - we read every one.
           </p>
         </div>
       </section>
@@ -80,7 +80,9 @@ export default function FaqPage() {
           <p className="text-forest/65 text-sm">
             Still curious?{" "}
             <a
-              href="mailto:fallowkind@gmail.com"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=fallowkind@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-forest underline decoration-sage decoration-2 underline-offset-4 hover:decoration-forest transition-colors"
             >
               Reach out

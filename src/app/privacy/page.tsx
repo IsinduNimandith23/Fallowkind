@@ -99,7 +99,9 @@ export default function PrivacyPage() {
               If you&apos;d like to access, correct, or delete the information we hold
               about you, email us at{" "}
               <a
-                href="mailto:fallowkind@gmail.com"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=fallowkind@gmail.com&su=Privacy%20request"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-forest underline decoration-sage decoration-2 underline-offset-4 hover:decoration-forest transition-colors"
               >
                 fallowkind@gmail.com

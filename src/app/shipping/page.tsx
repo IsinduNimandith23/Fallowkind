@@ -75,7 +75,9 @@ export default function ShippingPage() {
             <p className="text-forest/75 leading-relaxed">
               If your order hasn&apos;t arrived within the estimated window, reach out at{" "}
               <a
-                href="mailto:fallowkind@gmail.com"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=fallowkind@gmail.com&su=Lost%20or%20delayed%20order"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-forest underline decoration-sage decoration-2 underline-offset-4 hover:decoration-forest transition-colors"
               >
                 fallowkind@gmail.com

@@ -33,7 +33,7 @@ export default function Navbar() {
       <div className="relative flex items-center justify-between px-4 sm:px-12 md:px-32 h-20">
 
         {/* Logo */}
-        <Link href="/" className="relative flex items-center gap-2 z-10">
+        <Link href="/" className="relative flex items-center gap-2 z-10 -ml-6 sm:ml-0">
           <span
             aria-hidden
             className={`absolute left-1/2 top-[calc(50%+2px)] -translate-x-1/2 -translate-y-1/2 w-44 h-10 sm:w-44 sm:h-10 md:w-52 md:h-10 rounded-full bg-white/35 backdrop-blur-md border border-white/60 shadow-md transition-opacity duration-300 ${
@@ -108,7 +108,7 @@ export default function Navbar() {
           {totalItems > 0 && !menuOpen && (
             <span
               aria-label={`${totalItems} item${totalItems === 1 ? "" : "s"} in cart`}
-              className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-linen"
+              className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"
             />
           )}
         </button>
