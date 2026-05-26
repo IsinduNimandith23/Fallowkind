@@ -16,7 +16,7 @@ const links = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/";
   const { totalItems, openCart } = useCart();
 
   useEffect(() => { setMenuOpen(false); }, [pathname]);
