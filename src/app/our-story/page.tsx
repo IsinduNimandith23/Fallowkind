@@ -137,15 +137,24 @@ export default async function OurStoryPage() {
                 >
                   {/* Image */}
                   <AnimateOnScroll
-                    className={`md:col-span-6 ${reversed ? "md:order-2" : ""}`}
+                    className={`md:col-span-5 ${reversed ? "md:order-2" : ""}`}
                   >
-                    <div className="relative group">
-                      <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-xl border border-white/40">
+                    <div className="relative group max-w-xl mx-auto">
+                      {/* Offset accent frame */}
+                      <div
+                        aria-hidden
+                        className={`absolute inset-0 border border-moss/40 pointer-events-none transition-transform duration-500 ease-out ${
+                          reversed
+                            ? "translate-x-3 translate-y-3 sm:translate-x-4 sm:translate-y-4"
+                            : "-translate-x-3 translate-y-3 sm:-translate-x-4 sm:translate-y-4"
+                        } group-hover:translate-x-0 group-hover:translate-y-0`}
+                      />
+                      <div className="relative aspect-[4/5] overflow-hidden shadow-lg border border-white/40">
                         <Image
                           src={p.image}
                           alt={p.label}
                           fill
-                          sizes="(min-width: 768px) 42vw, 100vw"
+                          sizes="(min-width: 768px) 40vw, 100vw"
                           className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
                         />
                         {/* subtle bottom fade for depth */}
@@ -157,7 +166,7 @@ export default async function OurStoryPage() {
                   {/* Text */}
                   <AnimateOnScroll
                     delay={180}
-                    className={`md:col-span-6 md:pt-12 lg:pt-16 ${reversed ? "md:order-1 md:pr-6" : "md:pl-6"}`}
+                    className={`md:col-span-7 md:pt-8 lg:pt-12 ${reversed ? "md:order-1 md:pr-6" : "md:pl-6"}`}
                   >
                     <h3 className="text-2xl sm:text-3xl md:text-4xl mb-5 leading-tight">
                       {p.label}
@@ -176,7 +185,7 @@ export default async function OurStoryPage() {
       </section>
 
       {/* ── Stats ── */}
-      <section className="section-padding page-container">
+      {/* <section className="section-padding page-container">
         <AnimateOnScroll className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
           {[
             { number: "100%", label: "Natural fibres" },
@@ -190,7 +199,7 @@ export default async function OurStoryPage() {
             </div>
           ))}
         </AnimateOnScroll>
-      </section>
+      </section> */}
 
       {/* ── Pull quote ── */}
       <AnimateOnScroll>
@@ -200,9 +209,9 @@ export default async function OurStoryPage() {
           <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
           <div className="relative page-container text-center max-w-3xl mx-auto">
             <p className="text-2xl sm:text-4xl md:text-5xl text-forest font-serif italic leading-snug normal-case tracking-normal">
-              &ldquo;The future is conscious — and it starts with what we wear.&rdquo;
+              &ldquo;The future is conscious - and it starts with what we wear.&rdquo;
             </p>
-            <p className="mt-6 text-xs tracking-[0.3em] uppercase text-moss">— Fallowkind</p>
+            <p className="mt-6 text-xs tracking-[0.3em] uppercase text-moss">- Fallowkind</p>
           </div>
         </section>
       </AnimateOnScroll>

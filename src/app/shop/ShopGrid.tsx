@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import type { Product } from "@/lib/products";
+import { SIZE_OPTIONS } from "@/lib/sizes";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name-asc";
 
@@ -115,7 +116,7 @@ export default function ShopGrid({
   }, [products]);
 
   const allSizes = useMemo(() => {
-    const set = new Set<string>();
+    const set = new Set<string>(SIZE_OPTIONS);
     products.forEach((p) => p.sizes.forEach((s) => set.add(s)));
     return sortSizes(Array.from(set));
   }, [products]);
