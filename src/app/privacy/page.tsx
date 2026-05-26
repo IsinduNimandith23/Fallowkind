@@ -7,12 +7,12 @@ const sections = [
   {
     label: "Information we collect",
     body:
-      "When you shop with us, sign up for our newsletter, or contact our team, we collect details like your name, email, shipping address, and order history. Payment information is handled securely by our payment processor — we never see or store your full card details.",
+      "When you shop with us, sign up for our newsletter, or contact our team, we collect details like your name, email, shipping address, and order history. Payment information is handled securely by our payment processor - we never see or store your full card details.",
   },
   {
     label: "How we use your information",
     body:
-      "We use your information to process and ship your orders, send order updates and receipts, respond to your questions, and — if you've opted in — share occasional updates about new collections and stories from the brand.",
+      "We use your information to process and ship your orders, send order updates and receipts, respond to your questions, and - if you've opted in - share occasional updates about new collections and stories from the brand.",
   },
   {
     label: "Cookies and analytics",
@@ -22,7 +22,7 @@ const sections = [
   {
     label: "Sharing your information",
     body:
-      "We share only what's necessary with the partners who help us run the shop — payment processors, shipping carriers, and email providers. We never sell your data to third parties.",
+      "We share only what's necessary with the partners who help us run the shop - payment processors, shipping carriers, and email providers. We never sell your data to third parties.",
   },
   {
     label: "Your rights",

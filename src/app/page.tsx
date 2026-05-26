@@ -96,7 +96,7 @@ export default async function HomePage() {
               style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
             >
               <span className="w-10 h-px bg-fern/70" />
-              <p className="text-[11px] tracking-[0.4em] uppercase text-fern/95">
+              <p className="text-[10px] tracking-[0.4em] uppercase text-fern/95">
                 {heroEyebrow}
               </p>
             </div>
@@ -111,7 +111,7 @@ export default async function HomePage() {
           >
             {heroHeadingLine1 && (
               <span
-                className="block uppercase whitespace-nowrap leading-[0.92] tracking-tight text-[clamp(2.1rem,9.2vw,3.6rem)] sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7rem] opacity-0 animate-fade-in-up"
+                className="block uppercase whitespace-nowrap leading-[0.92] tracking-tight text-[clamp(1.85rem,8vw,3.15rem)] sm:text-[3.3rem] md:text-[3.95rem] lg:text-[5.25rem] xl:text-[6.15rem] opacity-0 animate-fade-in-up"
                 style={{ animationDelay: "0.5s", animationFillMode: "forwards" }}
               >
                 {heroHeadingLine1}
@@ -205,7 +205,7 @@ export default async function HomePage() {
           {featured.map((item, i) => (
             <AnimateOnScroll key={item.id} delay={i * 100}>
               <Link href={`/shop/${item.id}`} className="group block">
-                <ProductCard {...item} />
+                <ProductCard {...item} tag="NEW" />
               </Link>
             </AnimateOnScroll>
           ))}
@@ -260,7 +260,7 @@ export default async function HomePage() {
             Most modern clothing contains synthetic materials like polyester and nylon, which release
             microplastics over time. These fabrics often rely on heavy chemical processing and artificial
             dyes that come into direct contact with your skin every day. At Fallowkind, we chose a
-            different path. Our pieces are made with natural cotton and linen, focusing on breathable
+            different path. Our pieces are made with natural plant based fibers, focusing on breathable
             comfort, no hidden plastics, and slow fashion designed for everyday living.
           </p>
           <Link href="/our-story" className="btn-outline inline-block">

@@ -77,7 +77,7 @@ export default function Navbar() {
           <button
             onClick={openCart}
             aria-label="Open cart"
-            className={`hover:text-sage transition-all duration-300 relative w-12 h-12 flex items-center justify-center rounded-full ${
+            className={`hover:text-sage transition-all duration-300 relative w-10 h-10 flex items-center justify-center rounded-full ${
               scrolled
                 ? "bg-white/35 backdrop-blur-md border border-white/60 shadow-md"
                 : "bg-transparent border border-transparent"

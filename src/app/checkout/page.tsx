@@ -11,7 +11,7 @@ const SHIPPING = 400;
 const SAVED_INFO_KEY = "fallowkind_saved_checkout_info";
 
 const BANK_DETAILS = {
-  accountName: "S sepala dahanayake",
+  accountName: "S Sepala Dahanayake",
   accountNumber: "8024217640",
   bank: "Commercial Bank",
   branch: "Kottawa",

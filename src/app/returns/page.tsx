@@ -196,7 +196,7 @@ export default function ReturnsPage() {
               ))}
             </ul>
             <p className="mt-6 text-forest/75 leading-relaxed">
-              If we made a mistake, we&apos;ll make it right — promise.
+              If we made a mistake, we&apos;ll make it right - promise.
             </p>
             <p className="mt-5 text-forest/60 leading-relaxed text-sm italic">
               Note: Color variation due to lighting or screen settings isn&apos;t considered damage.

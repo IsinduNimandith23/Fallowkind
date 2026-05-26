@@ -25,7 +25,7 @@ export default function ContactPage() {
         </AnimateOnScroll>
 
         {/* Divider */}
-        <div className="my-16 border-t border-cream" />
+        <div className="my-16 border-t border-forest/15" />
 
         {/* Contact info */}
         <AnimateOnScroll>
@@ -42,7 +42,7 @@ export default function ContactPage() {
 
             <div>
               <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Response time</p>
-              <p className="text-forest/85">We reply within a day.</p>
+              <p className="text-forest/85">We reply within a business day</p>
             </div>
           </div>
         </AnimateOnScroll>

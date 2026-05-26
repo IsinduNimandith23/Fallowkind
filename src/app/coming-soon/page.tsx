@@ -67,7 +67,7 @@ export default function ComingSoonPage() {
         </h1>
 
         <p className="text-[10px] sm:text-xs md:text-sm tracking-[0.3em] sm:tracking-[0.4em] uppercase text-linen/55 px-2">
-          Kind to your Skin, Kinder to the Earth
+          Kind to your Skin Kinder to the Earth
         </p>
 
         <p className="mt-5 sm:mt-6 max-w-md text-linen/70 text-sm sm:text-base md:text-lg leading-relaxed">

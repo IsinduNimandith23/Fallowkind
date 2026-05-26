@@ -7,7 +7,7 @@ const sections = [
   {
     label: "Using the site",
     body:
-      "By browsing or shopping at fallowkind.com you agree to these terms. Please use the site lawfully and respectfully — don't attempt to interfere with its operation, security, or other people's use of it.",
+      "By browsing or shopping at fallowkind.com you agree to these terms. Please use the site lawfully and respectfully - don't attempt to interfere with its operation, security, or other people's use of it.",
   },
   {
     label: "Products and pricing",
@@ -17,7 +17,7 @@ const sections = [
   {
     label: "Orders and payment",
     body:
-      "Placing an order is an offer to purchase. We may cancel or decline orders at our discretion — for example, if an item is out of stock or if we suspect fraud. Payment is taken at checkout, and your order is confirmed by email once it's been accepted.",
+      "Placing an order is an offer to purchase. We may cancel or decline orders at our discretion - for example, if an item is out of stock or if we suspect fraud. Payment is taken at checkout, and your order is confirmed by email once it's been accepted.",
   },
   {
     label: "Shipping, returns and refunds",
@@ -27,12 +27,12 @@ const sections = [
   {
     label: "Intellectual property",
     body:
-      "All content on this site — including text, photography, logos, and design — belongs to Fallowkind or our partners and is protected by copyright. You may not reproduce, distribute, or use it commercially without our written permission.",
+      "All content on this site - including text, photography, logos, and design - belongs to Fallowkind or our partners and is protected by copyright. You may not reproduce, distribute, or use it commercially without our written permission.",
   },
   {
     label: "User content",
     body:
-      "If you share content with us (a review, a photo, a message) you grant Fallowkind a non-exclusive licence to use it in connection with the brand. You're responsible for what you share — please make sure it's yours to share.",
+      "If you share content with us (a review, a photo, a message) you grant Fallowkind a non-exclusive licence to use it in connection with the brand. You're responsible for what you share - please make sure it's yours to share.",
   },
   {
     label: "Limitation of liability",
@@ -82,7 +82,7 @@ export default function TermsPage() {
         <AnimateOnScroll className="mb-12">
           <p className="text-forest/75 leading-relaxed">
             These terms and conditions govern your use of fallowkind.com and any
-            purchases you make through it. Please read them carefully — by using
+            purchases you make through it. Please read them carefully - by using
             the site or placing an order, you agree to be bound by them.
           </p>
         </AnimateOnScroll>
