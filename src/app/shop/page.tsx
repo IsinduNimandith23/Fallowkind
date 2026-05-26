@@ -11,5 +11,11 @@ export default async function ShopPage() {
     getAllProducts(),
     getSiteSettings(),
   ]);
-  return <ShopGrid products={products} bannerUrl={settings.shopBannerUrl} />;
+  return (
+    <ShopGrid
+      products={products}
+      bannerUrl={settings.shopBannerUrl}
+      bannerMobileUrl={settings.shopBannerMobileUrl}
+    />
+  );
 }

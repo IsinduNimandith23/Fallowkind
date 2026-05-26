@@ -34,7 +34,17 @@ function sortSizes(sizes: string[]): string[] {
   });
 }
 
-export default function ShopGrid({ products, bannerUrl }: { products: Product[]; bannerUrl: string }) {
+export default function ShopGrid({
+  products,
+  bannerUrl,
+  bannerMobileUrl,
+}: {
+  products: Product[];
+  bannerUrl: string;
+  bannerMobileUrl: string;
+}) {
+  // Fall back to the desktop banner on mobile if no mobile-specific image is set.
+  const mobileSrc = bannerMobileUrl || bannerUrl;
   const [query, setQuery] = useState("");
   const [sortOpen, setSortOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -145,16 +155,28 @@ export default function ShopGrid({ products, bannerUrl }: { products: Product[];
 
   return (
     <>
-      {/* Hero banner — admin-managed image, extends under the navbar like the homepage hero */}
+      {/* Hero banner — admin-managed image, extends under the navbar like the homepage hero.
+          Separate mobile/desktop images so each fills its viewport without awkward cropping. */}
       <section className="relative -mt-20 h-[340px] sm:h-[460px] md:h-[560px] overflow-hidden bg-linen">
+        {/* Mobile (< md) */}
         <Image
-          key={bannerUrl}
+          key={`m-${mobileSrc}`}
+          src={mobileSrc}
+          alt=""
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover md:hidden"
+        />
+        {/* Desktop (>= md) */}
+        <Image
+          key={`d-${bannerUrl}`}
           src={bannerUrl}
           alt=""
           fill
           sizes="100vw"
           priority
-          className="object-cover"
+          className="object-cover hidden md:block"
         />
       </section>
 

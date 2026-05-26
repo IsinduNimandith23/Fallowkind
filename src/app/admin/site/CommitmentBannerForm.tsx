@@ -3,15 +3,10 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Mode = "upload" | "url";
-
 export default function CommitmentBannerForm({ currentUrl }: { currentUrl: string }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [mode, setMode] = useState<Mode>("upload");
-  const [url, setUrl] = useState(currentUrl);
   const [uploading, setUploading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -54,7 +49,6 @@ export default function CommitmentBannerForm({ currentUrl }: { currentUrl: strin
 
       await saveUrlToServer(upJson.url);
 
-      setUrl(upJson.url);
       setPreview(upJson.url);
       if (fileRef.current) fileRef.current.value = "";
       showMessage(setSuccess, "Commitment banner updated.");
@@ -67,35 +61,12 @@ export default function CommitmentBannerForm({ currentUrl }: { currentUrl: strin
     }
   }
 
-  async function handleSaveUrl(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    if (!url.trim()) {
-      setError("Enter an image URL.");
-      return;
-    }
-    setSaving(true);
-    try {
-      await saveUrlToServer(url.trim());
-      setPreview(url.trim());
-      showMessage(setSuccess, "Commitment banner URL saved.");
-      router.refresh();
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Save failed";
-      showMessage(setError, msg);
-    } finally {
-      setSaving(false);
-    }
-  }
-
   async function handleClear() {
     setError("");
     setSuccess("");
     setClearing(true);
     try {
       await saveUrlToServer("");
-      setUrl("");
       setPreview("");
       if (fileRef.current) fileRef.current.value = "";
       showMessage(setSuccess, "Commitment banner cleared.");
@@ -145,84 +116,30 @@ export default function CommitmentBannerForm({ currentUrl }: { currentUrl: strin
         </div>
       </div>
 
-      {/* Mode toggle */}
-      <div className="flex gap-2 border-b border-gray-200">
-        <button
-          onClick={() => setMode("upload")}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            mode === "upload"
-              ? "border-forest text-forest"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          Upload file
-        </button>
-        <button
-          onClick={() => setMode("url")}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            mode === "url"
-              ? "border-forest text-forest"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          Paste URL
-        </button>
-      </div>
-
       {/* Upload form */}
-      {mode === "upload" && (
-        <form onSubmit={handleUpload} className="bg-white rounded-lg border border-gray-100 shadow-sm p-6 space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Banner image
-            </label>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:uppercase file:tracking-wider file:bg-forest file:text-linen hover:file:bg-forest/90 cursor-pointer"
-            />
-            <p className="text-xs text-gray-400 mt-2">
-              JPG, PNG, WebP, or GIF. Max 10MB. Recommended a wide image (≈ 16:5, e.g. 2400 × 750 px). Goes to <code className="bg-gray-100 px-1 rounded">media/banner</code>.
-            </p>
-          </div>
-          <button
-            type="submit"
-            disabled={uploading}
-            className="bg-forest text-linen px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider hover:bg-forest/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {uploading ? "Uploading…" : "Upload & Save"}
-          </button>
-        </form>
-      )}
-
-      {/* URL form */}
-      {mode === "url" && (
-        <form onSubmit={handleSaveUrl} className="bg-white rounded-lg border border-gray-100 shadow-sm p-6 space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Image URL
-            </label>
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://… or /banner.png"
-              className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
-            />
-            <p className="text-xs text-gray-400 mt-2">
-              Any direct image URL (CDN, public Supabase Storage link, or a path under <code className="bg-gray-100 px-1 rounded">/public</code>).
-            </p>
-          </div>
-          <button
-            type="submit"
-            disabled={saving}
-            className="bg-forest text-linen px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider hover:bg-forest/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {saving ? "Saving…" : "Save URL"}
-          </button>
-        </form>
-      )}
+      <form onSubmit={handleUpload} className="bg-white rounded-lg border border-gray-100 shadow-sm p-6 space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            Banner image
+          </label>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:uppercase file:tracking-wider file:bg-forest file:text-linen hover:file:bg-forest/90 cursor-pointer"
+          />
+          <p className="text-xs text-gray-400 mt-2">
+            JPG, PNG, WebP, or GIF. Max 10MB. Recommended a wide image (≈ 16:5, e.g. 2400 × 750 px). Goes to <code className="bg-gray-100 px-1 rounded">media/banner</code>.
+          </p>
+        </div>
+        <button
+          type="submit"
+          disabled={uploading}
+          className="bg-forest text-linen px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider hover:bg-forest/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {uploading ? "Uploading…" : "Upload & Save"}
+        </button>
+      </form>
 
       {error && (
         <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded px-4 py-2.5">{error}</p>

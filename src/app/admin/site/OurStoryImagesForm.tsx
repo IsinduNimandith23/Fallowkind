@@ -3,54 +3,69 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ShopBannerForm({
-  currentUrl,
-  currentMobileUrl,
+type ImageKey = "beginning" | "principle1" | "principle2" | "principle3";
+
+export default function OurStoryImagesForm({
+  beginningUrl,
+  principle1Url,
+  principle2Url,
+  principle3Url,
 }: {
-  currentUrl: string;
-  currentMobileUrl: string;
+  beginningUrl: string;
+  principle1Url: string;
+  principle2Url: string;
+  principle3Url: string;
 }) {
   return (
     <div className="space-y-10">
-      <BannerEditor
-        title="Desktop banner"
-        currentUrl={currentUrl}
-        endpoint="/api/admin/settings/shop-banner"
-        previewAspectClass="aspect-[24/7]"
-        uploadHint="Shown on screens ≥ 768px wide. Recommended ~24:7 — e.g. 3840 × 1120 px. JPG, PNG, WebP, or GIF. Max 10MB."
-        allowClear={false}
+      <ImageEditor
+        title='"Our beginning" photo'
+        imageKey="beginning"
+        currentUrl={beginningUrl}
+        previewAspectClass="aspect-[4/5]"
+        uploadHint="Shown beside the 'We imagine a world where' list. Portrait orientation works best — recommended ~4:5 (e.g. 1200 × 1500 px). JPG, PNG, WebP, or GIF. Max 10MB."
       />
-      <BannerEditor
-        title="Mobile banner"
-        currentUrl={currentMobileUrl}
-        endpoint="/api/admin/settings/shop-banner-mobile"
-        previewAspectClass="aspect-[10/9]"
-        uploadHint="Shown on screens < 768px wide. Recommended ~10:9 to 1:1 — e.g. 1200 × 1080 px. Leave empty to use the desktop banner on phones too."
-        allowClear={true}
+      <ImageEditor
+        title="Principle 1 — Pure Materials, Pure Living"
+        imageKey="principle1"
+        currentUrl={principle1Url}
+        previewAspectClass="aspect-[4/5]"
+        uploadHint="First principle image in the 'What we stand for' section. Portrait ~4:5. JPG, PNG, WebP, or GIF. Max 10MB."
+      />
+      <ImageEditor
+        title="Principle 2 — Slow Fashion, Thoughtful Production"
+        imageKey="principle2"
+        currentUrl={principle2Url}
+        previewAspectClass="aspect-[4/5]"
+        uploadHint="Second principle image. Portrait ~4:5. JPG, PNG, WebP, or GIF. Max 10MB."
+      />
+      <ImageEditor
+        title="Principle 3 — Cruelty-Free by Nature"
+        imageKey="principle3"
+        currentUrl={principle3Url}
+        previewAspectClass="aspect-[4/5]"
+        uploadHint="Third principle image. Portrait ~4:5. JPG, PNG, WebP, or GIF. Max 10MB."
       />
     </div>
   );
 }
 
-function BannerEditor({
+function ImageEditor({
   title,
+  imageKey,
   currentUrl,
-  endpoint,
   previewAspectClass,
   uploadHint,
-  allowClear,
 }: {
   title: string;
+  imageKey: ImageKey;
   currentUrl: string;
-  endpoint: string;
   previewAspectClass: string;
   uploadHint: string;
-  allowClear: boolean;
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
-  const [clearing, setClearing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [preview, setPreview] = useState(currentUrl);
@@ -58,16 +73,6 @@ function BannerEditor({
   function showMessage(setter: (m: string) => void, msg: string) {
     setter(msg);
     setTimeout(() => setter(""), 3500);
-  }
-
-  async function saveUrl(nextUrl: string) {
-    const res = await fetch(endpoint, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: nextUrl }),
-    });
-    const json = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(json.error || "Save failed");
   }
 
   async function handleUpload(e: React.FormEvent) {
@@ -90,7 +95,13 @@ function BannerEditor({
       const upJson = await upRes.json();
       if (!upRes.ok) throw new Error(upJson.error || "Upload failed");
 
-      await saveUrl(upJson.url);
+      const saveRes = await fetch("/api/admin/settings/our-story-image", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: imageKey, url: upJson.url }),
+      });
+      const saveJson = await saveRes.json().catch(() => ({}));
+      if (!saveRes.ok) throw new Error(saveJson.error || "Save failed");
 
       setPreview(upJson.url);
       if (fileRef.current) fileRef.current.value = "";
@@ -104,46 +115,16 @@ function BannerEditor({
     }
   }
 
-  async function handleClear() {
-    setError("");
-    setSuccess("");
-    setClearing(true);
-    try {
-      await saveUrl("");
-      setPreview("");
-      if (fileRef.current) fileRef.current.value = "";
-      showMessage(setSuccess, `${title} cleared.`);
-      router.refresh();
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Clear failed";
-      showMessage(setError, msg);
-    } finally {
-      setClearing(false);
-    }
-  }
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{title}</h3>
-        {allowClear && preview && (
-          <button
-            type="button"
-            onClick={handleClear}
-            disabled={clearing}
-            className="text-xs text-gray-500 hover:text-red-600 underline underline-offset-4 disabled:opacity-50"
-          >
-            {clearing ? "Clearing…" : "Clear"}
-          </button>
-        )}
-      </div>
+      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{title}</h3>
 
       {/* Preview */}
       <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-5 py-3 border-b border-gray-100 bg-gray-50">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Current</p>
         </div>
-        <div className={`relative ${previewAspectClass} bg-linen`}>
+        <div className={`relative ${previewAspectClass} bg-linen max-w-xs`}>
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -154,7 +135,7 @@ function BannerEditor({
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-forest/40 text-sm">
-              No banner set
+              No image set
             </div>
           )}
         </div>
@@ -167,7 +148,7 @@ function BannerEditor({
       <form onSubmit={handleUpload} className="bg-white rounded-lg border border-gray-100 shadow-sm p-6 space-y-4">
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-            Banner image
+            Image
           </label>
           <input
             ref={fileRef}
