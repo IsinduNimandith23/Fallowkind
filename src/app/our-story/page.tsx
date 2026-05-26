@@ -108,12 +108,6 @@ export default async function OurStoryPage() {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-700"
             />
-            <div className="absolute bottom-6 left-6 right-6 glass-panel p-5">
-              <p className="text-[10px] tracking-widest uppercase text-moss mb-2">Our beginning</p>
-              <p className="text-forest/80 text-sm font-serif italic leading-relaxed normal-case tracking-normal">
-                &ldquo;One tee. A market stall. A belief.&rdquo;
-              </p>
-            </div>
           </div>
         </AnimateOnScroll>
       </section>
