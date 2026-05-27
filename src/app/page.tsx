@@ -255,7 +255,7 @@ export default async function HomePage() {
             <img
               src={commitmentBanner}
               alt=""
-              className="block w-full h-[220px] object-cover object-center sm:h-auto"
+              className="block w-full h-[220px] sm:h-[300px] lg:h-[380px] object-cover object-center"
             />
           )}
         </section>
