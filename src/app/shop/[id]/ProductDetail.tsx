@@ -511,11 +511,16 @@ export default function ProductDetail({ product, allProducts }: Props) {
                     </span>
                   )}
                 </div>
-                <div className="flex justify-between items-baseline">
-                  <p className="text-sm font-medium text-forest group-hover:text-sage transition-colors duration-200">
+                <div className="px-3 space-y-1">
+                  <p className="text-sm text-forest group-hover:text-sage transition-colors duration-200">
                     {p.name}
                   </p>
-                  <p className="text-sm text-sage">{p.price}</p>
+                  <p className="text-sm text-forest/70">
+                    {p.price}
+                    {p.originalPrice && (
+                      <span className="ml-2 text-forest/40 line-through">{p.originalPrice}</span>
+                    )}
+                  </p>
                 </div>
               </Link>
             ))}
