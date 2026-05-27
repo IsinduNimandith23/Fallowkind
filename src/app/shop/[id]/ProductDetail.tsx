@@ -558,7 +558,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
           </svg>
         </button>
 
-        <p className="text-[10px] tracking-[0.3em] uppercase text-moss mb-2">Fit</p>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-forest font-semibold mb-2">Fit</p>
         <h2 className="font-display text-2xl text-forest mb-6">Size Guide</h2>
 
         {/* Image placeholder — replace src with actual chart image when ready */}
@@ -571,7 +571,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
             <thead>
               <tr className="border-b border-forest/10">
                 {["Size", "Chest (cm)", "Length (cm)", "Shoulder (cm)"].map((h) => (
-                  <th key={h} className="text-left pb-2.5 pr-3 text-[10px] tracking-widest uppercase text-forest/35 font-normal whitespace-nowrap">
+                  <th key={h} className="text-left pb-2.5 pr-3 text-[10px] tracking-widest uppercase text-forest/70 font-medium whitespace-nowrap">
                     {h}
                   </th>
                 ))}
@@ -590,9 +590,11 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
           </table>
         </div>
 
-        <p className="text-xs text-forest/35 mt-5 leading-relaxed">
-          All measurements are in centimetres. Measure over light clothing for the most accurate fit.
-        </p>
+        <div className="glass-card mt-5 px-4 py-3">
+          <p className="text-xs text-forest/70 leading-relaxed">
+            Prefer a relaxed, oversized fit? We recommend purchasing one size up from your usual size.
+          </p>
+        </div>
       </div>
     </div>
   );
