@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
-export const metadata: Metadata = { title: "Terms & Conditions" };
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  description:
+    "Terms and conditions for using fallowkind.com — using the site, products and pricing, orders, intellectual property, and limitation of liability.",
+  alternates: { canonical: "/terms" },
+  robots: { index: true, follow: true },
+};
 
 const sections = [
   {

@@ -2,7 +2,17 @@ import type { Metadata } from "next";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import FaqItem from "./FaqItem";
 
-export const metadata: Metadata = { title: "FAQ" };
+export const metadata: Metadata = {
+  title: "FAQ",
+  description:
+    "Answers to common questions about Fallowkind — fabrics, sizing, care, shipping, and returns. Everything you need to know before ordering.",
+  alternates: { canonical: "/faq" },
+  openGraph: {
+    title: "FAQ | Fallowkind",
+    description: "Common questions about fabrics, sizing, shipping, and returns.",
+    url: "/faq",
+  },
+};
 
 const faqs = [
   {

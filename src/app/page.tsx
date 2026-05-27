@@ -58,6 +58,33 @@ const testimonials = [
   },
 ];
 
+const SITE_URL = "https://fallowkind.com";
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Fallowkind",
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo with background.png`,
+  email: "fallowkind@gmail.com",
+  sameAs: [
+    "https://www.instagram.com/fallowkind",
+    "https://www.tiktok.com/@fallowkind",
+  ],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Fallowkind",
+  url: SITE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/shop?q={search_term_string}` },
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default async function HomePage() {
   const [products, settings] = await Promise.all([
     getAllProducts(),
@@ -72,6 +99,14 @@ export default async function HomePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
       {/* ── Hero ── */}
       <section className="relative -mt-20 h-screen min-h-[600px] sm:min-h-[680px] overflow-hidden bg-forest">
         <div className="absolute inset-0">

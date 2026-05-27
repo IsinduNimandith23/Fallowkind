@@ -1,7 +1,17 @@
 import type { Metadata } from "next";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
-export const metadata: Metadata = { title: "Shipping" };
+export const metadata: Metadata = {
+  title: "Shipping",
+  description:
+    "Fallowkind shipping information — processing times, delivery windows, and order tracking. Orders ship within 2–3 business days in recyclable packaging.",
+  alternates: { canonical: "/shipping" },
+  openGraph: {
+    title: "Shipping | Fallowkind",
+    description: "Processing times, delivery windows, and order tracking.",
+    url: "/shipping",
+  },
+};
 
 const details = [
   {

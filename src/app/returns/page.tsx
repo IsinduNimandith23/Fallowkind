@@ -1,7 +1,17 @@
 import type { Metadata } from "next";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
-export const metadata: Metadata = { title: "Return Policy" };
+export const metadata: Metadata = {
+  title: "Return Policy",
+  description:
+    "Fallowkind return policy — submit returns within 7 days of delivery for eligible items. Read the full policy, eligibility, and how to start a return.",
+  alternates: { canonical: "/returns" },
+  openGraph: {
+    title: "Return Policy | Fallowkind",
+    description: "Returns within 7 days of delivery. Read the full policy and start a return.",
+    url: "/returns",
+  },
+};
 
 const eligible = [
   "Items must be in their original, unwashed condition.",

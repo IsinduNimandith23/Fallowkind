@@ -2,7 +2,17 @@ import type { Metadata } from "next";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import ContactForm from "@/components/ContactForm";
 
-export const metadata: Metadata = { title: "Contact" };
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Get in touch with the Fallowkind team — questions about orders, wholesale enquiries, or anything else. We reply within a business day.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Contact | Fallowkind",
+    description: "Questions about an order or wholesale enquiry? We reply within a business day.",
+    url: "/contact",
+  },
+};
 
 export default function ContactPage() {
   return (

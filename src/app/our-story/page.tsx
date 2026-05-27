@@ -3,7 +3,19 @@ import Image from "next/image";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { getSiteSettings } from "@/lib/siteSettings";
 
-export const metadata: Metadata = { title: "Our Story" };
+export const metadata: Metadata = {
+  title: "Our Story",
+  description:
+    "Why Fallowkind chooses natural fibres over synthetics. Our vision for slow fashion, ethical production, and clothing that's kinder to your skin and the planet.",
+  alternates: { canonical: "/our-story" },
+  openGraph: {
+    title: "Our Story | Fallowkind",
+    description:
+      "Why Fallowkind chooses natural fibres over synthetics — our vision for slow, conscious fashion.",
+    url: "/our-story",
+    type: "article",
+  },
+};
 export const revalidate = 0;
 
 export default async function OurStoryPage() {

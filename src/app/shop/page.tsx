@@ -3,7 +3,19 @@ import { getAllProducts } from "@/lib/products";
 import { getSiteSettings } from "@/lib/siteSettings";
 import ShopGrid from "./ShopGrid";
 
-export const metadata: Metadata = { title: "Shop" };
+export const metadata: Metadata = {
+  title: "Shop",
+  description:
+    "Shop the Fallowkind collection — clothing made from 100% natural fibres like organic cotton, linen and hemp. Slow-made, plastic-free, designed for everyday wear.",
+  alternates: { canonical: "/shop" },
+  openGraph: {
+    title: "Shop | Fallowkind",
+    description:
+      "Slow-fashion essentials in 100% natural fibres. Browse our latest pieces — cotton, linen and hemp, made to last.",
+    url: "/shop",
+    type: "website",
+  },
+};
 export const revalidate = 3600;
 
 export default async function ShopPage() {

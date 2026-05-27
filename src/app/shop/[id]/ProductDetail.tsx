@@ -35,6 +35,19 @@ export default function ProductDetail({ product, allProducts }: Props) {
   const selectedSizeOutOfStock = !!selectedSize && !product.sizes.includes(selectedSize);
   const purchaseDisabled = selectedSizeOutOfStock;
 
+  const scalePrice = (display: string, unitValue: number) =>
+    display.replace(/\d[\d,]*/, String(unitValue * qty));
+
+  const displayedPrice = scalePrice(product.price, product.priceValue);
+  const displayedOriginalPrice = (() => {
+    if (!product.originalPrice) return undefined;
+    const match = product.originalPrice.match(/\d[\d,]*/);
+    if (!match) return product.originalPrice;
+    const unit = parseInt(match[0].replace(/,/g, ""), 10);
+    if (Number.isNaN(unit)) return product.originalPrice;
+    return product.originalPrice.replace(/\d[\d,]*/, String(unit * qty));
+  })();
+
   function addCurrentSelection() {
     addItem(
       {
@@ -204,9 +217,9 @@ export default function ProductDetail({ product, allProducts }: Props) {
 
           {/* Price */}
           <div className="flex items-baseline gap-3 mb-6">
-            <span className="text-2xl font-semibold text-forest">{product.price}</span>
-            {product.originalPrice && (
-              <span className="text-sm text-forest/35 line-through">{product.originalPrice}</span>
+            <span className="text-2xl font-semibold text-forest">{displayedPrice}</span>
+            {displayedOriginalPrice && (
+              <span className="text-sm text-forest/35 line-through">{displayedOriginalPrice}</span>
             )}
           </div>
 

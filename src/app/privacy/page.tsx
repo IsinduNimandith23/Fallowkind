@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
-export const metadata: Metadata = { title: "Privacy Policy" };
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "How Fallowkind collects, uses, and protects your personal information. Read our privacy policy covering data, cookies, sharing, and your rights.",
+  alternates: { canonical: "/privacy" },
+  robots: { index: true, follow: true },
+};
 
 const sections = [
   {
