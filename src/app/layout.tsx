@@ -26,7 +26,7 @@ const SITE_DESCRIPTION =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Fallowkind — Natural Fibre, Slow Fashion Clothing", template: "%s | Fallowkind" },
+  title: { default: "Fallowkind | Natural Fibre, Slow Fashion Clothing", template: "%s | Fallowkind" },
   description: SITE_DESCRIPTION,
   keywords: [
     "Fallowkind",
@@ -43,14 +43,14 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: "Fallowkind",
-    title: "Fallowkind — Natural Fibre, Slow Fashion Clothing",
+    title: "Fallowkind | Natural Fibre, Slow Fashion Clothing",
     description: SITE_DESCRIPTION,
     locale: "en_US",
     images: [{ url: "/logo with background.png", width: 1200, height: 630, alt: "Fallowkind" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fallowkind — Natural Fibre, Slow Fashion Clothing",
+    title: "Fallowkind | Natural Fibre, Slow Fashion Clothing",
     description: SITE_DESCRIPTION,
     images: ["/logo with background.png"],
   },
@@ -59,7 +59,8 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
   },
-  icons: { icon: "/favicon.ico" },
+  // Icons are auto-detected from src/app/favicon.ico and src/app/icon.png
+  // (file-based metadata). Do not set `icons` here or it overrides them.
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
