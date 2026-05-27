@@ -106,15 +106,22 @@ export default async function OrdersPage({
                 </tr>
               </thead>
               <tbody>
-                {rows.map((order) => (
-                  <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                {rows.map((order) => {
+                  const isDelivered = order.order_status === "delivered";
+                  return (
+                  <tr
+                    key={order.id}
+                    className={`border-b border-gray-50 transition-colors ${
+                      isDelivered ? "bg-gray-50/70 text-gray-400 hover:bg-gray-100" : "hover:bg-gray-50"
+                    }`}
+                  >
                     <td className="px-4 md:px-6 py-3.5">
-                      <Link href={`/admin/orders/${order.id}`} className="font-medium text-forest hover:underline">
+                      <Link href={`/admin/orders/${order.id}`} className={`font-medium hover:underline ${isDelivered ? "text-forest/60" : "text-forest"}`}>
                         {order.order_number}
                       </Link>
                     </td>
                     <td className="px-4 md:px-6 py-3.5">
-                      <p className="text-gray-800 font-medium">{order.customer_name}</p>
+                      <p className={`font-medium ${isDelivered ? "text-gray-400" : "text-gray-800"}`}>{order.customer_name}</p>
                       <p className="text-gray-400 text-xs">{order.customer_email}</p>
                     </td>
                     <td className="px-4 md:px-6 py-3.5 text-gray-500">
@@ -123,7 +130,7 @@ export default async function OrdersPage({
                         {new Date(order.created_at).toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </td>
-                    <td className="px-4 md:px-6 py-3.5 font-medium text-gray-800">
+                    <td className={`px-4 md:px-6 py-3.5 font-medium ${isDelivered ? "text-gray-400" : "text-gray-800"}`}>
                       Rs. {Number(order.total).toLocaleString("en-LK")}
                     </td>
                     <td className="px-4 md:px-6 py-3.5">
@@ -142,7 +149,8 @@ export default async function OrdersPage({
                       </Link>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           )}
