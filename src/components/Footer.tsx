@@ -46,10 +46,10 @@ export default function Footer() {
               alt="Fallowkind"
               width={300}
               height={300}
-              className="w-44 h-32 sm:w-56 sm:h-56 object-contain -ml-3 sm:-ml-6 -mt-10 sm:-mt-[6.5rem] -mb-4 sm:-mb-12 brightness-0 invert"
+              className="w-48 h-48 sm:w-56 sm:h-56 object-contain -ml-6 sm:-ml-6 -mt-[5.5rem] sm:-mt-[6.5rem] -mb-[4.75rem] sm:-mb-[5.5rem] brightness-0 invert"
             />
             <p className="text-linen/60 text-sm leading-relaxed max-w-xs">
-              Clothing rooted in the land. Made for those who believe the future is conscious.
+              Kind to your skin, Kinder to the Earth
             </p>
             <div className="flex gap-3 pt-1">
               <a

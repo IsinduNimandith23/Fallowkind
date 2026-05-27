@@ -215,7 +215,7 @@ export default async function OurStoryPage() {
           <div className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
           <div className="relative page-container text-center max-w-3xl mx-auto">
             <p className="text-2xl sm:text-4xl md:text-5xl text-forest font-serif italic leading-snug normal-case tracking-normal">
-              &ldquo;The future is conscious - and it starts with what we wear.&rdquo;
+              &ldquo;Nature made it better. We simply turned it into clothing&rdquo;
             </p>
             <p className="mt-6 text-xs tracking-[0.3em] uppercase text-moss">- Fallowkind</p>
           </div>
