@@ -25,7 +25,7 @@ export default function ContactPage() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl mb-8">Say hello.</h1>
           <p className="text-forest/75 leading-relaxed max-w-md">
             Questions about an order, wholesale enquiries, or just want to talk about
-            regenerative living — we&apos;re here for it.
+            regenerative living - we&apos;re here for it.
           </p>
         </AnimateOnScroll>
 

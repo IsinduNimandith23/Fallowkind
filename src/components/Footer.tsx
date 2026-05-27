@@ -49,7 +49,9 @@ export default function Footer() {
               className="w-48 h-48 sm:w-56 sm:h-56 object-contain -ml-6 sm:-ml-6 -mt-[5.5rem] sm:-mt-[6.5rem] -mb-[4.75rem] sm:-mb-[5.5rem] brightness-0 invert"
             />
             <p className="text-linen/60 text-sm leading-relaxed max-w-xs">
-              Kind to your skin, Kinder to the Earth
+              Kind to your skin,
+              <br />
+              Kinder to the Earth
             </p>
             <div className="flex gap-3 pt-1">
               <a
