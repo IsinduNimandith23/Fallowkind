@@ -46,12 +46,12 @@ export default function ContactPage() {
               href="https://www.instagram.com/fallowkind"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full bg-forest px-0.5 py-1.5 hover:bg-forest/90 transition-colors duration-200"
+              className="group inline-flex items-center justify-center rounded-full bg-forest px-0.5 py-1.5 transition-all duration-300 hover:bg-sage hover:shadow-md hover:scale-x-105"
             >
               <span
                 aria-label="Instagram"
                 role="img"
-                className="block h-12 w-44 bg-fern"
+                className="block h-12 w-44 bg-fern transition-transform duration-300 group-hover:scale-x-110"
                 style={{
                   WebkitMaskImage: "url('/ig.webp')",
                   maskImage: "url('/ig.webp')",
