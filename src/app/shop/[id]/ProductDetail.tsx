@@ -532,66 +532,41 @@ export default function ProductDetail({ product, allProducts }: Props) {
 }
 
 function SizeGuideModal({ onClose }: { onClose: () => void }) {
-  const rows = [
-    { size: "S",  chest: "86–91",   length: "68", shoulder: "41" },
-    { size: "M",  chest: "96–101",  length: "70", shoulder: "43" },
-    { size: "L",  chest: "106–111", length: "72", shoulder: "45" },
-    { size: "XL", chest: "116–121", length: "74", shoulder: "47" },
-  ];
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-forest/40 backdrop-blur-md p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="glass-panel max-w-md w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto my-auto"
+        className="glass-panel max-w-xl w-full p-4 sm:p-5 relative max-h-[92vh] overflow-y-auto my-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/40 backdrop-blur-md border border-white/55 flex items-center justify-center text-forest/55 hover:text-forest hover:bg-white/60 transition-colors duration-200"
-          aria-label="Close size guide"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        <p className="text-[10px] tracking-[0.3em] uppercase text-forest font-semibold mb-2">Fit</p>
-        <h2 className="font-display text-2xl text-forest mb-6">Size Guide</h2>
-
-        {/* Image placeholder — replace src with actual chart image when ready */}
-        <div className="glass-card aspect-video flex items-center justify-center mb-6">
-          <p className="text-[10px] tracking-widest uppercase text-forest/30">Size chart image coming soon</p>
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-forest font-semibold">Fit</p>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-white/40 backdrop-blur-md border border-white/55 flex items-center justify-center text-forest/55 hover:text-forest hover:bg-white/60 transition-colors duration-200 shrink-0"
+            aria-label="Close size guide"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        <div className="overflow-x-auto -mx-1">
-          <table className="w-full text-sm min-w-[360px]">
-            <thead>
-              <tr className="border-b border-forest/10">
-                {["Size", "Chest (cm)", "Length (cm)", "Shoulder (cm)"].map((h) => (
-                  <th key={h} className="text-left pb-2.5 pr-3 text-[10px] tracking-widest uppercase text-forest/70 font-medium whitespace-nowrap">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.size} className="border-b border-forest/5">
-                  <td className="py-2.5 pr-3 font-semibold text-forest">{row.size}</td>
-                  <td className="py-2.5 pr-3 text-forest/65">{row.chest}</td>
-                  <td className="py-2.5 pr-3 text-forest/65">{row.length}</td>
-                  <td className="py-2.5 text-forest/65">{row.shoulder}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="glass-card relative w-full overflow-hidden mb-3">
+          <Image
+            src="/fallowkind-size_guide.png"
+            alt="Fallowkind size guide chart"
+            width={1200}
+            height={900}
+            sizes="(max-width: 640px) 92vw, 36rem"
+            className="w-full h-auto object-contain"
+          />
         </div>
 
-        <div className="glass-card mt-5 px-4 py-3">
-          <p className="text-xs text-forest/70 leading-relaxed">
+        <div className="glass-card px-3 py-2.5 sm:py-3">
+          <p className="text-[11px] font-bold text-forest/85 leading-relaxed text-center sm:whitespace-nowrap">
             Prefer a relaxed, oversized fit? We recommend purchasing one size up from your usual size.
           </p>
         </div>
