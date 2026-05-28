@@ -58,9 +58,9 @@ export default function ReturnsPage() {
       <section className="section-padding page-container max-w-3xl">
         <AnimateOnScroll className="mb-12">
           <p className="text-forest/75 leading-relaxed">
-            We get it, plans can change. That&apos;s why our refund policy is designed to
-            provide clear terms on our process for any eligible returns or
-            cancellations. Our priority is to ensure you&apos;re satisfied.
+            We understand that things change sometimes. Our refund policy keeps the
+            process simple and transparent for any eligible returns or cancellations.
+            We want every experience with us to feel smooth, fair, and reliable.
           </p>
           <p className="mt-5 text-forest/75 leading-relaxed">
             Return requests must be submitted within{" "}

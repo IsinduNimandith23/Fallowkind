@@ -24,7 +24,7 @@ export default function ContactPage() {
           <p className="text-xs tracking-[0.3em] uppercase text-moss mb-4">Get in touch</p>
           <h1 className="text-4xl md:text-5xl lg:text-6xl mb-8">Say hello.</h1>
           <p className="text-forest/75 leading-relaxed max-w-md">
-            Questions about an order, wholesale enquiries, or simply want to chat
+            Questions about an order or simply want to chat
             about regenerative living? We&apos;d love to hear from you.
           </p>
         </AnimateOnScroll>
@@ -34,8 +34,40 @@ export default function ContactPage() {
           <ContactForm />
         </AnimateOnScroll>
 
-        {/* Divider */}
-        <div className="my-16 border-t border-forest/15" />
+        {/* Or — Instagram */}
+        <AnimateOnScroll delay={150} className="mt-10">
+          <div className="flex items-center gap-4" aria-hidden="true">
+            <div className="flex-1 border-t border-forest/15" />
+            <span className="text-sm tracking-[0.3em] uppercase text-forest/70">or</span>
+            <div className="flex-1 border-t border-forest/15" />
+          </div>
+          <div className="mt-6 flex justify-center">
+            <a
+              href="https://www.instagram.com/fallowkind"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full bg-forest px-0.5 py-1.5 hover:bg-forest/90 transition-colors duration-200"
+            >
+              <span
+                aria-label="Instagram"
+                role="img"
+                className="block h-12 w-44 bg-fern"
+                style={{
+                  WebkitMaskImage: "url('/ig.webp')",
+                  maskImage: "url('/ig.webp')",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
+                }}
+              />
+            </a>
+          </div>
+        </AnimateOnScroll>
+
+        <div className="mt-16" />
 
         {/* Contact info */}
         <AnimateOnScroll>
@@ -52,7 +84,7 @@ export default function ContactPage() {
               </a>
             </div>
 
-            <div>
+            <div className="sm:justify-self-end">
               <p className="text-[10px] tracking-widest uppercase text-forest/75 mb-3">Response time</p>
               <p className="text-forest/85">We reply within a business day</p>
             </div>
