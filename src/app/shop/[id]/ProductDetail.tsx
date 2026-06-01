@@ -409,6 +409,9 @@ export default function ProductDetail({ product, allProducts }: Props) {
                     <span className="text-forest/65">{value}</span>
                   </div>
                 ))}
+                <p className="pt-2 text-xs text-forest/45 leading-relaxed italic">
+                  Note: Slight color variations may occur due to lighting, photography, and screen display settings. The actual product color may differ slightly from the images shown on the website.
+                </p>
               </div>
             )}
           </div>
