@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function ProductDetail({ product, allProducts }: Props) {
-  const productImages = [product.imageUrl2, product.imageUrl].filter(
+  const productImages = [product.imageUrl, product.imageUrl2].filter(
     (u): u is string => Boolean(u)
   );
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
