@@ -69,6 +69,7 @@ const organizationJsonLd = {
   email: "fallowkind@gmail.com",
   sameAs: [
     "https://www.instagram.com/fallowkind",
+    "https://www.facebook.com/share/1JDmSAPmjp/?mibextid=wwXIfr",
     "https://www.tiktok.com/@fallowkind",
   ],
 };

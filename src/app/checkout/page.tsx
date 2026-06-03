@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import { clearPendingCoupon, getPendingCoupon } from "@/lib/pendingCoupon";
 
-const SHIPPING = 400;
+const SHIPPING = 450;
 const SAVED_INFO_KEY = "fallowkind_saved_checkout_info";
 
 const BANK_DETAILS = {

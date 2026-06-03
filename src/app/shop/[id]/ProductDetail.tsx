@@ -465,7 +465,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
                 <div>
                   <p className="text-forest mb-2">Shipping</p>
                   <ul className="space-y-2 list-disc pl-5 marker:text-forest/30">
-                    <li>Standard shipping: Rs. 400</li>
+                    <li>Standard shipping: Rs. 450</li>
                     <li>All orders ship within 1–5 business days</li>
                     <li>Island-wide delivery available</li>
                   </ul>
