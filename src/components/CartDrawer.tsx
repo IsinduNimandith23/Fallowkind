@@ -142,7 +142,7 @@ function CartLineItem({
   onUpdateQty: (qty: number) => void;
 }) {
   const lineTotal = item.priceValue * item.quantity;
-  const displayImage = item.imageUrl2 ?? item.imageUrl;
+  const displayImage = item.imageUrl ?? item.imageUrl2;
 
   return (
     <li className="flex gap-4">

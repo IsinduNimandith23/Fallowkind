@@ -552,7 +552,7 @@ export default function CheckoutPage() {
 
             <ul className="space-y-4 mb-6">
               {items.map((item) => {
-                const summaryImage = item.imageUrl2 ?? item.imageUrl;
+                const summaryImage = item.imageUrl ?? item.imageUrl2;
                 return (
                 <li
                   key={`${item.productId}-${item.color}-${item.size}`}
