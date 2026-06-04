@@ -469,6 +469,14 @@ export default function ProductDetail({ product, allProducts }: Props) {
                     <li>All orders ship within 1–5 business days</li>
                     <li>Island-wide delivery available</li>
                   </ul>
+                  <p className="mt-3 text-[13px] leading-relaxed text-forest/55">
+                    Our standard delivery fee is usually Rs. 400. Due to recent increases in
+                    fuel-related transport costs, our courier partner has temporarily applied
+                    a 15% surcharge on deliveries.
+                  </p>
+                  <p className="mt-2 text-[13px] leading-relaxed text-forest/55">
+                    Thank you for your understanding and support.
+                  </p>
                 </div>
                 <div>
                   <p className="text-forest mb-2">Returns</p>

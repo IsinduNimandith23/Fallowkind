@@ -85,8 +85,10 @@ export default function ShippingPage() {
             <p className="text-forest/75 leading-relaxed">
               Our standard delivery fee is usually Rs. 400. Due to recent increases in
               fuel-related transport costs, our courier partner has temporarily applied a
-              15% surcharge on deliveries, bringing the current fee to Rs. 460. Thank you
-              for your understanding and support.
+              15% surcharge on deliveries.
+            </p>
+            <p className="text-forest/75 leading-relaxed mt-3">
+              Thank you for your understanding and support.
             </p>
           </div>
         </AnimateOnScroll>
