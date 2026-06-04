@@ -6,7 +6,7 @@ import {
   type EmailAttachment,
 } from "@/lib/email";
 
-const SHIPPING_FEE = 450;
+const SHIPPING_FEE = 460;
 const VALID_METHODS = new Set(["cod", "bank_transfer"]);
 
 export async function POST(request: Request) {

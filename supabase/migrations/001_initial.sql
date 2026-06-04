@@ -104,7 +104,7 @@ END;
 $$;
 
 -- ─────────────────────────────────────────────────────────────────
--- Sample coupon — remove or change before going live
+-- Sample coupon - remove or change before going live
 -- ─────────────────────────────────────────────────────────────────
 INSERT INTO coupons (code, discount_type, discount_value, min_order_value, max_uses)
 VALUES ('WELCOME10', 'percentage', 10, 10000, 100)

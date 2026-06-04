@@ -4,7 +4,7 @@ import AnimateOnScroll from "@/components/AnimateOnScroll";
 export const metadata: Metadata = {
   title: "Shipping",
   description:
-    "Fallowkind shipping information — processing times, delivery windows, and order tracking. Orders ship within 2–3 business days in recyclable packaging.",
+    "Fallowkind shipping information - processing times, delivery windows, and order tracking. Orders ship within 2–3 business days in recyclable packaging.",
   alternates: { canonical: "/shipping" },
   openGraph: {
     title: "Shipping | Fallowkind",
@@ -77,7 +77,21 @@ export default function ShippingPage() {
           ))}
         </div>
 
-        <AnimateOnScroll delay={200} className="mt-14">
+        <AnimateOnScroll delay={160} className="mt-6">
+          <div className="border border-forest/15 rounded-2xl p-6 sm:p-8 md:p-10 bg-forest/[0.04]">
+            <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
+              Delivery fee
+            </p>
+            <p className="text-forest/75 leading-relaxed">
+              Our standard delivery fee is usually Rs. 400. Due to recent increases in
+              fuel-related transport costs, our courier partner has temporarily applied a
+              15% surcharge on deliveries, bringing the current fee to Rs. 460. Thank you
+              for your understanding and support.
+            </p>
+          </div>
+        </AnimateOnScroll>
+
+        <AnimateOnScroll delay={200} className="mt-6">
           <div className="border border-forest/15 rounded-2xl p-6 sm:p-8 md:p-10 bg-cream/40">
             <p className="text-[10px] tracking-widest uppercase text-moss mb-3">
               Lost or delayed?

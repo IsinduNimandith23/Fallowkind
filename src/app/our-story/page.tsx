@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Our Story | Fallowkind",
     description:
-      "Why Fallowkind chooses natural fibres over synthetics — our vision for slow, conscious fashion.",
+      "Why Fallowkind chooses natural fibres over synthetics - our vision for slow, conscious fashion.",
     url: "/our-story",
     type: "article",
   },

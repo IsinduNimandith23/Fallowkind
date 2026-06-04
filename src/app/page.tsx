@@ -118,7 +118,7 @@ export default async function HomePage() {
           >
             <source src={heroVideo} type="video/mp4" />
           </video>
-          {/* Subtle top/bottom darkening for legibility — no side tint */}
+          {/* Subtle top/bottom darkening for legibility - no side tint */}
           <div className="absolute inset-0 bg-gradient-to-t from-forest/70 via-transparent to-forest/25" />
           {/* Soft vignette */}
           <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_50%,transparent_45%,rgba(42,61,42,0.35)_100%)]" />
@@ -189,7 +189,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Scroll indicator — right edge, lifted above the welcome-popup FAB */}
+        {/* Scroll indicator - right edge, lifted above the welcome-popup FAB */}
         <div
           className="absolute right-6 lg:right-10 bottom-24 z-10 hidden sm:flex flex-col items-center gap-3 opacity-0 animate-fade-in"
           style={{ animationDelay: "1.3s", animationFillMode: "forwards" }}

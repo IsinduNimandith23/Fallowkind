@@ -286,7 +286,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
                     type="button"
                     onClick={() => { setSelectedSize(s); setSizeError(false); }}
                     title={available ? undefined : "Sold out"}
-                    aria-label={available ? s : `${s} — sold out`}
+                    aria-label={available ? s : `${s} - sold out`}
                     className={
                       available
                         ? `min-w-[44px] px-4 py-2 text-xs rounded-full backdrop-blur-md border transition-all duration-200 ${
@@ -437,7 +437,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
               <ul className="pb-5 space-y-2 text-sm text-forest/65 list-disc pl-5 marker:text-forest/30">
                 <li>Wash on gentle with like colors</li>
                 <li>Wash on cold</li>
-                <li>Hang dry only to avoid shrinking — do not place in the dryer</li>
+                <li>Hang dry only to avoid shrinking - do not place in the dryer</li>
                 <li>For best results, allow to dry in the sun</li>
               </ul>
             )}
@@ -465,7 +465,7 @@ export default function ProductDetail({ product, allProducts }: Props) {
                 <div>
                   <p className="text-forest mb-2">Shipping</p>
                   <ul className="space-y-2 list-disc pl-5 marker:text-forest/30">
-                    <li>Standard shipping: Rs. 450</li>
+                    <li>Standard shipping: Rs. 460</li>
                     <li>All orders ship within 1–5 business days</li>
                     <li>Island-wide delivery available</li>
                   </ul>

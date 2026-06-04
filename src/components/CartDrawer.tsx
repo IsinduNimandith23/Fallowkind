@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 
-const SHIPPING = 450;
+const SHIPPING = 460;
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQty, clearCart, subtotal, totalItems } = useCart();
@@ -97,7 +97,7 @@ export default function CartDrawer() {
           )}
         </div>
 
-        {/* Footer — only shown when cart has items */}
+        {/* Footer - only shown when cart has items */}
         {items.length > 0 && (
           <div className="border-t border-forest/10 px-6 pt-5 pb-6 space-y-3 bg-linen/40 backdrop-blur-xl">
             <div className="flex justify-between text-sm text-forest/60">

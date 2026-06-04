@@ -174,7 +174,7 @@ export default function AdminSidebar({ pendingCount }: Props) {
         />
       )}
 
-      {/* Sidebar — static on md+, slide-in drawer on mobile */}
+      {/* Sidebar - static on md+, slide-in drawer on mobile */}
       <aside
         className={`bg-forest flex flex-col z-[230] transition-transform duration-200 ease-out
           fixed inset-y-0 left-0 w-64 md:w-56 md:static md:translate-x-0 md:shrink-0 md:h-full

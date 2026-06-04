@@ -22,7 +22,7 @@ const playfair = Playfair_Display({
 
 const SITE_URL = "https://fallowkind.com";
 const SITE_DESCRIPTION =
-  "Fallowkind makes slow-fashion clothing from 100% natural fibres — cotton, linen, hemp. No polyester, no microplastics. Kind to your skin, kinder to the earth.";
+  "Fallowkind makes slow-fashion clothing from 100% natural fibres - cotton, linen, hemp. No polyester, no microplastics. Kind to your skin, kinder to the earth.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

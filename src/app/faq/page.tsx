@@ -5,7 +5,7 @@ import FaqItem from "./FaqItem";
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "Answers to common questions about Fallowkind — fabrics, sizing, care, shipping, and returns. Everything you need to know before ordering.",
+    "Answers to common questions about Fallowkind - fabrics, sizing, care, shipping, and returns. Everything you need to know before ordering.",
   alternates: { canonical: "/faq" },
   openGraph: {
     title: "FAQ | Fallowkind",

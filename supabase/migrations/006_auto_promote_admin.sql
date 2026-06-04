@@ -1,7 +1,7 @@
 -- Auto-promote every new auth.users row to admin.
 -- Email verification is left untouched so invited users must click the
 -- invitation link before they can sign in (which is what marks the email
--- confirmed). Safe only while this Supabase project is admin-only — if
+-- confirmed). Safe only while this Supabase project is admin-only - if
 -- customer accounts are ever added to auth.users, drop this trigger first.
 
 CREATE OR REPLACE FUNCTION public.auto_promote_admin()

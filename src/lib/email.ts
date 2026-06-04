@@ -285,7 +285,7 @@ export async function sendOrderProcessingEmail(params: {
   return resend.emails.send({
     from: FROM_ADDRESS,
     to: params.customer_email,
-    subject: `Your Fallowkind order is being processed — ${params.order_number}`,
+    subject: `Your Fallowkind order is being processed - ${params.order_number}`,
     html: baseLayout(processingContent(params.customer_name, params.order_number, params.tracking_number)),
   });
 }
@@ -294,7 +294,7 @@ export async function sendOrderConfirmationEmail(order: OrderEmailData) {
   return resend.emails.send({
     from: FROM_ADDRESS,
     to: order.customer_email,
-    subject: `Your Fallowkind order is confirmed — ${order.order_number}`,
+    subject: `Your Fallowkind order is confirmed - ${order.order_number}`,
     html: baseLayout(customerContent(order)),
   });
 }
@@ -333,7 +333,7 @@ export async function sendContactMessageEmail(params: {
     from: FROM_ADDRESS,
     to: process.env.CONTACT_EMAIL || process.env.OWNER_EMAIL!,
     replyTo: params.email,
-    subject: `Contact form — ${params.subject}`,
+    subject: `Contact form - ${params.subject}`,
     html: baseLayout(contactMessageContent(params)),
   });
 }
@@ -345,7 +345,7 @@ export async function sendOwnerNotificationEmail(
   return resend.emails.send({
     from: FROM_ADDRESS,
     to: process.env.OWNER_EMAIL!,
-    subject: `New order received — ${order.order_number}`,
+    subject: `New order received - ${order.order_number}`,
     html: baseLayout(ownerContent(order)),
     attachments: attachments?.map((a) => ({
       filename: a.filename,

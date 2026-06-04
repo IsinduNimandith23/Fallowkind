@@ -67,7 +67,7 @@ export default async function CouponsPage() {
                       <td className="px-4 md:px-6 py-3.5 text-gray-500">
                         {coupon.min_order_value > 0
                           ? `Rs. ${Number(coupon.min_order_value).toLocaleString("en-LK")}`
-                          : "—"}
+                          : "-"}
                       </td>
                       <td className="px-4 md:px-6 py-3.5 text-gray-500">
                         {coupon.used_count}

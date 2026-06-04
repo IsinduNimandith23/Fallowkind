@@ -73,7 +73,7 @@ export default async function ProductsPage() {
                           {p.tag === "Sale" ? "Offer" : p.tag}
                         </span>
                       ) : (
-                        <span className="text-gray-300">—</span>
+                        <span className="text-gray-300">-</span>
                       )}
                     </td>
                     <td className="px-4 md:px-6 py-3">

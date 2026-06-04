@@ -5,7 +5,7 @@ import ContactForm from "@/components/ContactForm";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Get in touch with the Fallowkind team — questions about orders, wholesale enquiries, or anything else. We reply within a business day.",
+    "Get in touch with the Fallowkind team - questions about orders, wholesale enquiries, or anything else. We reply within a business day.",
   alternates: { canonical: "/contact" },
   openGraph: {
     title: "Contact | Fallowkind",
@@ -34,7 +34,7 @@ export default function ContactPage() {
           <ContactForm />
         </AnimateOnScroll>
 
-        {/* Or — Instagram */}
+        {/* Or - Instagram */}
         <AnimateOnScroll delay={150} className="mt-10">
           <div className="flex items-center gap-4" aria-hidden="true">
             <div className="flex-1 border-t border-forest/15" />

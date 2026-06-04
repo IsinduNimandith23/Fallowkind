@@ -7,7 +7,7 @@ const clientOptions = {
 };
 
 // Singleton for all data queries (.from, .storage, .rpc, .auth.admin.*).
-// Never call signInWithPassword / refreshSession / verifyOtp on this —
+// Never call signInWithPassword / refreshSession / verifyOtp on this -
 // those leave the user's JWT in the client's in-memory session, which
 // flips subsequent .from() calls from service-role to that user's role
 // and trips RLS. Use createAuthClient() for session-creating auth calls.

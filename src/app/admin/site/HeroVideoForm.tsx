@@ -78,7 +78,7 @@ export default function HeroVideoForm({ currentUrl }: { currentUrl: string }) {
           )}
         </div>
         <div className="px-5 py-3 text-xs text-gray-500 break-all">
-          <span className="font-medium text-gray-700">URL: </span>{preview || "—"}
+          <span className="font-medium text-gray-700">URL: </span>{preview || "-"}
         </div>
       </div>
 

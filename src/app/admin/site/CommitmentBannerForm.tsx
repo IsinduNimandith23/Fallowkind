@@ -107,12 +107,12 @@ export default function CommitmentBannerForm({ currentUrl }: { currentUrl: strin
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-linen/70 text-sm">
-              No banner set — sage background will show on the homepage
+              No banner set - sage background will show on the homepage
             </div>
           )}
         </div>
         <div className="px-5 py-3 text-xs text-gray-500 break-all">
-          <span className="font-medium text-gray-700">URL: </span>{preview || "—"}
+          <span className="font-medium text-gray-700">URL: </span>{preview || "-"}
         </div>
       </div>
 

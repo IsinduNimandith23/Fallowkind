@@ -95,7 +95,7 @@ export default function StatusUpdater({
       )}
       {status === "processing" && !tracking.trim() && !error && (
         <p className="text-xs text-gray-400">
-          Enter a tracking number — the customer will be emailed with a tracking link once you save.
+          Enter a tracking number - the customer will be emailed with a tracking link once you save.
         </p>
       )}
     </div>

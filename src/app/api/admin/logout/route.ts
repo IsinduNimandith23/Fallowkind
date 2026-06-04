@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   const accessToken = request.cookies.get(ADMIN_ACCESS_COOKIE)?.value;
 
   if (accessToken) {
-    // Best-effort: revoke the session in Supabase. Ignore failures — we still
+    // Best-effort: revoke the session in Supabase. Ignore failures - we still
     // want to clear the cookies even if the token is already expired.
     await supabase.auth.admin.signOut(accessToken).catch(() => {});
   }

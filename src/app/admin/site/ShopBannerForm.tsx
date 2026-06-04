@@ -17,7 +17,7 @@ export default function ShopBannerForm({
         currentUrl={currentUrl}
         endpoint="/api/admin/settings/shop-banner"
         previewAspectClass="aspect-[24/7]"
-        uploadHint="Shown on screens ≥ 768px wide. Recommended ~24:7 — e.g. 3840 × 1120 px. JPG, PNG, WebP, or GIF. Max 10MB."
+        uploadHint="Shown on screens ≥ 768px wide. Recommended ~24:7 - e.g. 3840 × 1120 px. JPG, PNG, WebP, or GIF. Max 10MB."
         allowClear={false}
       />
       <BannerEditor
@@ -25,7 +25,7 @@ export default function ShopBannerForm({
         currentUrl={currentMobileUrl}
         endpoint="/api/admin/settings/shop-banner-mobile"
         previewAspectClass="aspect-[10/9]"
-        uploadHint="Shown on screens < 768px wide. Recommended ~10:9 to 1:1 — e.g. 1200 × 1080 px. Leave empty to use the desktop banner on phones too."
+        uploadHint="Shown on screens < 768px wide. Recommended ~10:9 to 1:1 - e.g. 1200 × 1080 px. Leave empty to use the desktop banner on phones too."
         allowClear={true}
       />
     </div>
@@ -159,7 +159,7 @@ function BannerEditor({
           )}
         </div>
         <div className="px-5 py-3 text-xs text-gray-500 break-all">
-          <span className="font-medium text-gray-700">URL: </span>{preview || "—"}
+          <span className="font-medium text-gray-700">URL: </span>{preview || "-"}
         </div>
       </div>
 

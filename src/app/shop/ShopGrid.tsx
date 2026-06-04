@@ -156,7 +156,7 @@ export default function ShopGrid({
 
   return (
     <>
-      {/* Hero banner — admin-managed image, extends under the navbar like the homepage hero.
+      {/* Hero banner - admin-managed image, extends under the navbar like the homepage hero.
           Separate mobile/desktop images so each fills its viewport without awkward cropping. */}
       <section className="relative -mt-20 h-[340px] sm:h-[460px] md:h-[560px] overflow-hidden bg-linen">
         {/* Mobile (< md) */}
@@ -183,7 +183,7 @@ export default function ShopGrid({
 
       <div className="page-container px-6 md:px-12 lg:px-20 py-10 md:py-14">
         <div className="md:grid md:grid-cols-[240px_1fr] md:gap-x-12 lg:gap-x-16">
-          {/* Sidebar — desktop */}
+          {/* Sidebar - desktop */}
           <aside className="hidden md:block">
             <div className="sticky top-28">
               <FilterSidebar

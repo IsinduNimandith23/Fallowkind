@@ -23,24 +23,24 @@ export default function OurStoryImagesForm({
         imageKey="beginning"
         currentUrl={beginningUrl}
         previewAspectClass="aspect-[4/5]"
-        uploadHint="Shown beside the 'We imagine a world where' list. Portrait orientation works best — recommended ~4:5 (e.g. 1200 × 1500 px). JPG, PNG, WebP, or GIF. Max 10MB."
+        uploadHint="Shown beside the 'We imagine a world where' list. Portrait orientation works best - recommended ~4:5 (e.g. 1200 × 1500 px). JPG, PNG, WebP, or GIF. Max 10MB."
       />
       <ImageEditor
-        title="Principle 1 — Pure Materials, Pure Living"
+        title="Principle 1 - Pure Materials, Pure Living"
         imageKey="principle1"
         currentUrl={principle1Url}
         previewAspectClass="aspect-[4/5]"
         uploadHint="First principle image in the 'What we stand for' section. Portrait ~4:5. JPG, PNG, WebP, or GIF. Max 10MB."
       />
       <ImageEditor
-        title="Principle 2 — Slow Fashion, Thoughtful Production"
+        title="Principle 2 - Slow Fashion, Thoughtful Production"
         imageKey="principle2"
         currentUrl={principle2Url}
         previewAspectClass="aspect-[4/5]"
         uploadHint="Second principle image. Portrait ~4:5. JPG, PNG, WebP, or GIF. Max 10MB."
       />
       <ImageEditor
-        title="Principle 3 — Cruelty-Free by Nature"
+        title="Principle 3 - Cruelty-Free by Nature"
         imageKey="principle3"
         currentUrl={principle3Url}
         previewAspectClass="aspect-[4/5]"
@@ -140,7 +140,7 @@ function ImageEditor({
           )}
         </div>
         <div className="px-5 py-3 text-xs text-gray-500 break-all">
-          <span className="font-medium text-gray-700">URL: </span>{preview || "—"}
+          <span className="font-medium text-gray-700">URL: </span>{preview || "-"}
         </div>
       </div>
 

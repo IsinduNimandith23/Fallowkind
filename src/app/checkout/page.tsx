@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import { clearPendingCoupon, getPendingCoupon } from "@/lib/pendingCoupon";
 
-const SHIPPING = 450;
+const SHIPPING = 460;
 const SAVED_INFO_KEY = "fallowkind_saved_checkout_info";
 
 const BANK_DETAILS = {
@@ -390,7 +390,7 @@ export default function CheckoutPage() {
                       {appliedCoupon.discountType === "percentage"
                         ? `${appliedCoupon.discountValue}% off`
                         : `Rs. ${appliedCoupon.discountValue.toLocaleString("en-LK")} off`}
-                      {" — "}
+                      {" - "}
                       saving Rs. {appliedCoupon.discountAmount.toLocaleString("en-LK")}
                     </p>
                   </div>
@@ -601,6 +601,10 @@ export default function CheckoutPage() {
                 />
               )}
               <SummaryRow label="Shipping" value={`Rs. ${SHIPPING.toLocaleString("en-LK")}`} />
+              <p className="text-[11px] leading-relaxed text-forest/55">
+                Includes a temporary 15% fuel surcharge applied by our courier. Standard
+                delivery is usually Rs. 400.
+              </p>
               <div className="border-t border-forest/10 pt-3 flex justify-between">
                 <span className="text-base font-semibold text-forest">Total</span>
                 <span className="text-base font-semibold text-forest">

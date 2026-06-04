@@ -110,7 +110,7 @@ export default function HeroTextForm({
             value={eyebrow}
             onChange={(e) => setEyebrow(e.target.value)}
             maxLength={120}
-            placeholder="e.g. Spring Sale — 20% off all jackets"
+            placeholder="e.g. Spring Sale - 20% off all jackets"
             className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
           />
           <p className="text-xs text-gray-400 mt-1.5">Leave blank to hide this line.</p>
@@ -119,7 +119,7 @@ export default function HeroTextForm({
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Heading — line 1
+              Heading - line 1
             </label>
             <input
               type="text"
@@ -132,7 +132,7 @@ export default function HeroTextForm({
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Heading — line 2
+              Heading - line 2
             </label>
             <input
               type="text"

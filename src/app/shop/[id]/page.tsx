@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) return { title: "Product" };
 
   const title = product.name;
-  const description = product.description?.trim().slice(0, 160) || `${product.name} — ${product.category} from Fallowkind.`;
+  const description = product.description?.trim().slice(0, 160) || `${product.name} - ${product.category} from Fallowkind.`;
   const canonical = `/shop/${product.id}`;
   const images = [product.imageUrl, product.imageUrl2].filter((u): u is string => Boolean(u));
 

@@ -200,7 +200,7 @@ export default function ProductForm({ mode, product }: Props) {
             >
               {TAG_OPTIONS.map((t) => (
                 <option key={t} value={t}>
-                  {t || "— None —"}
+                  {t || "- None -"}
                 </option>
               ))}
             </select>
@@ -329,7 +329,7 @@ export default function ProductForm({ mode, product }: Props) {
       {/* Sizes */}
       <Section
         title="Sizes"
-        subtitle="Ticked = in stock. Untick to mark a size as sold out — it still shows on the product page with a strikethrough. If all sizes are unticked the product is marked Out of Stock."
+        subtitle="Ticked = in stock. Untick to mark a size as sold out - it still shows on the product page with a strikethrough. If all sizes are unticked the product is marked Out of Stock."
       >
         <div className="flex gap-2 flex-wrap">
           {SIZE_OPTIONS.map((s) => {
@@ -339,7 +339,7 @@ export default function ProductForm({ mode, product }: Props) {
                 key={s}
                 type="button"
                 onClick={() => toggleSize(s)}
-                title={inStock ? "In stock — click to mark sold out" : "Sold out — click to mark in stock"}
+                title={inStock ? "In stock - click to mark sold out" : "Sold out - click to mark in stock"}
                 className={`min-w-[48px] px-4 py-2 text-xs font-semibold uppercase tracking-wider border-2 rounded transition-colors ${
                   inStock
                     ? "bg-forest text-linen border-forest"
@@ -386,7 +386,7 @@ export default function ProductForm({ mode, product }: Props) {
               type="text"
               value={fit}
               onChange={(e) => setFit(e.target.value)}
-              placeholder="Regular fit — true to size"
+              placeholder="Regular fit - true to size"
               className="input"
             />
           </Field>

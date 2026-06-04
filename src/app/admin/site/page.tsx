@@ -64,7 +64,7 @@ export default async function SiteSettingsPage() {
     {
       id: "our-story",
       label: "Our Story page",
-      description: "Photos shown on the /our-story page — the “Our beginning” image and the three principle images.",
+      description: "Photos shown on the /our-story page - the “Our beginning” image and the three principle images.",
       content: (
         <section>
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Story images</h2>
@@ -84,7 +84,7 @@ export default async function SiteSettingsPage() {
       <div className="mb-6 md:mb-8">
         <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Site</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Manage the storefront media — pick a page to edit its hero video, banners, and images.
+          Manage the storefront media - pick a page to edit its hero video, banners, and images.
         </p>
       </div>
 

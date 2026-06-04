@@ -40,7 +40,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     return DEFAULTS;
   }
 
-  // Mobile banner column was added in migration 011 — fetch it separately so an
+  // Mobile banner column was added in migration 011 - fetch it separately so an
   // un-migrated database doesn't break the whole settings response.
   let shopBannerMobileUrl = DEFAULTS.shopBannerMobileUrl;
   const mobile = await supabase
@@ -49,12 +49,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     .eq("id", 1)
     .maybeSingle();
   if (mobile.error) {
-    console.warn("[siteSettings] shop_banner_mobile_url not available — run migration 011:", mobile.error.message);
+    console.warn("[siteSettings] shop_banner_mobile_url not available - run migration 011:", mobile.error.message);
   } else if (mobile.data?.shop_banner_mobile_url) {
     shopBannerMobileUrl = mobile.data.shop_banner_mobile_url;
   }
 
-  // Our-story image columns were added in migration 012 — fetch separately so
+  // Our-story image columns were added in migration 012 - fetch separately so
   // an un-migrated database still returns the rest of the settings.
   let ourStoryBeginningUrl  = DEFAULTS.ourStoryBeginningUrl;
   let ourStoryPrinciple1Url = DEFAULTS.ourStoryPrinciple1Url;
@@ -66,7 +66,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     .eq("id", 1)
     .maybeSingle();
   if (story.error) {
-    console.warn("[siteSettings] our_story_*_url not available — run migration 012:", story.error.message);
+    console.warn("[siteSettings] our_story_*_url not available - run migration 012:", story.error.message);
   } else if (story.data) {
     if (story.data.our_story_beginning_url)  ourStoryBeginningUrl  = story.data.our_story_beginning_url;
     if (story.data.our_story_principle1_url) ourStoryPrinciple1Url = story.data.our_story_principle1_url;

@@ -69,7 +69,7 @@ export default function ContactForm() {
           {status === "sending" ? "Sending..." : "Send message"}
         </button>
         {status === "sent" && (
-          <p className="text-sm text-moss">Thanks — your message is on its way.</p>
+          <p className="text-sm text-moss">Thanks - your message is on its way.</p>
         )}
         {status === "error" && errorMsg && (
           <p className="text-sm text-red-700">{errorMsg}</p>

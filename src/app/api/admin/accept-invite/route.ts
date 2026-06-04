@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
   if (updateError) {
     return NextResponse.json(
-      { error: "Could not set password — try again" },
+      { error: "Could not set password - try again" },
       { status: 500 }
     );
   }
