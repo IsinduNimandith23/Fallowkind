@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import { clearPendingCoupon, getPendingCoupon } from "@/lib/pendingCoupon";
+import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 
 const SHIPPING = 460;
 const SAVED_INFO_KEY = "fallowkind_saved_checkout_info";
@@ -77,6 +78,22 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (items.length === 0 && !successOrder) router.replace("/shop");
   }, [items, router, successOrder]);
+
+  // Fire a Meta Pixel InitiateCheckout once, when the checkout loads with items.
+  const initiateTrackedRef = useRef(false);
+  useEffect(() => {
+    if (initiateTrackedRef.current || items.length === 0) return;
+    initiateTrackedRef.current = true;
+    trackInitiateCheckout({
+      contents: items.map((i) => ({
+        id: String(i.productId),
+        quantity: i.quantity,
+        item_price: i.priceValue,
+      })),
+      numItems: items.reduce((sum, i) => sum + i.quantity, 0),
+      value: subtotal,
+    });
+  }, [items, subtotal]);
 
   useEffect(() => {
     try {
@@ -224,6 +241,19 @@ export default function CheckoutPage() {
         number: data.orderNumber,
         method: paymentMethod,
       });
+
+      // Fire a Meta Pixel Purchase before the cart is cleared.
+      trackPurchase({
+        contents: items.map((i) => ({
+          id: String(i.productId),
+          quantity: i.quantity,
+          item_price: i.priceValue,
+        })),
+        numItems: items.reduce((sum, i) => sum + i.quantity, 0),
+        value: total,
+        orderId: data.orderId,
+      });
+
       clearCart();
       clearPendingCoupon();
 

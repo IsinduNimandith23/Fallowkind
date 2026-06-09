@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/products";
 import { SIZE_OPTIONS } from "@/lib/sizes";
 import { useCart } from "@/contexts/CartContext";
+import { trackViewContent, trackAddToCart } from "@/lib/metaPixel";
 
 type Props = {
   product: Product;
@@ -31,6 +32,16 @@ export default function ProductDetail({ product, allProducts }: Props) {
 
   const { addItem, openCart } = useCart();
   const router = useRouter();
+
+  // Fire a Meta Pixel ViewContent when a product page is viewed.
+  useEffect(() => {
+    trackViewContent({
+      id: product.id,
+      name: product.name,
+      category: product.category,
+      value: product.priceValue,
+    });
+  }, [product.id, product.name, product.category, product.priceValue]);
 
   const selectedSizeOutOfStock = !!selectedSize && !product.sizes.includes(selectedSize);
   const purchaseDisabled = selectedSizeOutOfStock;
@@ -64,6 +75,13 @@ export default function ProductDetail({ product, allProducts }: Props) {
       },
       qty
     );
+    trackAddToCart({
+      id: product.id,
+      name: product.name,
+      category: product.category,
+      quantity: qty,
+      value: product.priceValue * qty,
+    });
   }
 
   function handleAddToCart() {
