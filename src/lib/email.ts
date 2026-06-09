@@ -266,7 +266,7 @@ function processingContent(
     </p>
 
     <p style="color:#5a6a5a;font-size:14px;line-height:1.8;margin:0 0 16px">
-      We&rsquo;ll make sure your order reaches you as soon as possible. If you have any questions, feel free to reply to this email.
+      We&rsquo;ll make sure your order reaches you as soon as possible. If you have any questions, contact us through our website.
     </p>
     <p style="color:#5a6a5a;font-size:14px;line-height:1.8;margin:0 0 24px">
       Thank you once again for choosing Fallowkind.
