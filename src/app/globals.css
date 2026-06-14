@@ -115,7 +115,7 @@ body.drawer-open .welcome-fab { display: none; }
 
   /* Pill-style tag */
   .tag-pill {
-    @apply rounded-full px-3 py-1 text-[9px] tracking-widest uppercase
+    @apply rounded-full px-2 py-0.5 text-[8px] sm:px-3 sm:py-1 sm:text-[9px] tracking-widest uppercase
            bg-forest/85 backdrop-blur-md text-linen border border-linen/15 shadow-sm;
   }
 
