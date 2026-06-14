@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import type { SizeQuantities } from "./stock";
 
 const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 
@@ -36,6 +37,7 @@ export type Product = {
   colors: ProductColor[];
   sizes: string[];
   inStock: boolean;
+  sizeQuantities: SizeQuantities;
   imageUrl?: string;
   imageUrl2?: string;
   details: ProductDetails;
@@ -56,6 +58,7 @@ type ProductRow = {
   origin: string;
   colors: ProductColor[] | null;
   sizes: string[] | null;
+  size_quantities: SizeQuantities | null;
   image_url: string | null;
   image_url_2: string | null;
   sort_order: number;
@@ -74,6 +77,7 @@ function rowToProduct(row: ProductRow): Product {
     colors: row.colors ?? [],
     sizes: sortSizes(row.sizes ?? []),
     inStock: row.in_stock,
+    sizeQuantities: row.size_quantities ?? {},
     imageUrl: row.image_url ?? undefined,
     imageUrl2: row.image_url_2 ?? undefined,
     details: {

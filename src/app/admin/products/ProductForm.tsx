@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product, ProductColor } from "@/lib/products";
 import { SIZE_OPTIONS } from "@/lib/sizes";
+import { lowStockLabel, LOW_STOCK_THRESHOLD } from "@/lib/stock";
 
 const CATEGORY_OPTIONS = ["T-Shirts", "Graphic", "Heavyweight", "Oversized"];
 const TAG_OPTIONS = ["", "New", "Bestseller", "Offer", "Limited"];
@@ -46,6 +47,14 @@ export default function ProductForm({ mode, product }: Props) {
   const [sizes, setSizes] = useState<string[]>(
     product?.sizes ?? ["S", "M", "L", "XL"]
   );
+  const [sizeQty, setSizeQty] = useState<Record<string, string>>(() => {
+    const sq = product?.sizeQuantities ?? {};
+    const init: Record<string, string> = {};
+    for (const s of SIZE_OPTIONS) {
+      init[s] = sq[s] != null ? String(sq[s]) : "";
+    }
+    return init;
+  });
   const [imageUrl, setImageUrl] = useState(product?.imageUrl ?? "");
   const [imageUrl2, setImageUrl2] = useState(product?.imageUrl2 ?? "");
   const [uploadingImage1, setUploadingImage1] = useState(false);
@@ -115,6 +124,25 @@ export default function ProductForm({ mode, product }: Props) {
       .filter((c) => c.name.trim() && c.hex.trim())
       .map((c) => ({ name: c.name.trim(), hex: c.hex.trim() }));
 
+    // Build the in-stock size list and the per-size quantity map together.
+    // Blank quantity = in stock, untracked. 0 = sold out (drop from sizes).
+    const cleanSizes: string[] = [];
+    const size_quantities: Record<string, number> = {};
+    for (const s of SIZE_OPTIONS) {
+      if (!sizes.includes(s)) continue; // marked sold out via the toggle
+      const raw = (sizeQty[s] ?? "").trim();
+      if (raw === "") {
+        cleanSizes.push(s);
+        continue;
+      }
+      const n = Number(raw);
+      if (!Number.isFinite(n) || n < 0) return setError(`Quantity for ${s} must be 0 or more`);
+      const q = Math.floor(n);
+      if (q === 0) continue; // zero on hand = sold out
+      cleanSizes.push(s);
+      size_quantities[s] = q;
+    }
+
     if (!name.trim()) return setError("Name is required");
     if (!category.trim()) return setError("Category is required");
     if (!priceDisplay.trim()) return setError("Price (display) is required");
@@ -129,12 +157,13 @@ export default function ProductForm({ mode, product }: Props) {
       original_price: originalPrice.trim() || null,
       tag: tag.trim() || null,
       description: description.trim(),
-      in_stock: sizes.length > 0,
+      in_stock: cleanSizes.length > 0,
       material: material.trim(),
       fit: fit.trim(),
       origin: origin.trim(),
       colors: cleanColors,
-      sizes,
+      sizes: cleanSizes,
+      size_quantities,
       image_url: imageUrl.trim() || null,
       image_url_2: imageUrl2.trim() || null,
     };
@@ -326,40 +355,62 @@ export default function ProductForm({ mode, product }: Props) {
         </div>
       </Section>
 
-      {/* Sizes */}
+      {/* Sizes & stock */}
       <Section
-        title="Sizes"
-        subtitle="Ticked = in stock. Untick to mark a size as sold out - it still shows on the product page with a strikethrough. If all sizes are unticked the product is marked Out of Stock."
+        title="Sizes & stock"
+        subtitle={`Set a stock quantity per size. Blank = in stock, not counted. 0 (or untick) = sold out. When a size has ${LOW_STOCK_THRESHOLD} or fewer left the store shows an "Only X left" badge.`}
       >
-        <div className="flex gap-2 flex-wrap">
+        <div className="space-y-2.5">
           {SIZE_OPTIONS.map((s) => {
             const inStock = sizes.includes(s);
+            const raw = (sizeQty[s] ?? "").trim();
+            const n = raw === "" ? null : Number(raw);
+            const valid = n != null && Number.isFinite(n) && n >= 0;
+            const label = inStock && valid ? lowStockLabel(n) : null;
             return (
-              <button
-                key={s}
-                type="button"
-                onClick={() => toggleSize(s)}
-                title={inStock ? "In stock - click to mark sold out" : "Sold out - click to mark in stock"}
-                className={`min-w-[48px] px-4 py-2 text-xs font-semibold uppercase tracking-wider border-2 rounded transition-colors ${
-                  inStock
-                    ? "bg-forest text-linen border-forest"
-                    : "bg-red-50 text-red-700/70 border-red-200 line-through decoration-2 hover:border-red-300"
-                }`}
-              >
-                {s}
-              </button>
+              <div key={s} className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => toggleSize(s)}
+                  title={inStock ? "In stock - click to mark sold out" : "Sold out - click to mark in stock"}
+                  className={`min-w-[56px] px-4 py-2 text-xs font-semibold uppercase tracking-wider border-2 rounded transition-colors ${
+                    inStock
+                      ? "bg-forest text-linen border-forest"
+                      : "bg-red-50 text-red-700/70 border-red-200 line-through decoration-2 hover:border-red-300"
+                  }`}
+                >
+                  {s}
+                </button>
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={sizeQty[s] ?? ""}
+                  disabled={!inStock}
+                  onChange={(e) =>
+                    setSizeQty((prev) => ({ ...prev, [s]: e.target.value }))
+                  }
+                  placeholder={inStock ? "Qty (∞ if blank)" : "Sold out"}
+                  className="w-44 border border-gray-200 rounded px-3 py-2 text-sm bg-white text-gray-800 focus:outline-none focus:border-forest disabled:bg-gray-50 disabled:text-gray-300"
+                />
+                <span className="text-[11px] font-semibold uppercase tracking-wider">
+                  {!inStock ? (
+                    <span className="text-red-600">Sold out</span>
+                  ) : !valid ? (
+                    <span className="text-emerald-700">In stock</span>
+                  ) : n === 0 ? (
+                    <span className="text-red-600">Sold out</span>
+                  ) : label ? (
+                    <span className="text-amber-600">“{label}”</span>
+                  ) : (
+                    <span className="text-emerald-700">In stock</span>
+                  )}
+                </span>
+              </div>
             );
           })}
         </div>
         <div className="mt-4 flex items-center gap-4 flex-wrap text-[11px] text-gray-500">
-          <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-forest" />
-            In stock
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-red-50 border-2 border-red-200" />
-            Sold out
-          </span>
           <span className="ml-auto flex items-center gap-2 font-semibold uppercase tracking-wider">
             <span className={`w-2 h-2 rounded-full ${sizes.length > 0 ? "bg-emerald-500" : "bg-red-500"}`} />
             <span className={sizes.length > 0 ? "text-emerald-700" : "text-red-600"}>

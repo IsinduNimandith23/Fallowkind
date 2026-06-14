@@ -77,13 +77,23 @@ export default async function ProductsPage() {
                       )}
                     </td>
                     <td className="px-4 md:px-6 py-3">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                          p.inStock ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {p.inStock ? "In stock" : "Out of stock"}
-                      </span>
+                      <div className="flex flex-col gap-1 items-start">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            p.inStock ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {p.inStock ? "In stock" : "Out of stock"}
+                        </span>
+                        {p.sizes.some((s) => p.sizeQuantities[s] != null) && (
+                          <span className="text-[11px] text-gray-500">
+                            {p.sizes
+                              .filter((s) => p.sizeQuantities[s] != null)
+                              .map((s) => `${s}:${p.sizeQuantities[s]}`)
+                              .join("  ")}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 md:px-6 py-3">
                       <div className="flex items-center gap-3">

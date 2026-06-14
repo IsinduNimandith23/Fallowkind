@@ -17,7 +17,7 @@ export async function PATCH(request: Request, { params }: Params) {
     "name", "category", "price_display", "price_value",
     "original_price", "tag", "description", "in_stock",
     "material", "fit", "origin",
-    "colors", "sizes", "image_url", "image_url_2", "sort_order",
+    "colors", "sizes", "size_quantities", "image_url", "image_url_2", "sort_order",
   ];
   for (const f of fields) {
     if (f in body) allowed[f] = body[f];

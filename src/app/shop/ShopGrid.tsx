@@ -6,6 +6,7 @@ import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import type { Product } from "@/lib/products";
 import { SIZE_OPTIONS } from "@/lib/sizes";
+import { productLowStockLabel } from "@/lib/stock";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name-asc";
 
@@ -383,6 +384,11 @@ export default function ShopGrid({
                   {!p.inStock && (
                     <span className="absolute top-3 left-3 tag-pill z-10 !bg-red-700/85">
                       Sold Out
+                    </span>
+                  )}
+                  {p.inStock && productLowStockLabel(p.sizes, p.sizeQuantities) && (
+                    <span className="absolute top-3 right-3 tag-pill z-10 !bg-amber-600/90">
+                      {productLowStockLabel(p.sizes, p.sizeQuantities)}
                     </span>
                   )}
                   {p.inStock && (

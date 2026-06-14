@@ -16,6 +16,7 @@ type ProductPayload = {
   origin?: string;
   colors?: { name: string; hex: string }[];
   sizes?: string[];
+  size_quantities?: Record<string, number>;
   image_url?: string | null;
   image_url_2?: string | null;
   sort_order?: number;
@@ -56,6 +57,7 @@ export async function POST(request: Request) {
         origin: body.origin ?? "",
         colors: body.colors ?? [],
         sizes: body.sizes ?? ["S", "M", "L", "XL", "XXL"],
+        size_quantities: body.size_quantities ?? {},
         image_url: body.image_url || null,
         image_url_2: body.image_url_2 || null,
         sort_order: body.sort_order ?? 0,

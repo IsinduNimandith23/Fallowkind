@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/products";
 import { SIZE_OPTIONS } from "@/lib/sizes";
+import { lowStockLabel, productLowStockLabel } from "@/lib/stock";
 import { useCart } from "@/contexts/CartContext";
 import { trackViewContent, trackAddToCart } from "@/lib/metaPixel";
 
@@ -45,6 +46,11 @@ export default function ProductDetail({ product, allProducts }: Props) {
 
   const selectedSizeOutOfStock = !!selectedSize && !product.sizes.includes(selectedSize);
   const purchaseDisabled = selectedSizeOutOfStock;
+
+  // Low-stock urgency: per the selected size, or the product total before one is picked.
+  const lowStockText = selectedSize
+    ? lowStockLabel(product.sizeQuantities[selectedSize])
+    : productLowStockLabel(product.sizes, product.sizeQuantities);
 
   const scalePrice = (display: string, unitValue: number) =>
     display.replace(/\d[\d,]*/, String(unitValue * qty));
@@ -347,6 +353,11 @@ export default function ProductDetail({ product, allProducts }: Props) {
             >
               {product.inStock && !selectedSizeOutOfStock ? "In Stock" : "Out of Stock"}
             </span>
+            {product.inStock && !selectedSizeOutOfStock && lowStockText && (
+              <span className="ml-1 text-[11px] tracking-[0.18em] uppercase font-semibold text-amber-600">
+                · {lowStockText}
+              </span>
+            )}
           </div>
 
           {/* Qty */}
