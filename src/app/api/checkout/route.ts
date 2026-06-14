@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 import {
   sendOrderConfirmationEmail,
@@ -39,6 +40,59 @@ export async function POST(request: Request) {
       0
     );
     const total = subtotal - discountAmount + SHIPPING_FEE;
+
+    // ── Stock check & reservation ──────────────────────────────────
+    // Aggregate the requested quantity per (product, size) - the cart can
+    // hold the same size in different colours as separate lines.
+    type StockItem = { productId: number; name: string; size: string; quantity: number };
+    const required = new Map<
+      string,
+      { productId: number; size: string; name: string; qty: number }
+    >();
+    for (const i of items as StockItem[]) {
+      const key = `${i.productId}__${i.size}`;
+      const cur = required.get(key);
+      if (cur) cur.qty += i.quantity;
+      else required.set(key, { productId: i.productId, size: i.size, name: i.name, qty: i.quantity });
+    }
+
+    const productIds = [...new Set((items as StockItem[]).map((i) => i.productId))];
+    const { data: stockRows, error: stockErr } = await supabase
+      .from("products")
+      .select("id, size_quantities")
+      .in("id", productIds);
+    if (stockErr) {
+      console.error("Stock check error:", stockErr);
+      return NextResponse.json(
+        { error: "Could not verify stock. Please try again." },
+        { status: 500 }
+      );
+    }
+    const stockById = new Map<number, Record<string, number>>(
+      (stockRows ?? []).map((r) => [
+        r.id as number,
+        (r.size_quantities ?? {}) as Record<string, number>,
+      ])
+    );
+
+    // Reject if a tracked size doesn't have enough on hand. Untracked sizes
+    // (no number set) are treated as unlimited and skipped.
+    for (const { productId, size, name, qty } of required.values()) {
+      const available = stockById.get(productId)?.[size];
+      if (typeof available === "number" && available < qty) {
+        return NextResponse.json(
+          {
+            error:
+              available <= 0
+                ? `Sorry, "${name}" (size ${size}) just sold out. Please remove it from your cart.`
+                : `Sorry, only ${available} of "${name}" (size ${size}) ${
+                    available === 1 ? "is" : "are"
+                  } left. Please lower the quantity and try again.`,
+          },
+          { status: 409 }
+        );
+      }
+    }
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
@@ -85,6 +139,23 @@ export async function POST(request: Request) {
     }));
 
     await supabase.from("order_items").insert(orderItems);
+
+    // ── Decrement tracked stock now that the order is placed ──
+    // The DB function is a no-op for untracked sizes and clamps at 0,
+    // flipping a product to Sold Out when its last size runs out.
+    await Promise.all(
+      [...required.values()].map(({ productId, size, qty }) =>
+        supabase.rpc("decrement_product_stock", {
+          p_product_id: productId,
+          p_size: size,
+          p_qty: qty,
+        })
+      )
+    );
+    // Refresh the cached store pages so the new stock/sold-out state shows.
+    revalidatePath("/");
+    revalidatePath("/shop");
+    for (const id of productIds) revalidatePath(`/shop/${id}`);
 
     if (couponCode) {
       await supabase.rpc("increment_coupon_usage", { coupon_code: couponCode });
