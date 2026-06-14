@@ -52,6 +52,19 @@ export default function ProductDetail({ product, allProducts }: Props) {
     ? lowStockLabel(product.sizeQuantities[selectedSize])
     : productLowStockLabel(product.sizes, product.sizeQuantities);
 
+  // Cap the quantity stepper at the selected size's tracked stock. Untracked
+  // sizes (no number set) have no cap.
+  const selectedSizeStock = selectedSize ? product.sizeQuantities[selectedSize] : undefined;
+  const maxQty = typeof selectedSizeStock === "number" ? selectedSizeStock : Infinity;
+  const atMaxQty = qty >= maxQty;
+
+  // If the chosen size has fewer in stock than the current quantity, pull it down.
+  useEffect(() => {
+    if (typeof selectedSizeStock === "number" && selectedSizeStock >= 1) {
+      setQty((q) => Math.min(q, selectedSizeStock));
+    }
+  }, [selectedSizeStock]);
+
   const scalePrice = (display: string, unitValue: number) =>
     display.replace(/\d[\d,]*/, String(unitValue * qty));
 
@@ -373,12 +386,18 @@ export default function ProductDetail({ product, allProducts }: Props) {
                 {qty}
               </span>
               <button
-                onClick={() => setQty((q) => q + 1)}
-                className="pl-2 pr-4 py-2.5 text-forest hover:text-sage transition-colors duration-200 leading-none"
+                onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
+                disabled={atMaxQty}
+                className="pl-2 pr-4 py-2.5 text-forest hover:text-sage transition-colors duration-200 leading-none disabled:text-forest/25 disabled:hover:text-forest/25 disabled:cursor-not-allowed"
               >
                 +
               </button>
             </div>
+            {Number.isFinite(maxQty) && atMaxQty && (
+              <span className="ml-3 text-[11px] tracking-wide text-forest/45">
+                Max {maxQty} available
+              </span>
+            )}
           </div>
 
           {/* Add to Cart + Buy Now */}
