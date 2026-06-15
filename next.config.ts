@@ -26,8 +26,11 @@ const nextConfig: NextConfig = {
     remotePatterns: supabaseHostname
       ? [{ protocol: "https", hostname: supabaseHostname, pathname: "/storage/v1/object/**" }]
       : [],
-    formats: ["image/avif", "image/webp"],
+    formats: ["image/webp"],
     qualities: [75, 95],
+    minimumCacheTTL: 2678400,
+    deviceSizes: [640, 828, 1080, 1920, 2048],
+    imageSizes: [128, 256],
   },
   async headers() {
     return [
