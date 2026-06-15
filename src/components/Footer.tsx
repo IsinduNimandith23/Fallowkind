@@ -56,11 +56,12 @@ export default function Footer() {
           {/* Brand */}
           <div className="flex flex-col gap-4 sm:col-span-2 lg:col-span-1">
             <Image
-              src="/Untitled design.png"
+              src="/logo.webp"
               alt="Fallowkind"
               width={300}
               height={300}
               className="w-48 h-48 sm:w-56 sm:h-56 object-contain -ml-6 sm:-ml-6 -mt-[5.5rem] sm:-mt-[6.5rem] -mb-[4.75rem] sm:-mb-[5.5rem] brightness-0 invert"
+              unoptimized
             />
             <p className="text-linen/60 text-sm leading-relaxed max-w-xs">
               Kind to your skin,

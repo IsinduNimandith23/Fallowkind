@@ -41,7 +41,7 @@ export default function Navbar() {
             }`}
           />
           <Image
-            src="/Untitled design.png"
+            src="/logo.webp"
             alt="Fallowkind"
             width={520}
             height={520}

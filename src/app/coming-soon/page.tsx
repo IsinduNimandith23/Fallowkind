@@ -68,11 +68,12 @@ export default function ComingSoonPage() {
     >
       <main className="relative z-10 flex flex-col items-center text-center max-w-2xl">
         <Image
-          src="/Untitled design.png"
+          src="/logo.webp"
           alt="Fallowkind"
           width={640}
           height={640}
           priority
+          unoptimized
           className="w-[14rem] sm:w-[18rem] md:w-[26rem] h-20 sm:h-24 md:h-36 object-cover brightness-0 invert"
         />
 

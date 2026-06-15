@@ -86,12 +86,13 @@ export default function AdminSidebar({ pendingCount }: Props) {
       {/* Brand */}
       <div className="border-b border-white/10 flex flex-col items-center overflow-hidden">
         <Image
-          src="/Untitled design.png"
+          src="/logo.webp"
           alt="Fallowkind"
           width={500}
           height={500}
           className="w-72 h-72 object-contain brightness-0 invert -my-24"
           priority
+          unoptimized
         />
         <p className="text-fern/60 text-[10px] tracking-[0.3em] uppercase pb-3">Admin</p>
       </div>
