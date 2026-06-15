@@ -46,9 +46,9 @@ export default function Navbar() {
             width={520}
             height={520}
             sizes="(min-width: 768px) 240px, 208px"
-            quality={95}
             className="w-52 h-52 sm:w-52 sm:h-52 md:w-60 md:h-60 object-contain relative"
             priority
+            unoptimized
           />
         </Link>
 
