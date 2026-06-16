@@ -25,6 +25,7 @@ type Form = {
   lastName: string;
   email: string;
   phone: string;
+  phone2: string;
   address: string;
   city: string;
   postalCode: string;
@@ -51,7 +52,7 @@ type SuccessOrder = {
 };
 
 const INITIAL_FORM: Form = {
-  firstName: "", lastName: "", email: "", phone: "",
+  firstName: "", lastName: "", email: "", phone: "", phone2: "",
   address: "", city: "", postalCode: "", notes: "",
 };
 
@@ -148,6 +149,8 @@ export default function CheckoutPage() {
       next.email = "Enter a valid email address";
     if (!form.phone.trim() || form.phone.replace(/\D/g, "").length < 9)
       next.phone = "Enter a valid phone number";
+    if (form.phone2.trim() && form.phone2.replace(/\D/g, "").length < 9)
+      next.phone2 = "Enter a valid phone number";
     if (!form.address.trim()) next.address = "Required";
     if (!form.city.trim()) next.city = "Required";
     if (!form.postalCode.trim()) next.postalCode = "Required";
@@ -264,6 +267,7 @@ export default function CheckoutPage() {
             lastName: form.lastName,
             email: form.email,
             phone: form.phone,
+            phone2: form.phone2,
             address: form.address,
             city: form.city,
             postalCode: form.postalCode,
@@ -331,6 +335,15 @@ export default function CheckoutPage() {
                     value={form.phone}
                     onChange={(e) => setField("phone", e.target.value)}
                     className={inputCls(!!errors.phone)}
+                    placeholder="+94 7X XXX XXXX"
+                  />
+                </Field>
+                <Field label="Second phone number (optional)" error={errors.phone2}>
+                  <input
+                    type="tel"
+                    value={form.phone2}
+                    onChange={(e) => setField("phone2", e.target.value)}
+                    className={inputCls(!!errors.phone2)}
                     placeholder="+94 7X XXX XXXX"
                   />
                 </Field>

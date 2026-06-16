@@ -130,6 +130,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <p className="font-medium text-gray-800">{order.customer_name}</p>
               <p className="text-gray-500">{order.customer_email}</p>
               <p className="text-gray-500">{order.customer_phone}</p>
+              {order.customer_phone_2 && (
+                <p className="text-gray-500">{order.customer_phone_2}</p>
+              )}
             </div>
           </section>
 

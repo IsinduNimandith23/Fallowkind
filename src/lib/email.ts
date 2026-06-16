@@ -20,6 +20,7 @@ export type OrderEmailData = {
   customer_name: string;
   customer_email: string;
   customer_phone: string;
+  customer_phone_2?: string;
   address: string;
   city: string;
   postal_code: string;
@@ -174,7 +175,7 @@ function ownerContent(order: OrderEmailData): string {
       <div style="background:#F5F0E5;padding:18px">
         <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">Customer</p>
         <p style="color:#2A3D2A;font-size:14px;margin:0;line-height:1.9">
-          <strong>${esc(order.customer_name)}</strong><br>${esc(order.customer_email)}<br>${esc(order.customer_phone)}
+          <strong>${esc(order.customer_name)}</strong><br>${esc(order.customer_email)}<br>${esc(order.customer_phone)}${order.customer_phone_2 ? `<br>${esc(order.customer_phone_2)}` : ""}
         </p>
       </div>
       <div style="background:#F5F0E5;padding:18px">
