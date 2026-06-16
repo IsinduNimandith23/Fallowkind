@@ -23,14 +23,14 @@ const nextConfig: NextConfig = {
     middlewareClientMaxBodySize: "100mb",
   },
   images: {
+    // Vercel Image Optimization is disabled to stay within the Hobby plan's
+    // 5k/month transformation limit. Images are served as-is, so keep source
+    // files reasonably sized (see /public). Supabase product images are
+    // delivered directly without proxying.
+    unoptimized: true,
     remotePatterns: supabaseHostname
       ? [{ protocol: "https", hostname: supabaseHostname, pathname: "/storage/v1/object/**" }]
       : [],
-    formats: ["image/webp"],
-    qualities: [75, 95],
-    minimumCacheTTL: 2678400,
-    deviceSizes: [640, 828, 1080, 1920, 2048],
-    imageSizes: [128, 256],
   },
   async headers() {
     return [
