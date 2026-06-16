@@ -30,13 +30,13 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-0 inset-x-0 z-40">
-      <div className="relative flex items-center justify-between px-4 sm:px-12 md:px-32 h-20">
+      <div className="relative flex items-center justify-between px-4 sm:px-6 lg:px-10 xl:px-20 h-20">
 
         {/* Logo */}
         <Link href="/" className="relative flex items-center gap-2 z-10 -ml-6 sm:ml-0">
           <span
             aria-hidden
-            className={`absolute left-1/2 top-[calc(50%+2px)] -translate-x-1/2 -translate-y-1/2 w-44 h-10 sm:w-44 sm:h-10 md:w-52 md:h-10 rounded-full bg-white/35 backdrop-blur-md border border-white/60 shadow-md transition-opacity duration-300 ${
+            className={`absolute left-1/2 top-[calc(50%+2px)] -translate-x-1/2 -translate-y-1/2 w-40 h-10 sm:w-44 sm:h-10 lg:w-48 lg:h-10 rounded-full bg-white/35 backdrop-blur-md border border-white/60 shadow-md transition-opacity duration-300 ${
               scrolled ? "opacity-100" : "opacity-0"
             }`}
           />
@@ -45,15 +45,15 @@ export default function Navbar() {
             alt="Fallowkind"
             width={520}
             height={520}
-            sizes="(min-width: 768px) 240px, 208px"
-            className="w-52 h-52 sm:w-52 sm:h-52 md:w-60 md:h-60 object-contain relative"
+            sizes="(min-width: 1024px) 208px, 176px"
+            className="w-44 h-44 sm:w-48 sm:h-48 lg:w-52 lg:h-52 object-contain relative"
             priority
             unoptimized
           />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 bg-white/35 backdrop-blur-md border border-white/60 rounded-full px-2 py-1.5 shadow-md">
+        <nav className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 bg-white/35 backdrop-blur-md border border-white/60 rounded-full px-2 py-1.5 shadow-md">
           {links.map((l) => {
             const isActive = pathname === l.href;
             return (
@@ -73,7 +73,7 @@ export default function Navbar() {
         </nav>
 
         {/* Right icons */}
-        <div className="hidden md:flex items-center gap-4 text-forest">
+        <div className="hidden lg:flex items-center gap-4 text-forest">
           <button
             onClick={openCart}
             aria-label="Open cart"
@@ -94,7 +94,7 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className={`md:hidden text-forest relative z-10 w-11 h-11 flex flex-col items-center justify-center rounded-full transition-all duration-300 ${
+          className={`lg:hidden text-forest relative z-10 w-11 h-11 flex flex-col items-center justify-center rounded-full transition-all duration-300 ${
             scrolled || menuOpen
               ? "bg-white/35 backdrop-blur-md border border-white/60 shadow-md"
               : "bg-transparent border border-transparent"
@@ -116,7 +116,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div
-        className={`md:hidden overflow-hidden px-4 transition-[max-height] duration-500 ease-in-out ${
+        className={`lg:hidden overflow-hidden px-4 transition-[max-height] duration-500 ease-in-out ${
           menuOpen ? "max-h-96" : "max-h-0"
         }`}
       >
