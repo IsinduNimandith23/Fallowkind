@@ -30,9 +30,16 @@ export default function ProductDetail({ product, allProducts }: Props) {
   const [shippingOpen, setShippingOpen] = useState(false);
   const [sizeError, setSizeError] = useState(false);
   const [added, setAdded] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifyStatus, setNotifyStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [notifyError, setNotifyError] = useState("");
 
   const { addItem, openCart } = useCart();
   const router = useRouter();
+
+  // The whole product is unavailable when it's flagged out of stock or every
+  // size has sold out. We then swap the buy controls for a restock sign-up.
+  const allSoldOut = !product.inStock || product.sizes.length === 0;
 
   // Fire a Meta Pixel ViewContent when a product page is viewed.
   useEffect(() => {
@@ -125,6 +132,32 @@ export default function ProductDetail({ product, allProducts }: Props) {
     if (purchaseDisabled) return;
     addCurrentSelection();
     router.push("/checkout");
+  }
+
+  async function handleNotifySubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const email = notifyEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setNotifyError("Please enter a valid email address.");
+      return;
+    }
+    setNotifyStatus("loading");
+    setNotifyError("");
+    try {
+      const res = await fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product.id, email }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Something went wrong");
+      }
+      setNotifyStatus("done");
+    } catch (err) {
+      setNotifyStatus("error");
+      setNotifyError(err instanceof Error ? err.message : "Something went wrong");
+    }
   }
 
   const related = allProducts
@@ -373,6 +406,59 @@ export default function ProductDetail({ product, allProducts }: Props) {
             )}
           </div>
 
+          {allSoldOut ? (
+            /* ── Restock notify sign-up (shown when the product is fully sold out) ── */
+            <div className="mb-8 rounded-3xl bg-white/35 backdrop-blur-md border border-white/55 shadow-sm p-5">
+              {notifyStatus === "done" ? (
+                <div className="flex items-start gap-3">
+                  <span className="mt-0.5 flex w-7 h-7 shrink-0 items-center justify-center rounded-full bg-moss/15 text-moss">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-forest">You&rsquo;re on the list</p>
+                    <p className="text-[13px] text-forest/60 leading-relaxed mt-0.5">
+                      We&rsquo;ll email you as soon as <span className="text-forest/80">{product.name}</span> is back in stock.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-forest">Notify me when available</p>
+                  <p className="text-[13px] text-forest/55 leading-relaxed mt-1 mb-4">
+                    This piece is sold out. Drop your email and we&rsquo;ll let you know the moment it&rsquo;s restocked.
+                  </p>
+                  <form onSubmit={handleNotifySubmit} className="flex flex-col sm:flex-row gap-3">
+                    <input
+                      type="email"
+                      value={notifyEmail}
+                      onChange={(e) => {
+                        setNotifyEmail(e.target.value);
+                        if (notifyStatus === "error") { setNotifyStatus("idle"); setNotifyError(""); }
+                      }}
+                      placeholder="you@email.com"
+                      autoComplete="email"
+                      aria-label="Email address"
+                      required
+                      className="flex-1 min-w-0 rounded-full bg-white/50 border border-white/60 px-5 py-2.5 text-sm text-forest placeholder:text-forest/35 outline-none focus:border-forest/40 focus:bg-white/70 transition-colors duration-200"
+                    />
+                    <button
+                      type="submit"
+                      disabled={notifyStatus === "loading"}
+                      className="btn-primary text-xs tracking-widest uppercase whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {notifyStatus === "loading" ? "Sending…" : "Notify Me"}
+                    </button>
+                  </form>
+                  {notifyError && (
+                    <p className="text-xs text-red-500/80 mt-2">{notifyError}</p>
+                  )}
+                </>
+              )}
+            </div>
+          ) : (
+          <>
           {/* Qty */}
           <div className="flex items-center mb-3">
             <div className="inline-flex items-center rounded-full bg-white/35 backdrop-blur-md border border-white/55 shadow-sm">
@@ -427,6 +513,8 @@ export default function ProductDetail({ product, allProducts }: Props) {
               Buy Now
             </button>
           </div>
+          </>
+          )}
 
           {/* Product details accordion */}
           <div className="border-t border-forest/15">

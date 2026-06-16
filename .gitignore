@@ -40,6 +40,9 @@ Thumbs.db
 # test coverage
 coverage
 
+# local email preview renders
+email-preview-*.html
+
 # Supabase local CLI state
 supabase/.temp/
 supabase/.branches/

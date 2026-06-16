@@ -338,6 +338,103 @@ export async function sendContactMessageEmail(params: {
   });
 }
 
+function restockRequestContent(params: {
+  product_name: string;
+  product_id: number;
+  email: string;
+}): string {
+  const productUrl = `https://fallowkind.com/shop/${params.product_id}`;
+  return `
+    <p style="color:#7A9070;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">Restock Request</p>
+    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 24px;font-weight:400">${esc(params.product_name)}</h2>
+
+    <p style="color:#5a6a5a;font-size:15px;line-height:1.8;margin:0 0 24px">
+      A shopper asked to be notified when this product is back in stock.
+    </p>
+
+    <div style="background:#F5F0E5;padding:18px;margin-bottom:24px">
+      <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">Notify</p>
+      <p style="color:#2A3D2A;font-size:14px;margin:0;line-height:1.9">${esc(params.email)}</p>
+    </div>
+
+    <p style="margin:0">
+      <a href="${esc(productUrl)}" style="color:#2A3D2A;font-size:14px;font-family:Arial,Helvetica,sans-serif;word-break:break-all">${esc(productUrl)}</a>
+    </p>`;
+}
+
+// ── Customer "back in stock" email ──────────────────────────────────
+// Sent to a shopper who signed up on a sold-out product once it is
+// restocked. Exported as a pure HTML builder so it can be previewed
+// without sending.
+function backInStockContent(params: {
+  product_name: string;
+  product_id: number;
+  image_url?: string;
+}): string {
+  const productUrl = `https://fallowkind.com/shop/${params.product_id}`;
+  const image = params.image_url
+    ? `<div style="text-align:center;margin:0 0 28px">
+         <img src="${esc(params.image_url)}" alt="${esc(params.product_name)}" width="240" style="width:240px;max-width:100%;height:auto;border-radius:12px;display:inline-block">
+       </div>`
+    : "";
+  return `
+    <p style="color:#7A9070;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">Back in Stock</p>
+    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 24px;font-weight:400">${esc(params.product_name)}</h2>
+
+    ${image}
+
+    <p style="color:#5a6a5a;font-size:15px;line-height:1.8;margin:0 0 16px">
+      Good news &mdash; the piece you were waiting for is available again.
+    </p>
+    <p style="color:#5a6a5a;font-size:15px;line-height:1.8;margin:0 0 28px">
+      Stock is limited, so we&rsquo;d grab it before it sells out once more.
+    </p>
+
+    <div style="text-align:center;margin:0 0 28px">
+      <a href="${esc(productUrl)}" style="display:inline-block;background:#2A3D2A;color:#F5F0E5;font-size:13px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:999px;font-family:Arial,Helvetica,sans-serif">Shop Now</a>
+    </div>
+
+    <p style="color:#5a6a5a;font-size:13px;line-height:1.8;margin:0;text-align:center">
+      Or visit <a href="${esc(productUrl)}" style="color:#2A3D2A;word-break:break-all">${esc(productUrl)}</a>
+    </p>`;
+}
+
+export function buildBackInStockEmailHtml(params: {
+  product_name: string;
+  product_id: number;
+  image_url?: string;
+}): string {
+  return baseLayout(backInStockContent(params));
+}
+
+export async function sendBackInStockEmail(params: {
+  product_name: string;
+  product_id: number;
+  to: string;
+  image_url?: string;
+}) {
+  return resend.emails.send({
+    from: FROM_ADDRESS,
+    to: params.to,
+    subject: `${params.product_name} is back in stock`,
+    html: buildBackInStockEmailHtml(params),
+  });
+}
+
+export async function sendRestockRequestEmail(params: {
+  product_name: string;
+  product_id: number;
+  email: string;
+}) {
+  return resend.emails.send({
+    from: FROM_ADDRESS,
+    to: process.env.CONTACT_EMAIL || process.env.OWNER_EMAIL!,
+    replyTo: params.email,
+    subject: `Restock request - ${params.product_name}`,
+    html: baseLayout(restockRequestContent(params)),
+  });
+}
+
 export async function sendOwnerNotificationEmail(
   order: OrderEmailData,
   attachments?: EmailAttachment[]
