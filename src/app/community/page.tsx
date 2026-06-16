@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
+import ReviewForm from "@/components/ReviewForm";
 
 export const metadata: Metadata = {
   title: "Community",
@@ -52,6 +52,46 @@ const feedbackWall = [
     rating: 5,
     quote:
       "Knowing there are no hidden plastics makes me feel good about every wear. Comfort without the compromise.",
+  },
+  {
+    image: "/Rooted in Land.jpg",
+    name: "Anjana F.",
+    location: "Kurunegala",
+    rating: 5,
+    quote:
+      "Easily the most comfortable tee in my wardrobe. Soft, breathable, and it holds up wash after wash.",
+  },
+  {
+    image: "/banner.png",
+    name: "Ruwan J.",
+    location: "Anuradhapura",
+    rating: 5,
+    quote:
+      "The quality genuinely surprised me. Feels premium, fits perfectly, and the colour hasn't faded at all.",
+  },
+  {
+    image: "/ModuraShop.jpg",
+    name: "Senuri A.",
+    location: "Batticaloa",
+    rating: 5,
+    quote:
+      "So light and airy in the heat. I keep reaching for it over everything else I own.",
+  },
+  {
+    image: "/Rooted in Land.jpg",
+    name: "Kasun L.",
+    location: "Gampaha",
+    rating: 5,
+    quote:
+      "Clean, minimal, and made to last. You can feel the care that went into every stitch.",
+  },
+  {
+    image: "/banner.png",
+    name: "Tharindi S.",
+    location: "Nuwara Eliya",
+    rating: 5,
+    quote:
+      "Sustainable and actually stylish - finally a brand that gets both right. Couldn't be happier.",
   },
 ];
 
@@ -125,7 +165,7 @@ export default function CommunityPage() {
       </section>
 
       {/* ── Featured wide feedback ── */}
-      <section className="section-padding page-container">
+      <section className="w-full px-4 py-14 sm:py-16 md:py-20">
         <AnimateOnScroll>
           <figure className="relative overflow-hidden rounded-3xl shadow-lg border border-white/40 group">
             <div className="relative aspect-[16/10] sm:aspect-[2/1] lg:aspect-[21/9]">
@@ -133,7 +173,7 @@ export default function CommunityPage() {
                 src={featured.image}
                 alt={`${featured.name} wearing Fallowkind`}
                 fill
-                sizes="(min-width: 1024px) 80vw, 100vw"
+                sizes="100vw"
                 priority
                 className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
               />
@@ -153,8 +193,8 @@ export default function CommunityPage() {
       </section>
 
       {/* ── Feedback wall ── */}
-      <section className="section-padding pt-0 page-container">
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+      <section className="w-full px-4 py-14 sm:py-16 md:py-20 pt-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {rest.map((f, i) => (
             <AnimateOnScroll key={f.name} delay={i * 120}>
               <figure className="relative overflow-hidden rounded-3xl shadow-lg border border-white/40 group h-full">
@@ -163,7 +203,7 @@ export default function CommunityPage() {
                     src={f.image}
                     alt={`${f.name} wearing Fallowkind`}
                     fill
-                    sizes="(min-width: 768px) 45vw, 100vw"
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                     className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-forest/90 via-forest/25 to-transparent" />
@@ -214,34 +254,34 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      {/* ── Join the community CTA ── */}
+      {/* ── Share your review ── */}
       <section className="section-padding page-container">
         <AnimateOnScroll>
-          <div className="relative overflow-hidden rounded-3xl bg-forest border border-white/10 shadow-lg px-6 py-16 sm:px-12 sm:py-20 md:py-24 text-center">
+          <div className="relative overflow-hidden rounded-3xl bg-forest border border-white/10 shadow-lg px-6 py-12 sm:px-12 sm:py-14 md:py-16 text-center">
             {/* Decorative circles + soft glow */}
             <div className="absolute -right-24 -bottom-24 w-80 h-80 rounded-full border border-fern/10" />
             <div className="absolute -left-24 -top-24 w-80 h-80 rounded-full border border-fern/10" />
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-fern/10 blur-3xl" />
 
-            <div className="relative max-w-2xl mx-auto">
-              <p className="text-xs tracking-[0.3em] uppercase text-fern mb-4">Be part of it</p>
-              <h2 className="text-linen text-3xl sm:text-4xl md:text-5xl mb-6">Share your Fallowkind</h2>
-              <p className="text-linen/65 leading-relaxed mb-10 max-w-md mx-auto">
-                Tag <span className="text-linen">@fallowkind</span> and we&apos;ll feature your photo
-                here. We&apos;d love to see how you wear yours.
+            <div className="relative max-w-xl mx-auto">
+              <p className="text-xs tracking-[0.3em] uppercase text-fern mb-3">Be part of it</p>
+              <h2 className="text-linen text-3xl sm:text-4xl md:text-5xl mb-4">Share your Fallowkind</h2>
+              <p className="text-linen/65 leading-relaxed mb-8 max-w-md mx-auto">
+                Tell us how your Fallowkind feels to wear. We&apos;d love to hear your story - and we
+                may feature it here for the rest of the community to see.
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-4">
+
+              <ReviewForm />
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
                 <a
                   href="https://www.instagram.com/fallowkind"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-glass-dark inline-block"
+                  className="text-[11px] tracking-[0.35em] uppercase text-linen/80 hover:text-linen transition-colors"
                 >
-                  Follow on Instagram
+                  Or tag @fallowkind on Instagram →
                 </a>
-                <Link href="/shop" className="text-[11px] tracking-[0.35em] uppercase text-linen/80 hover:text-linen transition-colors">
-                  Shop the collection →
-                </Link>
               </div>
             </div>
           </div>
