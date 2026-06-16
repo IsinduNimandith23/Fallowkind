@@ -382,12 +382,12 @@ export default function ShopGrid({
                     </span>
                   )}
                   {!p.inStock && (
-                    <span className="absolute top-3 left-3 tag-pill z-10 !bg-red-700/85">
+                    <span className="absolute top-3 left-3 tag-pill z-10 !bg-forest/50">
                       Sold Out
                     </span>
                   )}
                   {p.inStock && productLowStockLabel(p.sizes, p.sizeQuantities) && (
-                    <span className="absolute top-3 right-3 tag-pill z-10 !bg-amber-600/90 whitespace-nowrap">
+                    <span className="absolute top-3 right-3 tag-pill z-10 !bg-linen/90 !text-forest !border-forest/20 whitespace-nowrap">
                       {productLowStockLabel(p.sizes, p.sizeQuantities)}
                     </span>
                   )}

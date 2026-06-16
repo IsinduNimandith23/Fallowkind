@@ -338,7 +338,7 @@ export default function CheckoutPage() {
                     placeholder="+94 7X XXX XXXX"
                   />
                 </Field>
-                <Field label="Second phone number (optional)" error={errors.phone2}>
+                <Field label="Additional number (optional)" error={errors.phone2}>
                   <input
                     type="tel"
                     value={form.phone2}
