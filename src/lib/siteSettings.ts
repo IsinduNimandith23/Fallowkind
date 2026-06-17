@@ -15,7 +15,7 @@ export type SiteSettings = {
 };
 
 const DEFAULTS: SiteSettings = {
-  heroVideoUrl: "/mp5.mp4",
+  heroVideoUrl: "/hero.mp4",
   shopBannerUrl: "/banner.png",
   shopBannerMobileUrl: "",
   commitmentBannerUrl: "",

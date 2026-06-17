@@ -92,7 +92,7 @@ export default async function HomePage() {
     getSiteSettings(),
   ]);
   const featured = products.slice(0, 3);
-  const heroVideo = settings.heroVideoUrl || "/mp5.mp4";
+  const heroVideo = settings.heroVideoUrl || "/hero.mp4";
   const heroEyebrow      = settings.heroEyebrow;
   const heroHeadingLine1 = settings.heroHeadingLine1;
   const heroHeadingLine2 = settings.heroHeadingLine2;

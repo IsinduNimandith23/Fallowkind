@@ -42,12 +42,12 @@ CREATE TRIGGER products_updated_at
 -- ─── Site settings (singleton) ───────────────────────────────────
 CREATE TABLE IF NOT EXISTS site_settings (
   id              INTEGER     PRIMARY KEY DEFAULT 1 CHECK (id = 1),
-  hero_video_url  TEXT        NOT NULL DEFAULT '/mp5.mp4',
+  hero_video_url  TEXT        NOT NULL DEFAULT '/hero.mp4',
   updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
 INSERT INTO site_settings (id, hero_video_url)
-VALUES (1, '/mp5.mp4')
+VALUES (1, '/hero.mp4')
 ON CONFLICT (id) DO NOTHING;
 
 -- ─── Storage bucket for hero video + product images ──────────────
