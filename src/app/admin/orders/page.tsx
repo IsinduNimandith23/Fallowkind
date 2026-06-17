@@ -125,9 +125,9 @@ export default async function OrdersPage({
                       <p className="text-gray-400 text-xs">{order.customer_email}</p>
                     </td>
                     <td className="px-4 md:px-6 py-3.5 text-gray-500">
-                      {new Date(order.created_at).toLocaleDateString("en-LK")}
+                      {new Date(order.created_at).toLocaleDateString("en-LK", { timeZone: "Asia/Colombo" })}
                       <p className="text-xs text-gray-400">
-                        {new Date(order.created_at).toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(order.created_at).toLocaleTimeString("en-LK", { timeZone: "Asia/Colombo", hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </td>
                     <td className={`px-4 md:px-6 py-3.5 font-medium ${isDelivered ? "text-gray-400" : "text-gray-800"}`}>

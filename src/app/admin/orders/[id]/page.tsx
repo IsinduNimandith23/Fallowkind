@@ -209,13 +209,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <div className="flex justify-between">
                 <span className="text-gray-500">Placed</span>
                 <span className="text-gray-700">
-                  {new Date(order.created_at).toLocaleDateString("en-LK")}
+                  {new Date(order.created_at).toLocaleDateString("en-LK", { timeZone: "Asia/Colombo" })}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Time</span>
                 <span className="text-gray-700">
-                  {new Date(order.created_at).toLocaleTimeString("en-LK", { hour: "2-digit", minute: "2-digit" })}
+                  {new Date(order.created_at).toLocaleTimeString("en-LK", { timeZone: "Asia/Colombo", hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>
               <div className="flex justify-between">
