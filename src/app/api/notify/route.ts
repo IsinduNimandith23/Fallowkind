@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Could not save your request" }, { status: 500 });
     }
 
-    // Heads-up to the owner is best-effort — the request is already saved.
+    // Heads-up to the owner is best-effort - the request is already saved.
     try {
       await sendRestockRequestEmail({
         product_name: product.name as string,

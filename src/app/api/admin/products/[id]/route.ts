@@ -6,7 +6,7 @@ import { sendBackInStockEmail } from "@/lib/email";
 type Params = { params: Promise<{ id: string }> };
 
 // A product is buyable only when it's flagged in stock AND has at least one
-// available size — same rule the storefront uses to show the restock sign-up.
+// available size - same rule the storefront uses to show the restock sign-up.
 function isAvailable(inStock: boolean, sizes: unknown): boolean {
   return Boolean(inStock) && Array.isArray(sizes) && sizes.length > 0;
 }

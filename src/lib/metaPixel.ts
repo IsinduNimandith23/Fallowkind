@@ -4,7 +4,7 @@
 // These helpers fire standard e-commerce events so the pixel can optimise the
 // ad campaign for real conversions (not just page views).
 //
-// All values are in LKR — the store's only currency.
+// All values are in LKR - the store's only currency.
 
 const CURRENCY = "LKR";
 
@@ -78,7 +78,7 @@ export function trackInitiateCheckout(args: {
   });
 }
 
-/** A completed purchase — the most important event for ad optimisation. */
+/** A completed purchase - the most important event for ad optimisation. */
 export function trackPurchase(args: {
   contents: PixelContent[];
   numItems: number;

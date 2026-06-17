@@ -27,14 +27,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     return <>{children}</>;
   }
 
-  const { count } = await supabase
-    .from("orders")
-    .select("id", { count: "exact", head: true })
-    .in("order_status", ["pending", "processing"]);
+  const [{ count }, { count: pendingReviews }] = await Promise.all([
+    supabase
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .in("order_status", ["pending", "processing"]),
+    supabase
+      .from("product_reviews")
+      .select("id", { count: "exact", head: true })
+      .eq("approved", false),
+  ]);
 
   return (
     <div className="fixed inset-0 z-[200] flex bg-gray-50" style={{ fontFamily: "var(--font-sans)" }}>
-      <AdminSidebar pendingCount={count ?? 0} />
+      <AdminSidebar pendingCount={count ?? 0} pendingReviews={pendingReviews ?? 0} />
       <div className="flex-1 overflow-y-auto pt-14 md:pt-0">
         {children}
       </div>

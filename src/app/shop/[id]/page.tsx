@@ -1,4 +1,5 @@
 import { getAllProducts, getProductById } from "@/lib/products";
+import { getApprovedProductReviews } from "@/lib/reviews";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ProductDetail from "./ProductDetail";
@@ -44,14 +45,25 @@ export default async function ProductPage({ params }: Props) {
   const numericId = Number(id);
   if (!Number.isFinite(numericId)) notFound();
 
-  const [product, allProducts] = await Promise.all([
+  const [product, allProducts, reviews] = await Promise.all([
     getProductById(numericId),
     getAllProducts(),
+    getApprovedProductReviews(numericId),
   ]);
 
   if (!product) notFound();
 
   const priceNumber = Number(product.priceValue);
+  const aggregateRating =
+    reviews.length > 0
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: (
+            reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+          ).toFixed(2),
+          reviewCount: reviews.length,
+        }
+      : undefined;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -61,6 +73,7 @@ export default async function ProductPage({ params }: Props) {
     category: product.category,
     image: [product.imageUrl, product.imageUrl2].filter(Boolean),
     brand: { "@type": "Brand", name: "Fallowkind" },
+    ...(aggregateRating ? { aggregateRating } : {}),
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/shop/${product.id}`,
@@ -79,7 +92,7 @@ export default async function ProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ProductDetail product={product} allProducts={allProducts} />
+      <ProductDetail product={product} allProducts={allProducts} reviews={reviews} />
     </>
   );
 }

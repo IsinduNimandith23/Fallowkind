@@ -5,17 +5,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/products";
+import type { ProductReview } from "@/lib/reviews";
 import { SIZE_OPTIONS } from "@/lib/sizes";
 import { lowStockLabel, productLowStockLabel } from "@/lib/stock";
 import { useCart } from "@/contexts/CartContext";
 import { trackViewContent, trackAddToCart } from "@/lib/metaPixel";
+import ProductReviews from "@/components/ProductReviews";
 
 type Props = {
   product: Product;
   allProducts: Product[];
+  reviews: ProductReview[];
 };
 
-export default function ProductDetail({ product, allProducts }: Props) {
+export default function ProductDetail({ product, allProducts, reviews }: Props) {
   const productImages = [product.imageUrl, product.imageUrl2].filter(
     (u): u is string => Boolean(u)
   );
@@ -631,6 +634,9 @@ export default function ProductDetail({ product, allProducts }: Props) {
           <div className="border-t border-forest/15" />
         </div>
       </div>
+
+      {/* ── Customer reviews ── */}
+      <ProductReviews productId={product.id} productName={product.name} reviews={reviews} />
 
       {/* ── Related products ── */}
       {related.length > 0 && (

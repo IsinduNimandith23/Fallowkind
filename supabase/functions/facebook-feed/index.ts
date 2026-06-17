@@ -1,6 +1,6 @@
 // Supabase Edge Function: facebook-feed
 // Generates a Facebook Product Catalog CSV feed for Fallowkind.
-// Public endpoint (no auth) — consumed directly by Facebook's catalog crawler.
+// Public endpoint (no auth) - consumed directly by Facebook's catalog crawler.
 //
 // Deploy:
 //   supabase functions deploy facebook-feed --project-ref bhrntzarynnzhtbasmkj
