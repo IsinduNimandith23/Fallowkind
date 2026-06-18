@@ -157,7 +157,7 @@ export async function refreshInstagramToken(): Promise<RefreshResult> {
     return {
       ok: true,
       expiresAt: null,
-      note: "Facebook Page token is non-expiring — no refresh needed.",
+      note: "Facebook Page token is non-expiring - no refresh needed.",
     };
   }
 
