@@ -243,7 +243,7 @@ function processingContent(
   trackingCode: string
 ): string {
   const firstName = esc(customerName.split(" ")[0]);
-  const trackUrl = `https://track.citypak.lk/track?tracking_number=${encodeURIComponent(trackingCode)}`;
+  const trackUrl = `https://domex.lk/Order-Details.php?wbno=${encodeURIComponent(trackingCode)}`;
   return `
     <p style="color:#7A9070;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">Order Processing</p>
     <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 24px;font-weight:400">${esc(orderNumber)}</h2>

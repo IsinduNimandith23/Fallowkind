@@ -1,17 +1,28 @@
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/siteSettings";
+import { getInstagramFeed, getInstagramTokenStatus } from "@/lib/instagram";
+import { getFacebookFeed } from "@/lib/facebook";
 import HeroVideoForm from "./HeroVideoForm";
 import HeroTextForm from "./HeroTextForm";
 import ShopBannerForm from "./ShopBannerForm";
 import CommitmentBannerForm from "./CommitmentBannerForm";
 import OurStoryImagesForm from "./OurStoryImagesForm";
+import SocialFeedStatus from "./SocialFeedStatus";
 import SiteTabs, { type SiteTab } from "./SiteTabs";
 
 export const metadata: Metadata = { title: "Site" };
 export const revalidate = 0;
 
 export default async function SiteSettingsPage() {
-  const settings = await getSiteSettings();
+  const [settings, igStatus, igFeed, fbFeed] = await Promise.all([
+    getSiteSettings(),
+    getInstagramTokenStatus(),
+    getInstagramFeed(8),
+    getFacebookFeed(8),
+  ]);
+  const fbConfigured = Boolean(
+    process.env.FACEBOOK_PAGE_ID && process.env.FACEBOOK_PAGE_ACCESS_TOKEN
+  );
 
   const tabs: SiteTab[] = [
     {
@@ -75,6 +86,24 @@ export default async function SiteSettingsPage() {
             principle3Url={settings.ourStoryPrinciple3Url}
           />
         </section>
+      ),
+    },
+    {
+      id: "social-feed",
+      label: "Social feed",
+      description:
+        "Instagram & Facebook posts shown in the Community gallery. The Instagram token auto-refreshes weekly; use “Refresh token now” to do it on demand.",
+      content: (
+        <SocialFeedStatus
+          instagram={{
+            configured: igStatus.configured,
+            source: igStatus.source,
+            expiresAt: igStatus.expiresAt,
+            daysLeft: igStatus.daysLeft,
+            count: igFeed.length,
+          }}
+          facebook={{ configured: fbConfigured, count: fbFeed.length }}
+        />
       ),
     },
   ];

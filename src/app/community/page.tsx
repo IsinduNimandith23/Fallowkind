@@ -2,273 +2,438 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import ReviewForm from "@/components/ReviewForm";
+import { getInstagramFeed } from "@/lib/instagram";
+import { getFacebookFeed } from "@/lib/facebook";
 
 export const metadata: Metadata = {
   title: "Community",
   description:
-    "Real Fallowkind customers, real comfort. See how our community lives in natural fibres - photos, kind words and everyday moments shared by the people who wear Fallowkind.",
+    "Rooted Together - a community of people choosing comfort, nature and conscious living. Photos, stories, reels and the collective impact of the Fallowkind community.",
   alternates: { canonical: "/community" },
   openGraph: {
     title: "Community | Fallowkind",
     description:
-      "Real people, real comfort - photos and kind words from the Fallowkind community.",
+      "A community of people choosing comfort, nature and conscious living.",
     url: "/community",
     type: "website",
   },
 };
 export const revalidate = 3600;
 
-// Big, wide customer-feedback photos. Swap these placeholder images in /public
-// for real customer photos (landscape works best for the wide layout).
-const feedbackWall = [
+/* ------------------------------------------------------------------ */
+/* DUMMY CONTENT — swap images in /public and copy below for real data */
+/* ------------------------------------------------------------------ */
+
+// Placeholder images (replace with the real ones you'll send later).
+const IMG = ["/banner.png", "/Rooted in Land.jpg", "/Untitled design.png"];
+const pick = (i: number) => IMG[i % IMG.length];
+
+const categories = [
+  { label: "Gallery", sub: "Customer photos", Icon: IconCamera },
+  { label: "Stories", sub: "Community stories", Icon: IconLeaf },
+  { label: "Reels", sub: "Videos & Reels", Icon: IconPlay },
+  { label: "Nature Moments", sub: "Nature in daily life", Icon: IconSprout },
+  { label: "Around the World", sub: "Our global community", Icon: IconGlobe },
+  { label: "Spotlight", sub: "Monthly community spotlight", Icon: IconTrophy },
+  { label: "Impact", sub: "Our collective impact", Icon: IconTree },
+];
+
+// The Community Gallery renders the brand's live Instagram + Facebook feeds
+// (auto-updating via the Graph API — see src/lib/instagram.ts & facebook.ts).
+// Until the access tokens are configured, these manual posts are shown as a
+// fallback so the section is never empty.
+const INSTAGRAM_PROFILE = "https://www.instagram.com/fallowkind";
+
+type Platform = "instagram" | "facebook";
+type GalleryTile = {
+  href: string;
+  image: string;
+  caption: string;
+  isVideo: boolean;
+  platform: Platform;
+};
+
+const fallbackPosts: GalleryTile[] = [
   {
-    image: "/banner.png",
-    name: "Kavindu S.",
-    location: "Colombo",
-    rating: 5,
-    quote:
-      "Honestly the softest thing I own. I wore it three days in a row and it still felt fresh - the fabric just breathes.",
+    href: "https://www.instagram.com/p/DZp2ggGKPCw/",
+    image: pick(1),
+    caption: "Morning walk in Kandy wearing my Fallowkind tee 🌿",
+    isVideo: false,
+    platform: "instagram",
   },
   {
-    image: "/ModuraShop.jpg",
-    name: "Nethmi P.",
-    location: "Kandy",
-    rating: 5,
-    quote:
-      "You can feel the difference the second you put it on. Lightweight, natural, and it looks even better in person.",
+    href: "https://www.instagram.com/p/DZFuCpsH-Mt/",
+    image: pick(2),
+    caption: "Ocean breeze & organic cotton = my kind of therapy 🌊",
+    isVideo: false,
+    platform: "facebook",
   },
   {
-    image: "/Rooted in Land.jpg",
-    name: "Tharushi D.",
-    location: "Galle",
-    rating: 5,
-    quote:
-      "Finally clothing that feels kind on my skin. Simple, minimal, and made to actually last.",
+    href: "https://www.instagram.com/p/DZp2ggGKPCw/",
+    image: pick(3),
+    caption: "Exploring more, consuming less. That's the vibe. 🏔️",
+    isVideo: false,
+    platform: "instagram",
   },
   {
-    image: "/ModuraShop.jpg",
-    name: "Yashen K.",
-    location: "Negombo",
-    rating: 5,
-    quote:
-      "Knowing there are no hidden plastics makes me feel good about every wear. Comfort without the compromise.",
-  },
-  {
-    image: "/Rooted in Land.jpg",
-    name: "Anjana F.",
-    location: "Kurunegala",
-    rating: 5,
-    quote:
-      "Easily the most comfortable tee in my wardrobe. Soft, breathable, and it holds up wash after wash.",
-  },
-  {
-    image: "/banner.png",
-    name: "Ruwan J.",
-    location: "Anuradhapura",
-    rating: 5,
-    quote:
-      "The quality genuinely surprised me. Feels premium, fits perfectly, and the colour hasn't faded at all.",
-  },
-  {
-    image: "/ModuraShop.jpg",
-    name: "Senuri A.",
-    location: "Batticaloa",
-    rating: 5,
-    quote:
-      "So light and airy in the heat. I keep reaching for it over everything else I own.",
-  },
-  {
-    image: "/Rooted in Land.jpg",
-    name: "Kasun L.",
-    location: "Gampaha",
-    rating: 5,
-    quote:
-      "Clean, minimal, and made to last. You can feel the care that went into every stitch.",
-  },
-  {
-    image: "/banner.png",
-    name: "Tharindi S.",
-    location: "Nuwara Eliya",
-    rating: 5,
-    quote:
-      "Sustainable and actually stylish - finally a brand that gets both right. Couldn't be happier.",
+    href: "https://www.instagram.com/p/DZFuCpsH-Mt/",
+    image: pick(4),
+    caption: "Sunsets, slow living and sustainable choices ✨",
+    isVideo: false,
+    platform: "facebook",
   },
 ];
 
-// Short written notes from the community (text only).
-const kindWords = [
+const spotlight = {
+  handle: "@nimeshi",
+  perks: [
+    { label: "15% Off Discount Code", Icon: IconTag },
+    { label: "Free Shipping", Icon: IconBox },
+    { label: "Featured on Instagram", Icon: IconCamera },
+  ],
+};
+
+const impactStats = [
+  { value: "12,580", label: "Plastic-free garments sold", Icon: IconBottle },
+  { value: "4,320+", label: "Community members", Icon: IconPeople },
+  { value: "2,350", label: "Trees supported", Icon: IconTree },
+  { value: "1,250+", label: "Photos shared", Icon: IconPhotoStack },
+  { value: "18", label: "Countries reached", Icon: IconGlobe },
+];
+
+const communityQuotes = [
   {
-    name: "Dinara W.",
-    location: "Colombo",
-    rating: 5,
-    quote: "The fit, comfort, and fabric quality are all perfect. Definitely ordering again.",
+    quote:
+      "I choose natural fabrics because I believe what we wear shouldn't cost the earth.",
+    author: "Tharindi, Sri Lanka",
   },
   {
-    name: "Sahan M.",
-    location: "Matara",
-    rating: 5,
-    quote: "Packaging, fabric, the whole experience felt thoughtful. You can tell it's made with care.",
+    quote: "Supporting local, supporting nature, supporting our future.",
+    author: "Mila, Seychelles",
   },
   {
-    name: "Ishara R.",
-    location: "Jaffna",
-    rating: 5,
-    quote: "Breathable in our heat and still looks clean and minimal. Exactly what I was searching for.",
+    quote:
+      "Natural fabrics, thoughtful designs and a purpose deeper than profit.",
+    author: "Jamie, Australia",
   },
 ];
 
-function Stars({ rating, className = "" }: { rating: number; className?: string }) {
-  return (
-    <div className={`flex gap-1 ${className}`} aria-label={`${rating} out of 5 stars`}>
-      {Array.from({ length: rating }).map((_, i) => (
-        <svg key={i} viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-          <path d="M12 2.5l2.95 6.34 6.95.74-5.2 4.74 1.47 6.83L12 17.77l-6.17 3.38 1.47-6.83-5.2-4.74 6.95-.74L12 2.5z" />
-        </svg>
-      ))}
-    </div>
-  );
-}
+const reels = [
+  { title: "Unboxing my Fallowkind order", handle: "@nimeshi" },
+  { title: "Nature walks & cotton talks", handle: "@adventures.with.hesh" },
+  { title: "Day in my life in linen", handle: "@sachini.w" },
+  { title: "Slow living looks good on us", handle: "@roshini.j" },
+];
 
-export default function CommunityPage() {
-  const [featured, ...rest] = feedbackWall;
+/* ------------------------------------------------------------------ */
+/* PAGE                                                                 */
+/* ------------------------------------------------------------------ */
+
+export default async function CommunityPage() {
+  // Live Instagram + Facebook feeds, merged newest-first. Falls back to the
+  // manual posts when no tokens are configured yet.
+  const [instagram, facebook] = await Promise.all([
+    getInstagramFeed(8),
+    getFacebookFeed(8),
+  ]);
+
+  const merged: (GalleryTile & { ts: number })[] = [
+    ...instagram.map((m) => ({
+      href: m.permalink,
+      image: m.thumbnailUrl ?? m.mediaUrl,
+      caption: m.caption ?? "Instagram post",
+      isVideo: m.mediaType === "VIDEO",
+      platform: "instagram" as const,
+      ts: Date.parse(m.timestamp),
+    })),
+    ...facebook.map((p) => ({
+      href: p.permalink,
+      image: p.image,
+      caption: p.caption ?? "Facebook post",
+      isVideo: false,
+      platform: "facebook" as const,
+      ts: Date.parse(p.timestamp),
+    })),
+  ].sort((a, b) => b.ts - a.ts);
+
+  const tiles: GalleryTile[] = merged.length
+    ? merged.slice(0, 8)
+    : fallbackPosts;
 
   return (
     <>
-      {/* ── Hero ── */}
-      <section className="bg-forest section-padding pt-20 md:pt-24 relative overflow-hidden">
-        {/* Decorative circles */}
-        <div className="absolute -left-32 -top-32 w-96 h-96 rounded-full border border-fern/10" />
-        <div className="absolute -left-20 -top-20 w-64 h-64 rounded-full border border-fern/10" />
+      {/* ── Hero (sits behind the fixed navbar) ── */}
+      <section className="relative flex items-center -mt-20 pt-40 pb-36 overflow-hidden">
+        <Image
+          src={pick(0)}
+          alt="The Fallowkind community"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        {/* Light cream wash so text stays readable over the photo */}
+        <div className="absolute inset-0 bg-linen/25" />
 
-        <div className="page-container max-w-4xl relative text-center">
-          <p
-            className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-fern mb-6 opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
-          >
-            Kind to your skin, worn by people like you
-          </p>
-          <h1
-            className="text-linen text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-8 opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.45s", animationFillMode: "forwards" }}
-          >
-            Our Community
-          </h1>
-          <p
-            className="text-linen/65 text-base sm:text-lg leading-relaxed opacity-0 animate-fade-in-up"
-            style={{ animationDelay: "0.65s", animationFillMode: "forwards" }}
-          >
-            Behind every piece is a person who chose comfort without compromise. These are real
-            moments and honest words from the people who live in Fallowkind - proof that natural
-            fibres simply feel better, day after day.
-          </p>
-        </div>
-      </section>
-
-      {/* ── Featured wide feedback ── */}
-      <section className="w-full px-4 py-14 sm:py-16 md:py-20">
-        <AnimateOnScroll>
-          <figure className="relative overflow-hidden rounded-3xl shadow-lg border border-white/40 group">
-            <div className="relative aspect-[16/10] sm:aspect-[2/1] lg:aspect-[21/9]">
-              <Image
-                src={featured.image}
-                alt={`${featured.name} wearing Fallowkind`}
-                fill
-                sizes="100vw"
-                priority
-                className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-forest/90 via-forest/30 to-transparent" />
+        <div className="relative w-full px-6 text-center">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex justify-center mb-5 text-sage">
+              <IconSprout className="w-8 h-8" />
             </div>
-            <figcaption className="absolute inset-x-0 bottom-0 p-6 sm:p-8 md:p-12 max-w-3xl">
-              <Stars rating={featured.rating} className="text-fern mb-4" />
-              <blockquote className="text-linen text-xl sm:text-2xl md:text-4xl font-serif italic normal-case tracking-normal leading-snug">
-                &ldquo;{featured.quote}&rdquo;
-              </blockquote>
-              <p className="mt-5 text-xs tracking-[0.25em] uppercase text-linen/70">
-                {featured.name} · {featured.location}
-              </p>
-            </figcaption>
-          </figure>
-        </AnimateOnScroll>
-      </section>
-
-      {/* ── Feedback wall ── */}
-      <section className="w-full px-4 py-14 sm:py-16 md:py-20 pt-0">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-          {rest.map((f, i) => (
-            <AnimateOnScroll key={f.name} delay={i * 120}>
-              <figure className="relative overflow-hidden rounded-3xl shadow-lg border border-white/40 group h-full">
-                <div className="relative aspect-[4/3] sm:aspect-[3/2]">
-                  <Image
-                    src={f.image}
-                    alt={`${f.name} wearing Fallowkind`}
-                    fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-forest/90 via-forest/25 to-transparent" />
-                </div>
-                <figcaption className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                  <Stars rating={f.rating} className="text-fern mb-3" />
-                  <blockquote className="text-linen text-base sm:text-lg font-serif italic normal-case tracking-normal leading-relaxed">
-                    &ldquo;{f.quote}&rdquo;
-                  </blockquote>
-                  <p className="mt-4 text-[11px] tracking-[0.25em] uppercase text-linen/70">
-                    {f.name} · {f.location}
-                  </p>
-                </figcaption>
-              </figure>
-            </AnimateOnScroll>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Kind words (text only) ── */}
-      <section className="relative section-padding overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cream/55 via-linen/30 to-fern/20" />
-        <div className="absolute -top-32 -right-20 w-96 h-96 rounded-full bg-fern/25 blur-3xl" />
-        <div className="absolute -bottom-32 -left-20 w-96 h-96 rounded-full bg-moss/20 blur-3xl" />
-
-        <div className="relative page-container">
-          <AnimateOnScroll className="text-center mb-12 md:mb-16">
-            <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Kind words</p>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl text-forest">Straight from you</h2>
-          </AnimateOnScroll>
-
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            {kindWords.map((t, i) => (
-              <AnimateOnScroll key={t.name} delay={i * 120}>
-                <article className="glass-card p-7 md:p-8 h-full flex flex-col">
-                  <Stars rating={t.rating} className="text-sage mb-4" />
-                  <p className="text-forest/75 leading-relaxed text-base font-serif italic normal-case tracking-normal mb-6">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div className="mt-auto pt-4 border-t border-forest/10">
-                    <p className="text-sm text-forest">{t.name}</p>
-                    <p className="text-xs tracking-widest uppercase text-moss mt-1">{t.location}</p>
-                  </div>
-                </article>
-              </AnimateOnScroll>
-            ))}
+            <h1
+              className="text-forest text-5xl sm:text-6xl md:text-7xl normal-case opacity-0 animate-fade-in-up"
+              style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}
+            >
+              Rooted Together
+            </h1>
+            <p
+              className="mt-6 text-forest/70 text-lg sm:text-xl leading-relaxed opacity-0 animate-fade-in-up"
+              style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
+            >
+              A community of people choosing comfort, nature, and conscious living.
+            </p>
+            <div
+              className="mt-8 opacity-0 animate-fade-in-up"
+              style={{ animationDelay: "0.6s", animationFillMode: "forwards" }}
+            >
+              <a href="#share" className="btn-primary">
+                Share Your Story
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Share your review ── */}
-      <section className="section-padding page-container">
+      {/* ── Category strip (overlaps hero) ── */}
+      <section className="w-full px-5 sm:px-8 lg:px-12 -mt-28 relative z-10">
+        <AnimateOnScroll>
+          <div className="glass-panel bg-white/80 px-4 py-8 sm:px-8">
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-y-8 gap-x-4">
+              {categories.map(({ label, sub, Icon }) => (
+                <a
+                  key={label}
+                  href="#"
+                  className="group flex flex-col items-center text-center gap-2"
+                >
+                  <span className="flex items-center justify-center w-12 h-12 rounded-full bg-fern/15 text-sage transition-colors duration-300 group-hover:bg-sage group-hover:text-linen">
+                    <Icon className="w-6 h-6" />
+                  </span>
+                  <span className="text-sm text-forest">{label}</span>
+                  <span className="text-[11px] text-moss leading-tight max-w-[8rem]">
+                    {sub}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </AnimateOnScroll>
+      </section>
+
+      {/* ── Band 1: Gallery · Spotlight · Impact ── */}
+      <section className="w-full px-5 sm:px-8 lg:px-12 py-14 md:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+          {/* Community Gallery — live Instagram feed */}
+          <AnimateOnScroll className="lg:col-span-7">
+            <SectionHead title="Community Gallery" href={INSTAGRAM_PROFILE} />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {tiles.map((t, i) => (
+                <a
+                  key={`${t.href}-${i}`}
+                  href={t.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative aspect-square overflow-hidden rounded-2xl border border-white/50 bg-white/40 shadow-sm"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={t.image}
+                    alt={t.caption}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <span className="pointer-events-none absolute inset-0 bg-forest/0 transition-colors duration-300 group-hover:bg-forest/15" />
+                  <span className="absolute top-2 right-2 flex items-center justify-center w-6 h-6 rounded-full bg-white/85 text-forest shadow-sm">
+                    {t.platform === "facebook" ? (
+                      <IconFacebook className="w-3.5 h-3.5" />
+                    ) : (
+                      <IconInstagram className="w-3.5 h-3.5" />
+                    )}
+                  </span>
+                  {t.isVideo && (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <span className="flex items-center justify-center w-10 h-10 rounded-full bg-white/80 text-forest shadow-md transition-transform group-hover:scale-110">
+                        <IconPlayFill className="w-4 h-4 ml-0.5" />
+                      </span>
+                    </span>
+                  )}
+                </a>
+              ))}
+            </div>
+          </AnimateOnScroll>
+
+          {/* Monthly Community Spotlight */}
+          <AnimateOnScroll className="lg:col-span-3" delay={120}>
+            <SectionHead title="Monthly Community Spotlight" href="#" />
+            <div className="glass-card p-6 text-center h-[calc(100%-2.75rem)] flex flex-col items-center">
+              <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-fern/40">
+                <Image
+                  src={pick(1)}
+                  alt={`${spotlight.handle} - community spotlight`}
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                />
+              </div>
+              <p className="mt-4 text-sm text-forest/70">
+                This month we&apos;re featuring
+              </p>
+              <p className="text-lg text-sage">{spotlight.handle}</p>
+              <p className="mt-2 text-xs text-moss">
+                Thank you for inspiring our community!
+              </p>
+              <div className="mt-6 pt-5 border-t border-forest/10 w-full grid grid-cols-3 gap-2">
+                {spotlight.perks.map(({ label, Icon }) => (
+                  <div
+                    key={label}
+                    className="flex flex-col items-center gap-1.5 text-center"
+                  >
+                    <Icon className="w-5 h-5 text-sage" />
+                    <span className="text-[9px] leading-tight text-moss">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </AnimateOnScroll>
+
+          {/* Our Impact Together */}
+          <AnimateOnScroll className="lg:col-span-2" delay={240}>
+            <h3 className="text-base text-forest normal-case tracking-normal mb-4">
+              Our Impact Together
+            </h3>
+            <div className="glass-tinted p-5 flex flex-col gap-5 h-[calc(100%-2.75rem)]">
+              {impactStats.map(({ value, label, Icon }) => (
+                <div key={label} className="flex items-start gap-3">
+                  <Icon className="w-5 h-5 text-sage shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-base text-forest leading-none">{value}</p>
+                    <p className="text-[11px] text-moss leading-tight mt-1">
+                      {label}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              <a
+                href="#"
+                className="mt-auto pt-3 text-[11px] tracking-widest uppercase text-sage hover:text-forest transition-colors inline-flex items-center gap-1"
+              >
+                See Full Impact →
+              </a>
+            </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ── Band 2: From Our Community · Reels · Join ── */}
+      <section className="w-full px-5 sm:px-8 lg:px-12 pb-16 md:pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+          {/* From Our Community */}
+          <AnimateOnScroll className="lg:col-span-4">
+            <SectionHead title="From Our Community" sub="Real stories from real people." href="#" />
+            <div className="flex flex-col gap-4">
+              {communityQuotes.map((q) => (
+                <article key={q.author} className="glass-card p-5">
+                  <span className="text-3xl text-fern leading-none font-serif">
+                    &ldquo;
+                  </span>
+                  <p className="text-forest/75 leading-relaxed text-sm font-serif italic normal-case tracking-normal -mt-2">
+                    {q.quote}
+                  </p>
+                  <p className="mt-3 text-[11px] tracking-wide uppercase text-moss">
+                    – {q.author}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </AnimateOnScroll>
+
+          {/* Reels & Videos */}
+          <AnimateOnScroll className="lg:col-span-5" delay={120}>
+            <SectionHead title="Reels & Videos" sub="Watch. Get inspired. Share." href="#" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {reels.map((r, i) => (
+                <a
+                  key={r.title}
+                  href="#"
+                  className="group glass-card overflow-hidden flex flex-col"
+                >
+                  <div className="relative aspect-[9/14] card-img rounded-none">
+                    <Image
+                      src={pick(i + 2)}
+                      alt={r.title}
+                      fill
+                      sizes="(min-width:1024px) 12vw, (min-width:640px) 25vw, 50vw"
+                      className="object-cover"
+                    />
+                    <span className="absolute inset-0 bg-forest/20 group-hover:bg-forest/30 transition-colors" />
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <span className="flex items-center justify-center w-10 h-10 rounded-full bg-white/80 text-forest backdrop-blur-md shadow-md transition-transform group-hover:scale-110">
+                        <IconPlayFill className="w-4 h-4 ml-0.5" />
+                      </span>
+                    </span>
+                  </div>
+                  <div className="p-3">
+                    <p className="text-[12px] leading-snug text-forest/80 font-sans normal-case tracking-normal">
+                      {r.title}
+                    </p>
+                    <p className="text-[10px] text-moss mt-1">{r.handle}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </AnimateOnScroll>
+
+          {/* Join The Circle */}
+          <AnimateOnScroll className="lg:col-span-3" delay={240}>
+            <div className="relative overflow-hidden glass-card bg-forest/95 p-7 h-full flex flex-col justify-center">
+              <div className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-fern/10 blur-2xl" />
+              <IconLeafBranch className="absolute -right-4 -bottom-4 w-40 h-40 text-fern/30 rotate-12" />
+              <div className="relative">
+                <h3 className="text-linen text-2xl normal-case tracking-normal">
+                  Join The Circle
+                </h3>
+                <p className="mt-3 text-linen/65 text-sm leading-relaxed">
+                  Be part of a conscious community.
+                </p>
+                <a href="#share" className="btn-glass-dark mt-6 inline-block">
+                  Join Us
+                </a>
+              </div>
+            </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ── Share your story (keeps the review backend) ── */}
+      <section id="share" className="section-padding page-container scroll-mt-24">
         <AnimateOnScroll>
           <div className="relative overflow-hidden rounded-3xl bg-forest border border-white/10 shadow-lg px-6 py-12 sm:px-12 sm:py-14 md:py-16 text-center">
-            {/* Decorative circles + soft glow */}
             <div className="absolute -right-24 -bottom-24 w-80 h-80 rounded-full border border-fern/10" />
             <div className="absolute -left-24 -top-24 w-80 h-80 rounded-full border border-fern/10" />
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-fern/10 blur-3xl" />
 
             <div className="relative max-w-xl mx-auto">
-              <p className="text-xs tracking-[0.3em] uppercase text-fern mb-3">Be part of it</p>
-              <h2 className="text-linen text-3xl sm:text-4xl md:text-5xl mb-4">Share your Fallowkind</h2>
+              <p className="text-xs tracking-[0.3em] uppercase text-fern mb-3">
+                Be part of it
+              </p>
+              <h2 className="text-linen text-3xl sm:text-4xl md:text-5xl mb-4">
+                Share your Fallowkind
+              </h2>
               <p className="text-linen/65 leading-relaxed mb-8 max-w-md mx-auto">
-                Tell us how your Fallowkind feels to wear. We&apos;d love to hear your story - and we
-                may feature it here for the rest of the community to see.
+                Tell us how your Fallowkind feels to wear. We&apos;d love to hear
+                your story - and we may feature it here for the rest of the
+                community to see.
               </p>
 
               <ReviewForm />
@@ -288,5 +453,206 @@ export default function CommunityPage() {
         </AnimateOnScroll>
       </section>
     </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Small helpers                                                        */
+/* ------------------------------------------------------------------ */
+
+function SectionHead({
+  title,
+  sub,
+  href,
+}: {
+  title: string;
+  sub?: string;
+  href: string;
+}) {
+  return (
+    <div className="flex items-end justify-between mb-4">
+      <div>
+        <h3 className="text-base sm:text-lg text-forest normal-case tracking-normal">
+          {title}
+        </h3>
+        {sub && <p className="text-xs text-moss mt-1">{sub}</p>}
+      </div>
+      <a
+        href={href}
+        className="text-[11px] tracking-widest uppercase text-sage hover:text-forest transition-colors shrink-0"
+      >
+        View All
+      </a>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Inline line icons (no extra deps)                                   */
+/* ------------------------------------------------------------------ */
+
+type IconProps = { className?: string };
+const base = (className = "w-6 h-6") => ({
+  className,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.6,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+});
+
+function IconCamera({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </svg>
+  );
+}
+function IconLeaf({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14Z" />
+      <path d="M5 19C9 15 13 11 17 8" />
+    </svg>
+  );
+}
+function IconPlay({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M10 9l5 3-5 3V9Z" />
+    </svg>
+  );
+}
+function IconPlayFill({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M8 5v14l11-7L8 5Z" />
+    </svg>
+  );
+}
+function IconSprout({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <path d="M12 20v-7" />
+      <path d="M12 13c0-3-2-5-6-5 0 4 3 5 6 5Z" />
+      <path d="M12 11c0-3 2-5 6-5 0 4-3 5-6 5Z" />
+    </svg>
+  );
+}
+function IconGlobe({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18" />
+    </svg>
+  );
+}
+function IconTrophy({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <path d="M8 4h8v4a4 4 0 0 1-8 0V4Z" />
+      <path d="M16 5h3v2a3 3 0 0 1-3 3M8 5H5v2a3 3 0 0 0 3 3" />
+      <path d="M12 12v4M9 20h6M10 20v-2h4v2" />
+    </svg>
+  );
+}
+function IconTree({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <path d="M12 3l5 7h-3l3 5H7l3-5H7l5-7Z" />
+      <path d="M12 15v6" />
+    </svg>
+  );
+}
+function IconTag({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z" />
+      <circle cx="7.5" cy="7.5" r="1.2" />
+    </svg>
+  );
+}
+function IconBox({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <path d="M3 7l9-4 9 4v10l-9 4-9-4V7Z" />
+      <path d="M3 7l9 4 9-4M12 11v10" />
+    </svg>
+  );
+}
+function IconBottle({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <path d="M10 2h4M10 4h4v3l1.5 2.5A4 4 0 0 1 16 11v8a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-8a4 4 0 0 1 .5-1.5L10 7V4Z" />
+    </svg>
+  );
+}
+function IconPeople({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3 20c0-3 3-5 6-5s6 2 6 5" />
+      <path d="M16 5a3 3 0 0 1 0 6M21 20c0-2.5-1.5-4-4-4.5" />
+    </svg>
+  );
+}
+function IconPhotoStack({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <rect x="3" y="3" width="14" height="14" rx="2" />
+      <path d="M3 13l4-4 4 4 3-3 3 3" />
+      <path d="M21 7v12a2 2 0 0 1-2 2H7" />
+    </svg>
+  );
+}
+function IconInstagram({ className }: IconProps) {
+  return (
+    <svg {...base(className)}>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17" cy="7" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+function IconFacebook({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M13.5 21v-7h2.3l.4-2.8h-2.7V9.4c0-.8.2-1.4 1.4-1.4h1.4V5.5c-.7-.1-1.5-.2-2.3-.2-2.3 0-3.8 1.4-3.8 3.9v2.1H7.8V14h2.3v7h3.4Z" />
+    </svg>
+  );
+}
+function IconLeafBranch({ className }: IconProps) {
+  // A simple almond leaf, base at origin, pointing up
+  const leaf = "M0 0 C 6 -6 6 -16 0 -22 C -6 -16 -6 -6 0 0 Z";
+  const nodes = [
+    { x: 84, y: 98 },
+    { x: 68, y: 76 },
+    { x: 54, y: 56 },
+  ];
+  return (
+    <svg viewBox="0 0 120 120" className={className}>
+      {/* curving stem */}
+      <path
+        d="M98 114 C70 94 56 66 48 32"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+      />
+      {/* paired leaves fanning off the stem */}
+      {nodes.map((p, i) => (
+        <g key={i} transform={`translate(${p.x} ${p.y})`} fill="currentColor">
+          <path transform="rotate(-34)" d={leaf} />
+          <path transform="rotate(34)" d={leaf} />
+        </g>
+      ))}
+      {/* tip leaf */}
+      <g transform="translate(48 32)" fill="currentColor">
+        <path d={leaf} />
+      </g>
+    </svg>
   );
 }
