@@ -101,6 +101,7 @@ export default async function SiteSettingsPage() {
             expiresAt: igStatus.expiresAt,
             daysLeft: igStatus.daysLeft,
             count: igFeed.length,
+            refreshable: igStatus.refreshable,
           }}
           facebook={{ configured: fbConfigured, count: fbFeed.length }}
         />

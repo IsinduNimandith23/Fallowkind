@@ -3,7 +3,7 @@
 // Required env vars:
 //   FACEBOOK_PAGE_ID             numeric id of the Facebook Page
 //   FACEBOOK_PAGE_ACCESS_TOKEN   a Page access token. Derive it from a
-//                                long-lived user token via /me/accounts — Page
+//                                long-lived user token via /me/accounts - Page
 //                                tokens minted that way do not expire.
 //
 // Note: this is unrelated to supabase/functions/facebook-feed (that one is a
@@ -29,9 +29,9 @@ const GRAPH = "https://graph.facebook.com/v21.0";
 const FIELDS = "id,message,full_picture,permalink_url,created_time";
 
 /**
- * Fetch the Page's most recent posts that have an image. Cached + revalidated
- * by Next (ISR) so the feed auto-updates. Returns [] on any failure so callers
- * can fall back.
+ * Fetch posts where the Page has been *tagged* (UGC from customers/influencers),
+ * not the Page's own posts. Cached + revalidated by Next (ISR) so the feed
+ * auto-updates. Returns [] on any failure so callers can fall back.
  */
 export async function getFacebookFeed(limit = 8): Promise<FacebookPost[]> {
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
@@ -40,7 +40,7 @@ export async function getFacebookFeed(limit = 8): Promise<FacebookPost[]> {
 
   // Over-fetch a little since text-only posts (no image) get filtered out.
   const url =
-    `${GRAPH}/${pageId}/posts` +
+    `${GRAPH}/${pageId}/tagged` +
     `?fields=${FIELDS}&limit=${limit * 2}&access_token=${token}`;
 
   try {

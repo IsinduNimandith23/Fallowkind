@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
-import ReviewForm from "@/components/ReviewForm";
+import CommunityFormModal from "@/components/CommunityFormModal";
+import CommunityQuotes from "@/components/CommunityQuotes";
 import { getInstagramFeed } from "@/lib/instagram";
 import { getFacebookFeed } from "@/lib/facebook";
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 /* ------------------------------------------------------------------ */
-/* DUMMY CONTENT — swap images in /public and copy below for real data */
+/* DUMMY CONTENT - swap images in /public and copy below for real data */
 /* ------------------------------------------------------------------ */
 
 // Placeholder images (replace with the real ones you'll send later).
@@ -39,7 +40,7 @@ const categories = [
 ];
 
 // The Community Gallery renders the brand's live Instagram + Facebook feeds
-// (auto-updating via the Graph API — see src/lib/instagram.ts & facebook.ts).
+// (auto-updating via the Graph API - see src/lib/instagram.ts & facebook.ts).
 // Until the access tokens are configured, these manual posts are shown as a
 // fallback so the section is never empty.
 const INSTAGRAM_PROFILE = "https://www.instagram.com/fallowkind";
@@ -196,9 +197,7 @@ export default async function CommunityPage() {
               className="mt-8 opacity-0 animate-fade-in-up"
               style={{ animationDelay: "0.6s", animationFillMode: "forwards" }}
             >
-              <a href="#share" className="btn-primary">
-                Share Your Story
-              </a>
+              <CommunityFormModal label="Share Your Story" className="btn-primary" />
             </div>
           </div>
         </div>
@@ -232,7 +231,7 @@ export default async function CommunityPage() {
       {/* ── Band 1: Gallery · Spotlight · Impact ── */}
       <section className="w-full px-5 sm:px-8 lg:px-12 py-14 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
-          {/* Community Gallery — live Instagram feed */}
+          {/* Community Gallery - live Instagram feed */}
           <AnimateOnScroll className="lg:col-span-7">
             <SectionHead title="Community Gallery" href={INSTAGRAM_PROFILE} />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -341,21 +340,7 @@ export default async function CommunityPage() {
           {/* From Our Community */}
           <AnimateOnScroll className="lg:col-span-4">
             <SectionHead title="From Our Community" sub="Real stories from real people." href="#" />
-            <div className="flex flex-col gap-4">
-              {communityQuotes.map((q) => (
-                <article key={q.author} className="glass-card p-5">
-                  <span className="text-3xl text-fern leading-none font-serif">
-                    &ldquo;
-                  </span>
-                  <p className="text-forest/75 leading-relaxed text-sm font-serif italic normal-case tracking-normal -mt-2">
-                    {q.quote}
-                  </p>
-                  <p className="mt-3 text-[11px] tracking-wide uppercase text-moss">
-                    – {q.author}
-                  </p>
-                </article>
-              ))}
-            </div>
+            <CommunityQuotes quotes={communityQuotes} />
           </AnimateOnScroll>
 
           {/* Reels & Videos */}
@@ -406,51 +391,14 @@ export default async function CommunityPage() {
                 <p className="mt-3 text-linen/65 text-sm leading-relaxed">
                   Be part of a conscious community.
                 </p>
-                <a href="#share" className="btn-glass-dark mt-6 inline-block">
-                  Join Us
-                </a>
+                <CommunityFormModal
+                  label="Join Us"
+                  className="btn-glass-dark mt-6 inline-block"
+                />
               </div>
             </div>
           </AnimateOnScroll>
         </div>
-      </section>
-
-      {/* ── Share your story (keeps the review backend) ── */}
-      <section id="share" className="section-padding page-container scroll-mt-24">
-        <AnimateOnScroll>
-          <div className="relative overflow-hidden rounded-3xl bg-forest border border-white/10 shadow-lg px-6 py-12 sm:px-12 sm:py-14 md:py-16 text-center">
-            <div className="absolute -right-24 -bottom-24 w-80 h-80 rounded-full border border-fern/10" />
-            <div className="absolute -left-24 -top-24 w-80 h-80 rounded-full border border-fern/10" />
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-fern/10 blur-3xl" />
-
-            <div className="relative max-w-xl mx-auto">
-              <p className="text-xs tracking-[0.3em] uppercase text-fern mb-3">
-                Be part of it
-              </p>
-              <h2 className="text-linen text-3xl sm:text-4xl md:text-5xl mb-4">
-                Share your Fallowkind
-              </h2>
-              <p className="text-linen/65 leading-relaxed mb-8 max-w-md mx-auto">
-                Tell us how your Fallowkind feels to wear. We&apos;d love to hear
-                your story - and we may feature it here for the rest of the
-                community to see.
-              </p>
-
-              <ReviewForm />
-
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-                <a
-                  href="https://www.instagram.com/fallowkind"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] tracking-[0.35em] uppercase text-linen/80 hover:text-linen transition-colors"
-                >
-                  Or tag @fallowkind on Instagram →
-                </a>
-              </div>
-            </div>
-          </div>
-        </AnimateOnScroll>
       </section>
     </>
   );

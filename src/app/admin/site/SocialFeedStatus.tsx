@@ -12,6 +12,7 @@ type Props = {
     expiresAt: string | null;
     daysLeft: number | null;
     count: number;
+    refreshable: boolean;
   };
   facebook: {
     configured: boolean;
@@ -65,7 +66,7 @@ export default function SocialFeedStatus({ instagram, facebook }: Props) {
         router.refresh();
       }
     } catch {
-      setMsg({ tone: "red", text: "Network error — please try again." });
+      setMsg({ tone: "red", text: "Network error - please try again." });
     } finally {
       setBusy(false);
     }
@@ -83,14 +84,15 @@ export default function SocialFeedStatus({ instagram, facebook }: Props) {
     igBadge = { tone: "green", text: "Connected" };
   }
 
-  const expiryText =
-    instagram.source === "env"
-      ? "Unknown (env token — not yet refreshed)"
+  const expiryText = !instagram.refreshable
+    ? "Never (non-expiring Page token)"
+    : instagram.source === "env"
+      ? "Unknown (env token - not yet refreshed)"
       : instagram.expiresAt
         ? `${new Date(instagram.expiresAt).toLocaleDateString()}${
             instagram.daysLeft !== null ? ` (${instagram.daysLeft} days)` : ""
           }`
-        : "—";
+        : "-";
 
   const fbBadge: { tone: Tone; text: string } = !facebook.configured
     ? { tone: "gray", text: "Not configured" }
@@ -110,42 +112,52 @@ export default function SocialFeedStatus({ instagram, facebook }: Props) {
           <Row
             label="Token source"
             value={
-              instagram.source === "database"
-                ? "Database (auto-refreshed)"
-                : instagram.source === "env"
-                  ? "Environment variable"
-                  : "None"
+              !instagram.refreshable
+                ? "Facebook Page token"
+                : instagram.source === "database"
+                  ? "Database (auto-refreshed)"
+                  : instagram.source === "env"
+                    ? "Environment variable"
+                    : "None"
             }
           />
           <Row label="Token expires" value={expiryText} />
           <Row label="Posts loaded" value={instagram.count} />
         </div>
 
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            type="button"
-            onClick={refresh}
-            disabled={busy || !instagram.configured}
-            className="px-4 py-2 rounded-lg bg-forest text-white text-sm font-medium hover:bg-sage transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {busy ? "Refreshing…" : "Refresh token now"}
-          </button>
-          {msg && (
-            <span
-              className={`text-sm ${
-                msg.tone === "red" ? "text-red-600" : "text-green-600"
-              }`}
-            >
-              {msg.text}
-            </span>
-          )}
-        </div>
+        {instagram.refreshable ? (
+          <>
+            <div className="mt-4 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={refresh}
+                disabled={busy || !instagram.configured}
+                className="px-4 py-2 rounded-lg bg-forest text-white text-sm font-medium hover:bg-sage transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {busy ? "Refreshing…" : "Refresh token now"}
+              </button>
+              {msg && (
+                <span
+                  className={`text-sm ${
+                    msg.tone === "red" ? "text-red-600" : "text-green-600"
+                  }`}
+                >
+                  {msg.text}
+                </span>
+              )}
+            </div>
 
-        {instagram.source === "env" && (
-          <p className="mt-3 text-xs text-amber-600">
-            Using the env-var token. Run migration 018 and click “Refresh token
-            now” to persist it in the database so the weekly cron can keep it
-            alive automatically.
+            {instagram.source === "env" && (
+              <p className="mt-3 text-xs text-amber-600">
+                Using the env-var token. Run migration 018 and click “Refresh
+                token now” to persist it in the database so the weekly cron can
+                keep it alive automatically.
+              </p>
+            )}
+          </>
+        ) : (
+          <p className="mt-4 text-xs text-gray-500">
+            This is a non-expiring Facebook Page token, so no refresh is needed.
           </p>
         )}
       </div>

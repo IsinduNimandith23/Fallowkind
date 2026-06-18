@@ -7,7 +7,7 @@
 //   initial seed / fallback when nothing is stored yet.
 //
 // Optional env vars (depend on how the Meta app is set up):
-//   INSTAGRAM_USER_ID        IG user id (default "me" — works with Instagram
+//   INSTAGRAM_USER_ID        IG user id (default "me" - works with Instagram
 //                            Login tokens; for Facebook Login set the ig-user-id)
 //   INSTAGRAM_GRAPH_HOST     "graph.instagram.com" (default, Instagram Login) or
 //                            "graph.facebook.com"  (Facebook Login)
@@ -39,6 +39,11 @@ const USER_ID = process.env.INSTAGRAM_USER_ID || "me";
 const FIELDS =
   "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
 
+// Facebook-login setups use a Page access token (graph.facebook.com) which is
+// non-expiring, so it can't (and needn't) be refreshed like an Instagram-login
+// token. Instagram-login setups use graph.instagram.com and a 60-day token.
+const USES_FACEBOOK_LOGIN = GRAPH_HOST.includes("facebook");
+
 /**
  * The active access token: prefer the one persisted in `site_settings`
  * (kept fresh by the refresh cron); fall back to the env seed. Returns null
@@ -55,13 +60,14 @@ async function getActiveToken(): Promise<string | null> {
       return data.instagram_access_token as string;
     }
   } catch {
-    // table/column may not exist yet (migration not run) — fall back to env
+    // table/column may not exist yet (migration not run) - fall back to env
   }
   return process.env.INSTAGRAM_ACCESS_TOKEN ?? null;
 }
 
 /**
- * Fetch the most recent posts for the connected Instagram account.
+ * Fetch media where the account has been *tagged* (UGC from customers), not the
+ * account's own posts. Uses the /tags edge (requires instagram_manage_comments).
  * Cached + revalidated by Next (ISR) so the feed auto-updates on a schedule.
  * Returns [] on any failure (missing token, API error) so callers can fall back.
  */
@@ -70,7 +76,7 @@ export async function getInstagramFeed(limit = 8): Promise<InstagramMedia[]> {
   if (!token) return [];
 
   const url =
-    `https://${GRAPH_HOST}/${USER_ID}/media` +
+    `https://${GRAPH_HOST}/${USER_ID}/tags` +
     `?fields=${FIELDS}&limit=${limit}&access_token=${token}`;
 
   try {
@@ -102,10 +108,14 @@ export type InstagramTokenStatus = {
   source: "database" | "env" | "none";
   expiresAt: string | null;
   daysLeft: number | null;
+  // false for non-expiring Facebook-login Page tokens (no refresh needed)
+  refreshable: boolean;
 };
 
 /** Where the active token comes from and (if persisted) when it expires. */
 export async function getInstagramTokenStatus(): Promise<InstagramTokenStatus> {
+  const refreshable = !USES_FACEBOOK_LOGIN;
+
   let dbToken: string | null = null;
   let expiresAt: string | null = null;
   try {
@@ -124,16 +134,16 @@ export async function getInstagramTokenStatus(): Promise<InstagramTokenStatus> {
     const daysLeft = expiresAt
       ? Math.round((Date.parse(expiresAt) - Date.now()) / 86_400_000)
       : null;
-    return { configured: true, source: "database", expiresAt, daysLeft };
+    return { configured: true, source: "database", expiresAt, daysLeft, refreshable };
   }
   if (process.env.INSTAGRAM_ACCESS_TOKEN) {
-    return { configured: true, source: "env", expiresAt: null, daysLeft: null };
+    return { configured: true, source: "env", expiresAt: null, daysLeft: null, refreshable };
   }
-  return { configured: false, source: "none", expiresAt: null, daysLeft: null };
+  return { configured: false, source: "none", expiresAt: null, daysLeft: null, refreshable };
 }
 
 export type RefreshResult =
-  | { ok: true; expiresAt: string }
+  | { ok: true; expiresAt: string | null; note?: string }
   | { ok: false; error: string };
 
 /**
@@ -143,6 +153,14 @@ export type RefreshResult =
  * graph.instagram.com tokens.
  */
 export async function refreshInstagramToken(): Promise<RefreshResult> {
+  if (USES_FACEBOOK_LOGIN) {
+    return {
+      ok: true,
+      expiresAt: null,
+      note: "Facebook Page token is non-expiring — no refresh needed.",
+    };
+  }
+
   const token = await getActiveToken();
   if (!token) return { ok: false, error: "No Instagram token configured" };
 
