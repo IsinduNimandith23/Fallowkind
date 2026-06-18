@@ -3,8 +3,12 @@ import Image from "next/image";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import CommunityFormModal from "@/components/CommunityFormModal";
 import CommunityQuotes from "@/components/CommunityQuotes";
+import CommunityStoriesModal from "@/components/CommunityStoriesModal";
+import CommunityGalleryModal from "@/components/CommunityGalleryModal";
+import CommunityReelsModal from "@/components/CommunityReelsModal";
 import { getInstagramFeed } from "@/lib/instagram";
 import { getFacebookFeed } from "@/lib/facebook";
+import { getApprovedCommunityReviews } from "@/lib/communityReviews";
 
 export const metadata: Metadata = {
   title: "Community",
@@ -83,6 +87,34 @@ const fallbackPosts: GalleryTile[] = [
     isVideo: false,
     platform: "facebook",
   },
+  {
+    href: "https://www.instagram.com/fallowkind",
+    image: pick(0),
+    caption: "Linen days and quiet mornings 🤍",
+    isVideo: false,
+    platform: "instagram",
+  },
+  {
+    href: "https://www.instagram.com/fallowkind",
+    image: pick(2),
+    caption: "Rooted in the land, made to last 🌱",
+    isVideo: false,
+    platform: "facebook",
+  },
+  {
+    href: "https://www.instagram.com/fallowkind",
+    image: pick(1),
+    caption: "Conscious closet, clear conscience ✨",
+    isVideo: false,
+    platform: "instagram",
+  },
+  {
+    href: "https://www.instagram.com/fallowkind",
+    image: pick(3),
+    caption: "Everyday essentials, kinder to the planet 🌍",
+    isVideo: false,
+    platform: "facebook",
+  },
 ];
 
 const spotlight = {
@@ -102,7 +134,9 @@ const impactStats = [
   { value: "18", label: "Countries reached", Icon: IconGlobe },
 ];
 
-const communityQuotes = [
+// Shown in the "From Our Community" section only until real submissions
+// from the share-your-story form have been approved (see CommunityPage).
+const fallbackQuotes = [
   {
     quote:
       "I choose natural fabrics because I believe what we wear shouldn't cost the earth.",
@@ -119,11 +153,14 @@ const communityQuotes = [
   },
 ];
 
-const reels = [
-  { title: "Unboxing my Fallowkind order", handle: "@nimeshi" },
-  { title: "Nature walks & cotton talks", handle: "@adventures.with.hesh" },
-  { title: "Day in my life in linen", handle: "@sachini.w" },
-  { title: "Slow living looks good on us", handle: "@roshini.j" },
+type ReelItem = { title: string; handle: string; image: string; href?: string };
+
+// Shown in Reels & Videos until real video posts come through the tagged feeds.
+const fallbackReels: ReelItem[] = [
+  { title: "Unboxing my Fallowkind order", handle: "@nimeshi", image: pick(2) },
+  { title: "Nature walks & cotton talks", handle: "@adventures.with.hesh", image: pick(3) },
+  { title: "Day in my life in linen", handle: "@sachini.w", image: pick(4) },
+  { title: "Slow living looks good on us", handle: "@roshini.j", image: pick(5) },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -133,10 +170,20 @@ const reels = [
 export default async function CommunityPage() {
   // Live Instagram + Facebook feeds, merged newest-first. Falls back to the
   // manual posts when no tokens are configured yet.
-  const [instagram, facebook] = await Promise.all([
+  const [instagram, facebook, communityReviews] = await Promise.all([
     getInstagramFeed(8),
     getFacebookFeed(8),
+    getApprovedCommunityReviews(200),
   ]);
+
+  // The "From Our Community" section is driven by approved submissions from
+  // the share-your-story form. Until any are approved, fall back to the
+  // seed quotes so the section is never empty. The marquee shows the newest
+  // few; "View All" opens a modal with every approved story.
+  const allCommunityQuotes = communityReviews.length
+    ? communityReviews.map((r) => ({ quote: r.review, author: r.name }))
+    : fallbackQuotes;
+  const communityQuotes = allCommunityQuotes.slice(0, 12);
 
   const merged: (GalleryTile & { ts: number })[] = [
     ...instagram.map((m) => ({
@@ -151,15 +198,35 @@ export default async function CommunityPage() {
       href: p.permalink,
       image: p.image,
       caption: p.caption ?? "Facebook post",
-      isVideo: false,
+      isVideo: p.isVideo,
       platform: "facebook" as const,
       ts: Date.parse(p.timestamp),
     })),
   ].sort((a, b) => b.ts - a.ts);
 
-  const tiles: GalleryTile[] = merged.length
-    ? merged.slice(0, 8)
-    : fallbackPosts;
+  // Community Gallery shows photo posts only; Reels & Videos shows video posts.
+  // Both come from the tagged Instagram + Facebook feeds (customer UGC).
+  const imageTiles = merged.filter((t) => !t.isVideo);
+  // Always fill a 4×2 grid: real photos first, topped up with seed photos when
+  // the tagged feed is short so the gallery never looks half-empty.
+  const allTiles: GalleryTile[] = [...imageTiles, ...fallbackPosts].slice(
+    0,
+    Math.max(8, imageTiles.length)
+  );
+  const tiles: GalleryTile[] = allTiles.slice(0, 8);
+
+  // Video posts become reels. Fall back to the seed reels when the feed has no
+  // videos yet, so the section is never empty. "View All" opens the full set.
+  const videoReels: ReelItem[] = merged
+    .filter((t) => t.isVideo)
+    .map((t) => ({
+      title: t.caption,
+      handle: t.platform === "facebook" ? "Facebook" : "Instagram",
+      image: t.image,
+      href: t.href,
+    }));
+  const allReels: ReelItem[] = videoReels.length ? videoReels : fallbackReels;
+  const reelTiles: ReelItem[] = allReels.slice(0, 3);
 
   return (
     <>
@@ -204,9 +271,15 @@ export default async function CommunityPage() {
       </section>
 
       {/* ── Category strip (overlaps hero) ── */}
+      {/* Above-the-fold: use a pure-CSS entrance (runs on first paint) instead of
+          the JS-gated scroll reveal, so the glass card never flashes see-through
+          while waiting for hydration. */}
       <section className="w-full px-5 sm:px-8 lg:px-12 -mt-28 relative z-10">
-        <AnimateOnScroll>
-          <div className="glass-panel bg-white/80 px-4 py-8 sm:px-8">
+        <div
+          className="opacity-0 animate-fade-in-up"
+          style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
+        >
+          <div className="bg-white border border-black/5 shadow-md rounded-2xl px-4 py-8 sm:px-8">
             <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-y-8 gap-x-4">
               {categories.map(({ label, sub, Icon }) => (
                 <a
@@ -225,7 +298,7 @@ export default async function CommunityPage() {
               ))}
             </div>
           </div>
-        </AnimateOnScroll>
+        </div>
       </section>
 
       {/* ── Band 1: Gallery · Spotlight · Impact ── */}
@@ -233,7 +306,11 @@ export default async function CommunityPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
           {/* Community Gallery - live Instagram feed */}
           <AnimateOnScroll className="lg:col-span-7">
-            <SectionHead title="Community Gallery" href={INSTAGRAM_PROFILE} />
+            <SectionHead
+              title="Community Gallery"
+              href={INSTAGRAM_PROFILE}
+              action={<CommunityGalleryModal tiles={allTiles} />}
+            />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {tiles.map((t, i) => (
                 <a
@@ -339,27 +416,38 @@ export default async function CommunityPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
           {/* From Our Community */}
           <AnimateOnScroll className="lg:col-span-4">
-            <SectionHead title="From Our Community" sub="Real stories from real people." href="#" />
+            <SectionHead
+              title="From Our Community"
+              sub="Real stories from real people."
+              href="#"
+              action={<CommunityStoriesModal quotes={allCommunityQuotes} />}
+            />
             <CommunityQuotes quotes={communityQuotes} />
           </AnimateOnScroll>
 
           {/* Reels & Videos */}
           <AnimateOnScroll className="lg:col-span-5" delay={120}>
-            <SectionHead title="Reels & Videos" sub="Watch. Get inspired. Share." href="#" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {reels.map((r, i) => (
+            <SectionHead
+              title="Reels & Videos"
+              sub="Watch. Get inspired. Share."
+              href={INSTAGRAM_PROFILE}
+              action={<CommunityReelsModal reels={allReels} />}
+            />
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {reelTiles.map((r, i) => (
                 <a
-                  key={r.title}
-                  href="#"
+                  key={`${r.title}-${i}`}
+                  href={r.href ?? "#"}
+                  {...(r.href ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   className="group glass-card overflow-hidden flex flex-col"
                 >
                   <div className="relative aspect-[9/14] card-img rounded-none">
-                    <Image
-                      src={pick(i + 2)}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={r.image}
                       alt={r.title}
-                      fill
-                      sizes="(min-width:1024px) 12vw, (min-width:640px) 25vw, 50vw"
-                      className="object-cover"
+                      loading="lazy"
+                      className="w-full h-full object-cover"
                     />
                     <span className="absolute inset-0 bg-forest/20 group-hover:bg-forest/30 transition-colors" />
                     <span className="absolute inset-0 flex items-center justify-center">
@@ -369,7 +457,7 @@ export default async function CommunityPage() {
                     </span>
                   </div>
                   <div className="p-3">
-                    <p className="text-[12px] leading-snug text-forest/80 font-sans normal-case tracking-normal">
+                    <p className="text-[12px] leading-snug text-forest/80 font-sans normal-case tracking-normal line-clamp-2">
                       {r.title}
                     </p>
                     <p className="text-[10px] text-moss mt-1">{r.handle}</p>
@@ -412,10 +500,12 @@ function SectionHead({
   title,
   sub,
   href,
+  action,
 }: {
   title: string;
   sub?: string;
   href: string;
+  action?: React.ReactNode;
 }) {
   return (
     <div className="flex items-end justify-between mb-4">
@@ -425,12 +515,14 @@ function SectionHead({
         </h3>
         {sub && <p className="text-xs text-moss mt-1">{sub}</p>}
       </div>
-      <a
-        href={href}
-        className="text-[11px] tracking-widest uppercase text-sage hover:text-forest transition-colors shrink-0"
-      >
-        View All
-      </a>
+      {action ?? (
+        <a
+          href={href}
+          className="text-[11px] tracking-widest uppercase text-sage hover:text-forest transition-colors shrink-0"
+        >
+          View All
+        </a>
+      )}
     </div>
   );
 }

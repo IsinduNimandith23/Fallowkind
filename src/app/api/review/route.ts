@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendCommunityReviewEmail } from "@/lib/email";
+import { insertCommunityReview } from "@/lib/communityReviews";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -24,6 +25,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
     }
 
+    // Persist the submission as a pending community story. It only appears
+    // in the "From Our Community" section once an admin approves it.
+    const { error: dbError } = await insertCommunityReview({
+      name,
+      rating,
+      review,
+      email: email || undefined,
+    });
+    if (dbError) {
+      return NextResponse.json({ error: "Failed to submit review" }, { status: 500 });
+    }
+
+    // Notify the owner (best-effort - the submission is already saved).
     const { error } = await sendCommunityReviewEmail({
       name,
       rating,
@@ -31,7 +45,7 @@ export async function POST(request: Request) {
       email: email || undefined,
     });
     if (error) {
-      return NextResponse.json({ error: "Failed to submit review" }, { status: 500 });
+      console.error("sendCommunityReviewEmail error:", error);
     }
 
     return NextResponse.json({ ok: true });

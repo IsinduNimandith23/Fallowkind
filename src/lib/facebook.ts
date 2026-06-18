@@ -15,6 +15,7 @@ export type FacebookPost = {
   image: string;
   permalink: string;
   timestamp: string;
+  isVideo: boolean;
 };
 
 type RawPost = {
@@ -26,7 +27,15 @@ type RawPost = {
 };
 
 const GRAPH = "https://graph.facebook.com/v21.0";
+// Only basic fields: tagged posts are content the Page doesn't own, so rich
+// fields like `attachments`/`status_type` trip the (#10) "Page Public Content
+// Access" permission error. Video posts are detected from the permalink shape.
 const FIELDS = "id,message,full_picture,permalink_url,created_time";
+
+// Facebook video/reel permalinks contain one of these path segments, whereas
+// photo posts use /photos/ or /posts/. A permission-free heuristic to route
+// video posts to the reels section instead of the photo gallery.
+const VIDEO_PERMALINK_RE = /\/(videos|reel|reels|watch)\b/i;
 
 /**
  * Fetch posts where the Page has been *tagged* (UGC from customers/influencers),
@@ -61,6 +70,7 @@ export async function getFacebookFeed(limit = 8): Promise<FacebookPost[]> {
         image: p.full_picture as string,
         permalink: p.permalink_url as string,
         timestamp: p.created_time,
+        isVideo: VIDEO_PERMALINK_RE.test(p.permalink_url as string),
       }));
   } catch (err) {
     console.error("Facebook feed error:", err);
