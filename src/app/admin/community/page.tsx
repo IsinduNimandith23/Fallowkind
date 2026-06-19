@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { getSiteSettings } from "@/lib/siteSettings";
 import CommunityRowActions from "./CommunityRowActions";
+import SpotlightForm from "./SpotlightForm";
 
 export const metadata: Metadata = { title: "Community" };
 
@@ -38,6 +40,8 @@ export default async function AdminCommunityPage({
   const { filter } = await searchParams;
   const active = filter ?? "pending";
 
+  const settings = await getSiteSettings();
+
   let query = supabase
     .from("community_reviews")
     .select("id, name, email, rating, review, approved, created_at")
@@ -58,6 +62,28 @@ export default async function AdminCommunityPage({
           appear in the &ldquo;From Our Community&rdquo; section
         </p>
       </div>
+
+      {/* Monthly spotlight editor */}
+      <section className="mb-10">
+        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-2">
+          Monthly Community Spotlight
+        </h2>
+        <p className="text-sm text-gray-500 mb-4">
+          The featured customer card shown on the community page. Changes go live
+          immediately.
+        </p>
+        <SpotlightForm
+          currentName={settings.spotlightName}
+          currentImageUrl={settings.spotlightImageUrl}
+          currentPerk1={settings.spotlightPerk1}
+          currentPerk2={settings.spotlightPerk2}
+        />
+      </section>
+
+      {/* Stories heading */}
+      <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
+        Community stories
+      </h2>
 
       {/* Filter tabs */}
       <div className="flex gap-1 mb-6 border-b border-gray-200 overflow-x-auto">

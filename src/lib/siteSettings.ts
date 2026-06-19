@@ -12,6 +12,10 @@ export type SiteSettings = {
   ourStoryPrinciple1Url: string;
   ourStoryPrinciple2Url: string;
   ourStoryPrinciple3Url: string;
+  spotlightName: string;
+  spotlightImageUrl: string;
+  spotlightPerk1: string;
+  spotlightPerk2: string;
 };
 
 const DEFAULTS: SiteSettings = {
@@ -26,6 +30,10 @@ const DEFAULTS: SiteSettings = {
   ourStoryPrinciple1Url: "/Rooted in Land.jpg",
   ourStoryPrinciple2Url: "/ModuraShop.jpg",
   ourStoryPrinciple3Url: "/banner.png",
+  spotlightName: "@nimeshi",
+  spotlightImageUrl: "",
+  spotlightPerk1: "15% Off Discount Code",
+  spotlightPerk2: "Featured on Instagram",
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -74,6 +82,28 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     if (story.data.our_story_principle3_url) ourStoryPrinciple3Url = story.data.our_story_principle3_url;
   }
 
+  // Spotlight columns were added in migration 020 - fetch separately so an
+  // un-migrated database still returns the rest of the settings. Unlike the
+  // image fallbacks above, values are taken as-is (an empty name intentionally
+  // hides the spotlight card on the storefront).
+  let spotlightName      = DEFAULTS.spotlightName;
+  let spotlightImageUrl  = DEFAULTS.spotlightImageUrl;
+  let spotlightPerk1     = DEFAULTS.spotlightPerk1;
+  let spotlightPerk2     = DEFAULTS.spotlightPerk2;
+  const spotlight = await supabase
+    .from("site_settings")
+    .select("spotlight_name, spotlight_image_url, spotlight_perk1, spotlight_perk2")
+    .eq("id", 1)
+    .maybeSingle();
+  if (spotlight.error) {
+    console.warn("[siteSettings] spotlight_* not available - run migration 020:", spotlight.error.message);
+  } else if (spotlight.data) {
+    spotlightName     = spotlight.data.spotlight_name      ?? "";
+    spotlightImageUrl = spotlight.data.spotlight_image_url ?? "";
+    spotlightPerk1    = spotlight.data.spotlight_perk1     ?? "";
+    spotlightPerk2    = spotlight.data.spotlight_perk2     ?? "";
+  }
+
   return {
     heroVideoUrl:        data.hero_video_url        || DEFAULTS.heroVideoUrl,
     shopBannerUrl:       data.shop_banner_url       || DEFAULTS.shopBannerUrl,
@@ -86,6 +116,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     ourStoryPrinciple1Url,
     ourStoryPrinciple2Url,
     ourStoryPrinciple3Url,
+    spotlightName,
+    spotlightImageUrl,
+    spotlightPerk1,
+    spotlightPerk2,
   };
 }
 
@@ -152,6 +186,27 @@ export async function setHeroText(input: HeroTextInput): Promise<void> {
       hero_eyebrow: input.eyebrow,
       hero_heading_line1: input.headingLine1,
       hero_heading_line2: input.headingLine2,
+      updated_at: new Date().toISOString(),
+    });
+  if (error) throw new Error(error.message);
+}
+
+export type SpotlightInput = {
+  name: string;
+  imageUrl: string;
+  perk1: string;
+  perk2: string;
+};
+
+export async function setSpotlight(input: SpotlightInput): Promise<void> {
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({
+      id: 1,
+      spotlight_name: input.name,
+      spotlight_image_url: input.imageUrl,
+      spotlight_perk1: input.perk1,
+      spotlight_perk2: input.perk2,
       updated_at: new Date().toISOString(),
     });
   if (error) throw new Error(error.message);

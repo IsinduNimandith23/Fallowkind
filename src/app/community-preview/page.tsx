@@ -9,6 +9,7 @@ import CommunityReelsModal from "@/components/CommunityReelsModal";
 import { getInstagramFeed } from "@/lib/instagram";
 import { getFacebookFeed } from "@/lib/facebook";
 import { getApprovedCommunityReviews } from "@/lib/communityReviews";
+import { getSiteSettings } from "@/lib/siteSettings";
 
 export const metadata: Metadata = {
   title: "Community",
@@ -117,14 +118,10 @@ const fallbackPosts: GalleryTile[] = [
   },
 ];
 
-const spotlight = {
-  handle: "@nimeshi",
-  perks: [
-    { label: "15% Off Discount Code", Icon: IconTag },
-    { label: "Free Shipping", Icon: IconBox },
-    { label: "Featured on Instagram", Icon: IconCamera },
-  ],
-};
+// Icons paired by position with the two editable perk labels (see admin →
+// Community → Monthly Community Spotlight). Labels are admin-managed; icons
+// stay fixed here to keep the card's look consistent.
+const SPOTLIGHT_PERK_ICONS = [IconTag, IconCamera];
 
 const impactStats = [
   { value: "12,580", label: "Plastic-free garments sold", Icon: IconBottle },
@@ -170,11 +167,23 @@ const fallbackReels: ReelItem[] = [
 export default async function CommunityPage() {
   // Live Instagram + Facebook feeds, merged newest-first. Falls back to the
   // manual posts when no tokens are configured yet.
-  const [instagram, facebook, communityReviews] = await Promise.all([
+  const [instagram, facebook, communityReviews, settings] = await Promise.all([
     getInstagramFeed(8),
     getFacebookFeed(8),
     getApprovedCommunityReviews(200),
+    getSiteSettings(),
   ]);
+
+  // Monthly Community Spotlight - admin-managed (admin → Community). An empty
+  // name hides the card; the avatar falls back to a placeholder image, and only
+  // non-empty perk labels are shown (paired with the fixed icons by position).
+  const spotlight = {
+    handle: settings.spotlightName,
+    image: settings.spotlightImageUrl || pick(1),
+    perks: [settings.spotlightPerk1, settings.spotlightPerk2]
+      .map((label, i) => ({ label, Icon: SPOTLIGHT_PERK_ICONS[i] }))
+      .filter((p) => p.label.trim() !== ""),
+  };
 
   // The "From Our Community" section is driven by approved submissions from
   // the share-your-story form. Until any are approved, fall back to the
@@ -290,8 +299,8 @@ export default async function CommunityPage() {
                   <span className="flex items-center justify-center w-12 h-12 rounded-full bg-fern/15 text-sage transition-colors duration-300 group-hover:bg-sage group-hover:text-linen">
                     <Icon className="w-6 h-6" />
                   </span>
-                  <span className="text-sm text-forest">{label}</span>
-                  <span className="text-[11px] text-moss leading-tight max-w-[8rem]">
+                  <span className="text-base text-forest">{label}</span>
+                  <span className="text-xs text-moss leading-tight max-w-[8rem]">
                     {sub}
                   </span>
                 </a>
@@ -303,15 +312,15 @@ export default async function CommunityPage() {
 
       {/* ── Band 1: Gallery · Spotlight · Impact ── */}
       <section className="w-full px-5 sm:px-8 lg:px-12 py-14 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 md:gap-8">
           {/* Community Gallery - live Instagram feed */}
-          <AnimateOnScroll className="lg:col-span-7">
+          <AnimateOnScroll className="md:col-span-6 lg:col-span-7">
             <SectionHead
               title="Community Gallery"
               href={INSTAGRAM_PROFILE}
               action={<CommunityGalleryModal tiles={allTiles} />}
             />
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {tiles.map((t, i) => (
                 <a
                   key={`${t.href}-${i}`}
@@ -347,65 +356,63 @@ export default async function CommunityPage() {
             </div>
           </AnimateOnScroll>
 
-          {/* Monthly Community Spotlight */}
-          <AnimateOnScroll className="lg:col-span-3" delay={120}>
-            <SectionHead title="Monthly Community Spotlight" href="#" />
-            <div className="glass-card p-6 text-center h-[calc(100%-2.75rem)] flex flex-col items-center">
-              <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-fern/40">
-                <Image
-                  src={pick(1)}
-                  alt={`${spotlight.handle} - community spotlight`}
-                  fill
-                  sizes="96px"
-                  className="object-cover"
-                />
-              </div>
-              <p className="mt-4 text-sm text-forest/70">
-                This month we&apos;re featuring
-              </p>
-              <p className="text-lg text-sage">{spotlight.handle}</p>
-              <p className="mt-2 text-xs text-moss">
-                Thank you for inspiring our community!
-              </p>
-              <div className="mt-6 pt-5 border-t border-forest/10 w-full grid grid-cols-3 gap-2">
-                {spotlight.perks.map(({ label, Icon }) => (
-                  <div
-                    key={label}
-                    className="flex flex-col items-center gap-1.5 text-center"
-                  >
-                    <Icon className="w-5 h-5 text-sage" />
-                    <span className="text-[9px] leading-tight text-moss">
-                      {label}
-                    </span>
+          {/* Monthly Community Spotlight - hidden when no customer is set */}
+          {spotlight.handle.trim() !== "" && (
+            <AnimateOnScroll className="md:col-span-3 lg:col-span-3" delay={120}>
+              <SectionHead title="Monthly Community Spotlight" />
+              <div className="glass-card p-6 sm:p-8 text-center h-[calc(100%-2.75rem)] flex flex-col items-center justify-center">
+                <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-fern/40">
+                  <Image
+                    src={spotlight.image}
+                    alt={`${spotlight.handle} - community spotlight`}
+                    fill
+                    sizes="160px"
+                    className="object-cover"
+                  />
+                </div>
+                <p className="mt-5 text-base text-forest/70">
+                  This month we&apos;re featuring
+                </p>
+                <p className="mt-1 text-2xl text-sage">{spotlight.handle}</p>
+                <p className="mt-3 text-sm text-moss">
+                  Thank you for inspiring our community!
+                </p>
+                {spotlight.perks.length > 0 && (
+                  <div className="mt-8 pt-6 border-t border-forest/10 w-full max-w-xs grid grid-cols-2 gap-6">
+                    {spotlight.perks.map(({ label, Icon }) => (
+                      <div
+                        key={label}
+                        className="flex flex-col items-center gap-2 text-center"
+                      >
+                        <Icon className="w-6 h-6 text-sage" />
+                        <span className="text-xs leading-snug text-moss">
+                          {label}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          </AnimateOnScroll>
+            </AnimateOnScroll>
+          )}
 
           {/* Our Impact Together */}
-          <AnimateOnScroll className="lg:col-span-2" delay={240}>
-            <h3 className="text-base text-forest normal-case tracking-normal mb-4">
+          <AnimateOnScroll className="md:col-span-3 lg:col-span-2" delay={240}>
+            <h3 className="text-xl sm:text-2xl text-forest normal-case tracking-normal mb-4">
               Our Impact Together
             </h3>
-            <div className="glass-tinted p-5 flex flex-col gap-5 h-[calc(100%-2.75rem)]">
+            <div className="glass-tinted p-5 sm:p-6 flex flex-col justify-center gap-8 h-[calc(100%-2.75rem)]">
               {impactStats.map(({ value, label, Icon }) => (
                 <div key={label} className="flex items-start gap-3">
-                  <Icon className="w-5 h-5 text-sage shrink-0 mt-0.5" />
+                  <Icon className="w-6 h-6 text-sage shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-base text-forest leading-none">{value}</p>
-                    <p className="text-[11px] text-moss leading-tight mt-1">
+                    <p className="text-lg text-forest leading-none">{value}</p>
+                    <p className="text-xs text-moss leading-tight mt-1">
                       {label}
                     </p>
                   </div>
                 </div>
               ))}
-              <a
-                href="#"
-                className="mt-auto pt-3 text-[11px] tracking-widest uppercase text-sage hover:text-forest transition-colors inline-flex items-center gap-1"
-              >
-                See Full Impact →
-              </a>
             </div>
           </AnimateOnScroll>
         </div>
@@ -413,9 +420,9 @@ export default async function CommunityPage() {
 
       {/* ── Band 2: From Our Community · Reels · Join ── */}
       <section className="w-full px-5 sm:px-8 lg:px-12 pb-16 md:pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 md:gap-8">
           {/* From Our Community */}
-          <AnimateOnScroll className="lg:col-span-4">
+          <AnimateOnScroll className="md:col-span-3 lg:col-span-4">
             <SectionHead
               title="From Our Community"
               sub="Real stories from real people."
@@ -426,7 +433,7 @@ export default async function CommunityPage() {
           </AnimateOnScroll>
 
           {/* Reels & Videos */}
-          <AnimateOnScroll className="lg:col-span-5" delay={120}>
+          <AnimateOnScroll className="md:col-span-3 lg:col-span-5" delay={120}>
             <SectionHead
               title="Reels & Videos"
               sub="Watch. Get inspired. Share."
@@ -457,10 +464,10 @@ export default async function CommunityPage() {
                     </span>
                   </div>
                   <div className="p-3">
-                    <p className="text-[12px] leading-snug text-forest/80 font-sans normal-case tracking-normal line-clamp-2">
+                    <p className="text-sm leading-snug text-forest/80 font-sans normal-case tracking-normal line-clamp-2">
                       {r.title}
                     </p>
-                    <p className="text-[10px] text-moss mt-1">{r.handle}</p>
+                    <p className="text-xs text-moss mt-1">{r.handle}</p>
                   </div>
                 </a>
               ))}
@@ -468,20 +475,22 @@ export default async function CommunityPage() {
           </AnimateOnScroll>
 
           {/* Join The Circle */}
-          <AnimateOnScroll className="lg:col-span-3" delay={240}>
+          <AnimateOnScroll className="md:col-span-6 lg:col-span-3" delay={240}>
             <div className="relative overflow-hidden glass-card bg-forest/95 p-7 h-full flex flex-col justify-center">
               <div className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-fern/10 blur-2xl" />
               <IconLeafBranch className="absolute -right-4 -bottom-4 w-40 h-40 text-fern/30 rotate-12" />
-              <div className="relative">
-                <h3 className="text-linen text-2xl normal-case tracking-normal">
-                  Join The Circle
-                </h3>
-                <p className="mt-3 text-linen/65 text-sm leading-relaxed">
-                  Be part of a conscious community.
-                </p>
+              <div className="relative md:flex md:items-center md:justify-between md:gap-6 lg:block">
+                <div>
+                  <h3 className="text-linen text-2xl sm:text-3xl normal-case tracking-normal">
+                    Join The Circle
+                  </h3>
+                  <p className="mt-3 text-linen/65 text-base leading-relaxed">
+                    Be part of a conscious community.
+                  </p>
+                </div>
                 <CommunityFormModal
                   label="Join Us"
-                  className="btn-glass-dark mt-6 inline-block"
+                  className="btn-glass-dark mt-6 md:mt-0 lg:mt-6 inline-block shrink-0"
                 />
               </div>
             </div>
@@ -504,25 +513,26 @@ function SectionHead({
 }: {
   title: string;
   sub?: string;
-  href: string;
+  href?: string;
   action?: React.ReactNode;
 }) {
   return (
     <div className="flex items-end justify-between mb-4">
       <div>
-        <h3 className="text-base sm:text-lg text-forest normal-case tracking-normal">
+        <h3 className="text-xl sm:text-2xl text-forest normal-case tracking-normal">
           {title}
         </h3>
-        {sub && <p className="text-xs text-moss mt-1">{sub}</p>}
+        {sub && <p className="text-sm text-moss mt-1">{sub}</p>}
       </div>
-      {action ?? (
-        <a
-          href={href}
-          className="text-[11px] tracking-widest uppercase text-sage hover:text-forest transition-colors shrink-0"
-        >
-          View All
-        </a>
-      )}
+      {action ??
+        (href && (
+          <a
+            href={href}
+            className="text-xs tracking-widest uppercase text-sage hover:text-forest transition-colors shrink-0"
+          >
+            View All
+          </a>
+        ))}
     </div>
   );
 }
@@ -612,14 +622,6 @@ function IconTag({ className }: IconProps) {
     <svg {...base(className)}>
       <path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z" />
       <circle cx="7.5" cy="7.5" r="1.2" />
-    </svg>
-  );
-}
-function IconBox({ className }: IconProps) {
-  return (
-    <svg {...base(className)}>
-      <path d="M3 7l9-4 9 4v10l-9 4-9-4V7Z" />
-      <path d="M3 7l9 4 9-4M12 11v10" />
     </svg>
   );
 }

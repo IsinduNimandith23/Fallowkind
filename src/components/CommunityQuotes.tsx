@@ -18,10 +18,10 @@ export default function CommunityQuotes({ quotes }: { quotes: Quote[] }) {
             <span className="text-3xl text-fern leading-none font-serif">
               &ldquo;
             </span>
-            <p className="text-forest/75 leading-relaxed text-sm font-serif italic normal-case tracking-normal -mt-2">
+            <p className="text-forest/75 leading-relaxed text-base font-serif italic normal-case tracking-normal -mt-2">
               {q.quote}
             </p>
-            <p className="mt-3 text-[11px] tracking-wide uppercase text-moss">
+            <p className="mt-3 text-xs tracking-wide uppercase text-moss">
               – {q.author}
             </p>
           </article>

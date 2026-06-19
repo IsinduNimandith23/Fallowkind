@@ -34,7 +34,7 @@ export default function CommunityReelsModal({ reels }: { reels: Reel[] }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-[11px] tracking-widest uppercase text-sage hover:text-forest transition-colors shrink-0"
+        className="text-xs tracking-widest uppercase text-sage hover:text-forest transition-colors shrink-0"
       >
         View All
       </button>
