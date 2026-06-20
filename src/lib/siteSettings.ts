@@ -16,6 +16,7 @@ export type SiteSettings = {
   spotlightImageUrl: string;
   spotlightPerk1: string;
   spotlightPerk2: string;
+  communityBannerUrl: string;
 };
 
 const DEFAULTS: SiteSettings = {
@@ -34,6 +35,7 @@ const DEFAULTS: SiteSettings = {
   spotlightImageUrl: "",
   spotlightPerk1: "15% Off Discount Code",
   spotlightPerk2: "Featured on Instagram",
+  communityBannerUrl: "",
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -104,6 +106,20 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     spotlightPerk2    = spotlight.data.spotlight_perk2     ?? "";
   }
 
+  // Community banner column was added in migration 021 - fetch separately so an
+  // un-migrated database still returns the rest of the settings.
+  let communityBannerUrl = DEFAULTS.communityBannerUrl;
+  const communityBanner = await supabase
+    .from("site_settings")
+    .select("community_banner_url")
+    .eq("id", 1)
+    .maybeSingle();
+  if (communityBanner.error) {
+    console.warn("[siteSettings] community_banner_url not available - run migration 021:", communityBanner.error.message);
+  } else if (communityBanner.data?.community_banner_url) {
+    communityBannerUrl = communityBanner.data.community_banner_url;
+  }
+
   return {
     heroVideoUrl:        data.hero_video_url        || DEFAULTS.heroVideoUrl,
     shopBannerUrl:       data.shop_banner_url       || DEFAULTS.shopBannerUrl,
@@ -120,6 +136,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     spotlightImageUrl,
     spotlightPerk1,
     spotlightPerk2,
+    communityBannerUrl,
   };
 }
 
@@ -188,6 +205,13 @@ export async function setHeroText(input: HeroTextInput): Promise<void> {
       hero_heading_line2: input.headingLine2,
       updated_at: new Date().toISOString(),
     });
+  if (error) throw new Error(error.message);
+}
+
+export async function setCommunityBannerUrl(url: string): Promise<void> {
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({ id: 1, community_banner_url: url, updated_at: new Date().toISOString() });
   if (error) throw new Error(error.message);
 }
 

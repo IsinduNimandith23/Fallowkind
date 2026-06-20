@@ -242,7 +242,7 @@ export default async function CommunityPage() {
       {/* ── Hero (sits behind the fixed navbar) ── */}
       <section className="relative flex items-center -mt-20 pt-40 pb-36 overflow-hidden">
         <Image
-          src={pick(0)}
+          src={settings.communityBannerUrl || pick(0)}
           alt="The Fallowkind community"
           fill
           priority
