@@ -79,24 +79,13 @@ export default function CommunityFormModal({
                 Share your Fallowkind
               </h2>
               <p className="text-linen/65 leading-relaxed mb-8">
-                Tag <span className="text-linen">@fallowkind</span> in your
+                Tag <span className="text-linen">fallowkind</span> in your
                 Instagram or Facebook posts - or fill in this form - to be
                 featured in our{" "}
                 <span className="text-linen">From Our Community</span> section.
               </p>
 
               <ReviewForm />
-
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-                <a
-                  href="https://www.instagram.com/fallowkind"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] tracking-[0.35em] uppercase text-linen/80 hover:text-linen transition-colors"
-                >
-                  Or tag @fallowkind on Instagram →
-                </a>
-              </div>
             </div>
             </div>
           </div>
