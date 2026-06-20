@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 
 // Approve (publish) a pending community story. PATCH { id, approved }
@@ -19,6 +20,11 @@ export async function PATCH(request: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Bust the cached public community page so the change shows immediately.
+  revalidatePath("/community-preview");
+  revalidatePath("/community");
+
   return NextResponse.json({ success: true });
 }
 
@@ -36,5 +42,10 @@ export async function DELETE(request: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Bust the cached public community page so the change shows immediately.
+  revalidatePath("/community-preview");
+  revalidatePath("/community");
+
   return NextResponse.json({ success: true });
 }

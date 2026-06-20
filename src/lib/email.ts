@@ -436,53 +436,6 @@ export async function sendRestockRequestEmail(params: {
   });
 }
 
-function communityReviewContent(params: {
-  name: string;
-  rating: number;
-  review: string;
-  email?: string;
-}): string {
-  const safeReview = esc(params.review).replace(/\n/g, "<br>");
-  const stars = "★".repeat(params.rating) + "☆".repeat(5 - params.rating);
-  return `
-    <p style="color:#7A9070;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">New Community Review</p>
-    <h2 style="color:#2A3D2A;font-size:22px;margin:0 0 24px;font-weight:400">${esc(params.name)}</h2>
-
-    <div style="background:#F5F0E5;padding:18px;margin-bottom:24px">
-      <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 8px">Rating</p>
-      <p style="color:#4F6B4A;font-size:20px;margin:0;letter-spacing:2px">${stars} <span style="color:#2A3D2A;font-size:14px">(${params.rating}/5)</span></p>
-    </div>
-
-    <div style="margin-bottom:24px">
-      <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">Review</p>
-      <p style="color:#2A3D2A;font-size:14px;line-height:1.8;margin:0;white-space:pre-wrap">${safeReview}</p>
-    </div>
-
-    ${
-      params.email
-        ? `<div style="background:#F5F0E5;padding:18px">
-             <p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9070;margin:0 0 10px">Contact</p>
-             <p style="color:#2A3D2A;font-size:14px;margin:0">${esc(params.email)}</p>
-           </div>`
-        : ""
-    }`;
-}
-
-export async function sendCommunityReviewEmail(params: {
-  name: string;
-  rating: number;
-  review: string;
-  email?: string;
-}) {
-  return resend.emails.send({
-    from: FROM_ADDRESS,
-    to: process.env.CONTACT_EMAIL || process.env.OWNER_EMAIL!,
-    replyTo: params.email || undefined,
-    subject: `New community review - ${params.name} (${params.rating}/5)`,
-    html: baseLayout(communityReviewContent(params)),
-  });
-}
-
 export async function sendOwnerNotificationEmail(
   order: OrderEmailData,
   attachments?: EmailAttachment[]

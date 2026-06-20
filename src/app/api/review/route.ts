@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { sendCommunityReviewEmail } from "@/lib/email";
 import { insertCommunityReview } from "@/lib/communityReviews";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,17 +34,6 @@ export async function POST(request: Request) {
     });
     if (dbError) {
       return NextResponse.json({ error: "Failed to submit review" }, { status: 500 });
-    }
-
-    // Notify the owner (best-effort - the submission is already saved).
-    const { error } = await sendCommunityReviewEmail({
-      name,
-      rating,
-      review,
-      email: email || undefined,
-    });
-    if (error) {
-      console.error("sendCommunityReviewEmail error:", error);
     }
 
     return NextResponse.json({ ok: true });
