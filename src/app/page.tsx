@@ -226,7 +226,7 @@ export default async function HomePage() {
         <AnimateOnScroll className="flex items-end justify-between mb-10 md:mb-12 gap-4">
           <div className="min-w-0">
             <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Fresh in</p>
-            <h2 className="text-4xl sm:text-5xl md:text-7xl text-forest">New Arrivals</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl text-forest">New Arrivals</h2>
           </div>
           <Link
             href="/shop"
@@ -265,7 +265,7 @@ export default async function HomePage() {
       {/* ── Values row ── */}
       <section className="section-padding page-container">
         <AnimateOnScroll className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl md:text-7xl text-forest">What we stand for</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-5xl text-forest">What we stand for</h2>
         </AnimateOnScroll>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -291,7 +291,7 @@ export default async function HomePage() {
       <section className="section-padding page-container grid md:grid-cols-2 gap-16 items-center">
         <AnimateOnScroll delay={0} className="reveal-left">
           <p className="text-xs tracking-[0.3em] uppercase text-moss mb-5">Who we are</p>
-          <h2 className="text-4xl sm:text-5xl md:text-7xl mb-7">Rooted in<br />the land.</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-5xl mb-7">Rooted in<br />the land.</h2>
           <p className="text-forest/65 leading-relaxed mb-10 max-w-md text-justify">
             Most modern clothing contains synthetic materials like polyester and nylon, which release
             microplastics over time. These fabrics often rely on heavy chemical processing and artificial
@@ -320,7 +320,7 @@ export default async function HomePage() {
       {/* ── Our Conscious Approach ── */}
       <section className="bg-cream/40 py-24 px-6">
         <AnimateOnScroll className="max-w-2xl mx-auto text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl text-forest">Our Conscious Approach</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl text-forest">Our Conscious Approach</h2>
           <p className="text-forest/60 leading-relaxed mt-5 text-sm sm:text-base">
             Every garment leaves an impact on the planet. We focus on thoughtful materials,
             responsible production, and reducing unnecessary waste so each piece carries a lighter
