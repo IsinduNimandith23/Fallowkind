@@ -254,40 +254,56 @@ export default async function CommunityPage() {
   return (
     <>
       {/* ── Hero (sits behind the fixed navbar) ── */}
-      <section className="relative flex items-center -mt-20 pt-40 pb-36 overflow-hidden">
+      <section className="relative -mt-20 flex items-center lg:items-start lg:aspect-[16/5] overflow-hidden">
+        {/* Full-bleed banner with text overlaid. Desktop locks to a 16:5 ratio
+            with text on the left half; on mobile the image fills the section
+            behind the centered text (it zooms/crops, which is expected).
+            Design banner images at 16:5 (e.g. 2560×800). */}
         <Image
-          src={settings.communityBannerUrl || pick(0)}
+          src={settings.communityBannerUrl || "/Community_banner.jpg"}
           alt="The Fallowkind community"
           fill
           priority
           sizes="100vw"
           className="object-cover object-center"
         />
-        {/* Light cream wash so text stays readable over the photo */}
-        <div className="absolute inset-0 bg-linen/25" />
-
-        <div className="relative w-full px-6 text-center">
-          <div className="max-w-2xl mx-auto">
-            <div className="flex justify-center mb-5 text-sage">
-              <IconSprout className="w-8 h-8" />
-            </div>
-            <h1
-              className="text-forest text-5xl sm:text-6xl md:text-7xl normal-case opacity-0 animate-fade-in-up"
-              style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}
-            >
-              Rooted Together
-            </h1>
-            <p
-              className="mt-6 text-forest/70 text-lg sm:text-xl leading-relaxed opacity-0 animate-fade-in-up"
-              style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
-            >
-              A community of people choosing comfort, nature, and conscious living.
-            </p>
-            <div
-              className="mt-8 opacity-0 animate-fade-in-up"
-              style={{ animationDelay: "0.6s", animationFillMode: "forwards" }}
-            >
-              <CommunityFormModal label="Share Your Story" className="btn-primary" />
+        {/* Mobile-only soft gradient behind the text so the dark overlay copy
+            stays readable over the zoomed image, while the lower image stays
+            crisp. Desktop text sits on the calm wall side, so no scrim there. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-linen/55 via-linen/20 to-transparent lg:hidden" />
+        <div className="relative w-full px-6 pt-28 pb-32 sm:px-10 lg:py-0 lg:pt-28 lg:pl-28 xl:pl-40 lg:pr-20">
+          {/* Text sits in the left half of the banner on desktop, so the right
+              side stays clear for the photo. On mobile it centers over the image. */}
+          <div className="w-full lg:w-1/2">
+            <div className="text-center">
+              <div className="flex justify-center mb-5 text-sage">
+                <IconSprout className="w-9 h-9" />
+              </div>
+              <h1
+                className="text-[#272a12] text-5xl sm:text-6xl xl:text-7xl sm:whitespace-nowrap normal-case leading-[1.05] opacity-0 animate-fade-in-up"
+                style={{
+                  fontFamily: '"geller-headline-medium", var(--font-serif)',
+                  animationDelay: "0.2s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                Rooted Together
+              </h1>
+              <p
+                className="mt-6 max-w-sm mx-auto text-[#1c2010] text-lg sm:text-xl leading-relaxed opacity-0 animate-fade-in-up"
+                style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
+              >
+                A community of people choosing comfort, nature, and conscious living.
+              </p>
+              <div
+                className="mt-8 opacity-0 animate-fade-in-up"
+                style={{ animationDelay: "0.6s", animationFillMode: "forwards" }}
+              >
+                <CommunityFormModal
+                  label="Share Your Story"
+                  className="inline-block bg-[#525d39] text-linen normal-case tracking-normal text-base px-8 py-4 rounded-lg shadow-sm transition-colors duration-300 hover:bg-forest"
+                />
+              </div>
             </div>
           </div>
         </div>

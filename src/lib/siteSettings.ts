@@ -65,31 +65,54 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     return DEFAULTS;
   }
 
-  // Mobile banner column was added in migration 011 - fetch it separately so an
-  // un-migrated database doesn't break the whole settings response.
+  // The columns below were added across later migrations (011, 012, 020, 021,
+  // 022). Each is fetched in its own query so a missing column on an un-migrated
+  // database only disables its own fields rather than breaking the whole
+  // settings response. They're independent, so fire them concurrently - issuing
+  // them serially stacks one network round-trip per query (~1-2s total).
+  const [mobile, story, spotlight, communityBanner, impact] = await Promise.all([
+    supabase
+      .from("site_settings")
+      .select("shop_banner_mobile_url")
+      .eq("id", 1)
+      .maybeSingle(),
+    supabase
+      .from("site_settings")
+      .select("our_story_beginning_url, our_story_principle1_url, our_story_principle2_url, our_story_principle3_url")
+      .eq("id", 1)
+      .maybeSingle(),
+    supabase
+      .from("site_settings")
+      .select("spotlight_name, spotlight_image_url, spotlight_perk1, spotlight_perk2")
+      .eq("id", 1)
+      .maybeSingle(),
+    supabase
+      .from("site_settings")
+      .select("community_banner_url")
+      .eq("id", 1)
+      .maybeSingle(),
+    supabase
+      .from("site_settings")
+      .select(
+        "impact_stat1_value, impact_stat1_label, impact_stat2_value, impact_stat2_label, impact_stat3_value, impact_stat3_label, impact_stat4_value, impact_stat4_label, impact_stat5_value, impact_stat5_label, impact_stat6_value, impact_stat6_label",
+      )
+      .eq("id", 1)
+      .maybeSingle(),
+  ]);
+
+  // Mobile banner column was added in migration 011.
   let shopBannerMobileUrl = DEFAULTS.shopBannerMobileUrl;
-  const mobile = await supabase
-    .from("site_settings")
-    .select("shop_banner_mobile_url")
-    .eq("id", 1)
-    .maybeSingle();
   if (mobile.error) {
     console.warn("[siteSettings] shop_banner_mobile_url not available - run migration 011:", mobile.error.message);
   } else if (mobile.data?.shop_banner_mobile_url) {
     shopBannerMobileUrl = mobile.data.shop_banner_mobile_url;
   }
 
-  // Our-story image columns were added in migration 012 - fetch separately so
-  // an un-migrated database still returns the rest of the settings.
+  // Our-story image columns were added in migration 012.
   let ourStoryBeginningUrl  = DEFAULTS.ourStoryBeginningUrl;
   let ourStoryPrinciple1Url = DEFAULTS.ourStoryPrinciple1Url;
   let ourStoryPrinciple2Url = DEFAULTS.ourStoryPrinciple2Url;
   let ourStoryPrinciple3Url = DEFAULTS.ourStoryPrinciple3Url;
-  const story = await supabase
-    .from("site_settings")
-    .select("our_story_beginning_url, our_story_principle1_url, our_story_principle2_url, our_story_principle3_url")
-    .eq("id", 1)
-    .maybeSingle();
   if (story.error) {
     console.warn("[siteSettings] our_story_*_url not available - run migration 012:", story.error.message);
   } else if (story.data) {
@@ -99,19 +122,13 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     if (story.data.our_story_principle3_url) ourStoryPrinciple3Url = story.data.our_story_principle3_url;
   }
 
-  // Spotlight columns were added in migration 020 - fetch separately so an
-  // un-migrated database still returns the rest of the settings. Unlike the
-  // image fallbacks above, values are taken as-is (an empty name intentionally
-  // hides the spotlight card on the storefront).
+  // Spotlight columns were added in migration 020. Unlike the image fallbacks
+  // above, values are taken as-is (an empty name intentionally hides the
+  // spotlight card on the storefront).
   let spotlightName      = DEFAULTS.spotlightName;
   let spotlightImageUrl  = DEFAULTS.spotlightImageUrl;
   let spotlightPerk1     = DEFAULTS.spotlightPerk1;
   let spotlightPerk2     = DEFAULTS.spotlightPerk2;
-  const spotlight = await supabase
-    .from("site_settings")
-    .select("spotlight_name, spotlight_image_url, spotlight_perk1, spotlight_perk2")
-    .eq("id", 1)
-    .maybeSingle();
   if (spotlight.error) {
     console.warn("[siteSettings] spotlight_* not available - run migration 020:", spotlight.error.message);
   } else if (spotlight.data) {
@@ -121,32 +138,18 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     spotlightPerk2    = spotlight.data.spotlight_perk2     ?? "";
   }
 
-  // Community banner column was added in migration 021 - fetch separately so an
-  // un-migrated database still returns the rest of the settings.
+  // Community banner column was added in migration 021.
   let communityBannerUrl = DEFAULTS.communityBannerUrl;
-  const communityBanner = await supabase
-    .from("site_settings")
-    .select("community_banner_url")
-    .eq("id", 1)
-    .maybeSingle();
   if (communityBanner.error) {
     console.warn("[siteSettings] community_banner_url not available - run migration 021:", communityBanner.error.message);
   } else if (communityBanner.data?.community_banner_url) {
     communityBannerUrl = communityBanner.data.community_banner_url;
   }
 
-  // Impact stats columns were added in migration 022 - fetch separately so an
-  // un-migrated database still returns the rest of the settings. Once migrated,
-  // values are taken as-is (the migration seeds them with today's numbers); an
-  // empty value intentionally hides that stat row on the storefront.
+  // Impact stats columns were added in migration 022. Once migrated, values are
+  // taken as-is (the migration seeds them with today's numbers); an empty value
+  // intentionally hides that stat row on the storefront.
   let impactStats = DEFAULTS.impactStats;
-  const impact = await supabase
-    .from("site_settings")
-    .select(
-      "impact_stat1_value, impact_stat1_label, impact_stat2_value, impact_stat2_label, impact_stat3_value, impact_stat3_label, impact_stat4_value, impact_stat4_label, impact_stat5_value, impact_stat5_label, impact_stat6_value, impact_stat6_label",
-    )
-    .eq("id", 1)
-    .maybeSingle();
   if (impact.error) {
     console.warn("[siteSettings] impact_stat* not available - run migration 022:", impact.error.message);
   } else if (impact.data) {

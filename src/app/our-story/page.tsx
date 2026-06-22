@@ -16,7 +16,8 @@ export const metadata: Metadata = {
     type: "article",
   },
 };
-export const revalidate = 0;
+// Cache the rendered page. Admin mutations call revalidatePath("/our-story") to bust it.
+export const revalidate = 3600;
 
 export default async function OurStoryPage() {
   const settings = await getSiteSettings();
