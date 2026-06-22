@@ -34,6 +34,10 @@ export const revalidate = 3600;
 const IMG = ["/banner.png", "/Rooted in Land.jpg", "/Untitled design.png"];
 const pick = (i: number) => IMG[i % IMG.length];
 
+// Until real Instagram/Facebook posts come through the tagged feeds, every
+// Community Gallery placeholder tile shows the Fallowkind logo card.
+const GALLERY_PLACEHOLDER = "/logo with background.png";
+
 const categories = [
   { label: "Gallery", sub: "Customer photos", Icon: IconCamera },
   { label: "Stories", sub: "Community stories", Icon: IconLeaf },
@@ -62,56 +66,56 @@ type GalleryTile = {
 const fallbackPosts: GalleryTile[] = [
   {
     href: "https://www.instagram.com/p/DZp2ggGKPCw/",
-    image: pick(1),
+    image: GALLERY_PLACEHOLDER,
     caption: "Morning walk in Kandy wearing my Fallowkind tee 🌿",
     isVideo: false,
     platform: "instagram",
   },
   {
     href: "https://www.instagram.com/p/DZFuCpsH-Mt/",
-    image: pick(2),
+    image: GALLERY_PLACEHOLDER,
     caption: "Ocean breeze & organic cotton = my kind of therapy 🌊",
     isVideo: false,
     platform: "facebook",
   },
   {
     href: "https://www.instagram.com/p/DZp2ggGKPCw/",
-    image: pick(3),
+    image: GALLERY_PLACEHOLDER,
     caption: "Exploring more, consuming less. That's the vibe. 🏔️",
     isVideo: false,
     platform: "instagram",
   },
   {
     href: "https://www.instagram.com/p/DZFuCpsH-Mt/",
-    image: pick(4),
+    image: GALLERY_PLACEHOLDER,
     caption: "Sunsets, slow living and sustainable choices ✨",
     isVideo: false,
     platform: "facebook",
   },
   {
     href: "https://www.instagram.com/fallowkind",
-    image: pick(0),
+    image: GALLERY_PLACEHOLDER,
     caption: "Linen days and quiet mornings 🤍",
     isVideo: false,
     platform: "instagram",
   },
   {
     href: "https://www.instagram.com/fallowkind",
-    image: pick(2),
+    image: GALLERY_PLACEHOLDER,
     caption: "Rooted in the land, made to last 🌱",
     isVideo: false,
     platform: "facebook",
   },
   {
     href: "https://www.instagram.com/fallowkind",
-    image: pick(1),
+    image: GALLERY_PLACEHOLDER,
     caption: "Conscious closet, clear conscience ✨",
     isVideo: false,
     platform: "instagram",
   },
   {
     href: "https://www.instagram.com/fallowkind",
-    image: pick(3),
+    image: GALLERY_PLACEHOLDER,
     caption: "Everyday essentials, kinder to the planet 🌍",
     isVideo: false,
     platform: "facebook",
@@ -183,7 +187,7 @@ export default async function CommunityPage() {
   // non-empty perk labels are shown (paired with the fixed icons by position).
   const spotlight = {
     handle: settings.spotlightName,
-    image: settings.spotlightImageUrl || pick(1),
+    image: settings.spotlightImageUrl || GALLERY_PLACEHOLDER,
     perks: [settings.spotlightPerk1, settings.spotlightPerk2]
       .map((label, i) => ({ label, Icon: SPOTLIGHT_PERK_ICONS[i] }))
       .filter((p) => p.label.trim() !== ""),
