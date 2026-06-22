@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const STATUSES = ["pending", "processing", "delivered"];
+const STATUSES = ["pending", "processing", "delivered", "returned"];
 
 export default function StatusUpdater({
   orderId,

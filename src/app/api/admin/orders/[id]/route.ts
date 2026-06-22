@@ -4,7 +4,7 @@ import { sendOrderProcessingEmail } from "@/lib/email";
 
 type Params = { params: Promise<{ id: string }> };
 
-const VALID_ORDER_STATUSES = ["pending", "processing", "delivered"];
+const VALID_ORDER_STATUSES = ["pending", "processing", "delivered", "returned"];
 const VALID_PAYMENT_STATUSES = ["pending", "paid", "failed"];
 
 export async function PATCH(request: Request, { params }: Params) {
