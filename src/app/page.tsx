@@ -30,33 +30,33 @@ const marqueeItems = [
   "Fallowkind For The Future",
 ];
 
-const testimonials = [
+const greenChoices = [
   {
-    name: "Kavindu S.",
-    quote: "The quality is honestly amazing. Soft fabric and super comfortable for everyday wear.",
-    rating: 5,
+    title: "Earthgrown Fibres",
+    description:
+      "We choose plant-based fibres that feel soft on your skin and gentler on the environment.",
+    imageUrl: "/green-1.jpeg",
   },
   {
-    name: "Nethmi P.",
-    quote: "You can feel the difference straight away. Lightweight, breathable, and premium.",
-    rating: 5,
+    title: "Slow Fashion",
+    description:
+      "We keep our collections limited to reduce excess production and encourage mindful consumption.",
+    imageUrl: "/green-2.jpeg",
   },
   {
-    name: "Tharushi D.",
-    quote: "Love the simple designs and natural fabric feel. Exactly what I was searching for.",
-    rating: 5,
+    title: "Animal-Friendly Fashion",
+    description:
+      "Our garments are made without animal-derived materials, keeping every piece kind to all living beings.",
+    imageUrl: "/green-3.jpeg",
   },
   {
-    name: "Yashen K.",
-    quote: "Finally found clothing that feels good on the skin and still looks clean and minimal.",
-    rating: 5,
-  },
-  {
-    name: "Dinara W.",
-    quote: "The fit, comfort, and fabric quality are all perfect. Definitely ordering again.",
-    rating: 5,
+    title: "Eco Friendly Packaging",
+    description:
+      "Every order is packed using recyclable materials, helping reduce unnecessary waste and support a cleaner future.",
+    imageUrl: "/green-4.jpeg",
   },
 ];
+
 
 const SITE_URL = "https://fallowkind.com";
 
@@ -317,37 +317,33 @@ export default async function HomePage() {
         </AnimateOnScroll>
       </section>
 
-      {/* ── Testimonials (auto-scrolling) ── */}
-      <section className="bg-cream/40 py-24 overflow-hidden">
-        <AnimateOnScroll className="text-center mb-14 px-6">
-          <p className="text-xs tracking-[0.3em] uppercase text-moss mb-3">Kind words</p>
-          <h2 className="text-4xl sm:text-5xl md:text-7xl text-forest">From our community</h2>
-          <p className="text-forest/60 leading-relaxed mt-5 max-w-xl mx-auto text-sm">
-            Early voices from supporters who have lived with the pieces.
+      {/* ── Our Conscious Approach ── */}
+      <section className="bg-cream/40 py-24 px-6">
+        <AnimateOnScroll className="max-w-2xl mx-auto text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl text-forest">Our Conscious Approach</h2>
+          <p className="text-forest/60 leading-relaxed mt-5 text-sm sm:text-base">
+            Every garment leaves an impact on the planet. We focus on thoughtful materials,
+            responsible production, and reducing unnecessary waste so each piece carries a lighter
+            environmental footprint.
           </p>
         </AnimateOnScroll>
 
-        <div className="testimonial-mask overflow-hidden">
-          <div className="testimonial-track py-4">
-            {[...testimonials, ...testimonials].map((t, i) => (
-              <article
-                key={i}
-                className="glass-card p-7 mx-3 w-[320px] md:w-[380px] flex-shrink-0 flex flex-col"
-              >
-                <div className="flex gap-1 mb-4" aria-label={`${t.rating} out of 5 stars`}>
-                  {Array.from({ length: t.rating }).map((_, s) => (
-                    <StarIcon key={s} />
-                  ))}
-                </div>
-                <p className="text-forest/75 leading-relaxed text-sm font-serif italic normal-case tracking-normal mb-6">
-                  “{t.quote}”
-                </p>
-                <div className="mt-auto pt-4 border-t border-forest/10">
-                  <p className="text-sm text-forest">{t.name}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {greenChoices.map((choice, i) => (
+            <AnimateOnScroll key={choice.title} delay={i * 100} className="text-center">
+              <div className="relative aspect-square overflow-hidden rounded-3xl mb-6 bg-gradient-to-br from-fern/30 to-sage/15 shadow-sm border border-white/40 group">
+                <Image
+                  src={choice.imageUrl}
+                  alt={choice.title}
+                  fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+              <h3 className="text-sm tracking-[0.2em] uppercase text-forest mb-3">{choice.title}</h3>
+              <p className="text-forest/60 leading-relaxed text-sm">{choice.description}</p>
+            </AnimateOnScroll>
+          ))}
         </div>
       </section>
 
@@ -404,14 +400,6 @@ function ProductCard({ name, price, originalPrice, tag, imageUrl, imageUrl2 }: {
         </p>
       </div>
     </>
-  );
-}
-
-function StarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-sage">
-      <path d="M12 2.5l2.95 6.34 6.95.74-5.2 4.74 1.47 6.83L12 17.77l-6.17 3.38 1.47-6.83-5.2-4.74 6.95-.74L12 2.5z" />
-    </svg>
   );
 }
 

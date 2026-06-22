@@ -123,12 +123,16 @@ const fallbackPosts: GalleryTile[] = [
 // stay fixed here to keep the card's look consistent.
 const SPOTLIGHT_PERK_ICONS = [IconTag, IconCamera];
 
-const impactStats = [
-  { value: "12,580", label: "Plastic-free garments sold", Icon: IconBottle },
-  { value: "4,320+", label: "Community members", Icon: IconPeople },
-  { value: "2,350", label: "Trees supported", Icon: IconTree },
-  { value: "1,250+", label: "Photos shared", Icon: IconPhotoStack },
-  { value: "18", label: "Countries reached", Icon: IconGlobe },
+// Icons paired by position with the admin-managed "Our Impact Together" stats
+// (see admin → Site → Community page). The value + label of each stat are
+// editable; icons stay fixed here to keep the section's look consistent.
+const IMPACT_STAT_ICONS = [
+  IconSprout,
+  IconBottle,
+  IconTree,
+  IconTag,
+  IconPeople,
+  IconGlobe,
 ];
 
 // Shown in the "From Our Community" section only until real submissions
@@ -184,6 +188,12 @@ export default async function CommunityPage() {
       .map((label, i) => ({ label, Icon: SPOTLIGHT_PERK_ICONS[i] }))
       .filter((p) => p.label.trim() !== ""),
   };
+
+  // "Our Impact Together" stats - admin-managed (admin → Site → Community page).
+  // Icons are paired by position; a stat with a blank number is hidden.
+  const impactStats = settings.impactStats
+    .map((stat, i) => ({ ...stat, Icon: IMPACT_STAT_ICONS[i] }))
+    .filter((stat) => stat.value.trim() !== "" && stat.Icon);
 
   // The "From Our Community" section is driven by approved submissions from
   // the share-your-story form. Until any are approved, fall back to the
@@ -396,25 +406,27 @@ export default async function CommunityPage() {
             </AnimateOnScroll>
           )}
 
-          {/* Our Impact Together */}
-          <AnimateOnScroll className="md:col-span-3 lg:col-span-2" delay={240}>
-            <h3 className="text-xl sm:text-2xl text-forest normal-case tracking-normal mb-4">
-              Our Impact Together
-            </h3>
-            <div className="glass-tinted p-5 sm:p-6 flex flex-col justify-center gap-8 h-[calc(100%-2.75rem)]">
-              {impactStats.map(({ value, label, Icon }) => (
-                <div key={label} className="flex items-start gap-3">
-                  <Icon className="w-6 h-6 text-sage shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-lg text-forest leading-none">{value}</p>
-                    <p className="text-xs text-moss leading-tight mt-1">
-                      {label}
-                    </p>
+          {/* Our Impact Together - hidden when every stat has been cleared */}
+          {impactStats.length > 0 && (
+            <AnimateOnScroll className="md:col-span-3 lg:col-span-2" delay={240}>
+              <h3 className="text-xl sm:text-2xl text-forest normal-case tracking-normal mb-4">
+                Our Impact Together
+              </h3>
+              <div className="glass-tinted p-5 sm:p-6 flex flex-col justify-center gap-8 h-[calc(100%-2.75rem)]">
+                {impactStats.map(({ value, label, Icon }) => (
+                  <div key={`${value}-${label}`} className="flex items-start gap-3">
+                    <Icon className="w-6 h-6 text-sage shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-lg text-forest leading-none">{value}</p>
+                      <p className="text-xs text-moss leading-tight mt-1">
+                        {label}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </AnimateOnScroll>
+                ))}
+              </div>
+            </AnimateOnScroll>
+          )}
         </div>
       </section>
 

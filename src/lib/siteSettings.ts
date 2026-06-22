@@ -17,7 +17,14 @@ export type SiteSettings = {
   spotlightPerk1: string;
   spotlightPerk2: string;
   communityBannerUrl: string;
+  impactStats: ImpactStat[];
 };
+
+export type ImpactStat = { value: string; label: string };
+
+// Number of "Our Impact Together" stats. Icons are paired by position in the
+// community page (see IMPACT_STAT_ICONS there); only value + label are editable.
+export const IMPACT_STAT_COUNT = 6;
 
 const DEFAULTS: SiteSettings = {
   heroVideoUrl: "/hero.mp4",
@@ -36,6 +43,14 @@ const DEFAULTS: SiteSettings = {
   spotlightPerk1: "15% Off Discount Code",
   spotlightPerk2: "Featured on Instagram",
   communityBannerUrl: "",
+  impactStats: [
+    { value: "100%", label: "Organic & natural fibres used" },
+    { value: "100+", label: "Plastic-free garments sold" },
+    { value: "100+", label: "Trees supported" },
+    { value: "0", label: "Fast-fashion shortcuts" },
+    { value: "200+", label: "Community members" },
+    { value: "1", label: "Countries reached" },
+  ],
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -120,6 +135,28 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     communityBannerUrl = communityBanner.data.community_banner_url;
   }
 
+  // Impact stats columns were added in migration 022 - fetch separately so an
+  // un-migrated database still returns the rest of the settings. Once migrated,
+  // values are taken as-is (the migration seeds them with today's numbers); an
+  // empty value intentionally hides that stat row on the storefront.
+  let impactStats = DEFAULTS.impactStats;
+  const impact = await supabase
+    .from("site_settings")
+    .select(
+      "impact_stat1_value, impact_stat1_label, impact_stat2_value, impact_stat2_label, impact_stat3_value, impact_stat3_label, impact_stat4_value, impact_stat4_label, impact_stat5_value, impact_stat5_label, impact_stat6_value, impact_stat6_label",
+    )
+    .eq("id", 1)
+    .maybeSingle();
+  if (impact.error) {
+    console.warn("[siteSettings] impact_stat* not available - run migration 022:", impact.error.message);
+  } else if (impact.data) {
+    const row = impact.data as Record<string, string | null>;
+    impactStats = Array.from({ length: IMPACT_STAT_COUNT }, (_, i) => ({
+      value: (row[`impact_stat${i + 1}_value`] ?? "").trim(),
+      label: (row[`impact_stat${i + 1}_label`] ?? "").trim(),
+    }));
+  }
+
   return {
     heroVideoUrl:        data.hero_video_url        || DEFAULTS.heroVideoUrl,
     shopBannerUrl:       data.shop_banner_url       || DEFAULTS.shopBannerUrl,
@@ -137,6 +174,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     spotlightPerk1,
     spotlightPerk2,
     communityBannerUrl,
+    impactStats,
   };
 }
 
@@ -212,6 +250,19 @@ export async function setCommunityBannerUrl(url: string): Promise<void> {
   const { error } = await supabase
     .from("site_settings")
     .upsert({ id: 1, community_banner_url: url, updated_at: new Date().toISOString() });
+  if (error) throw new Error(error.message);
+}
+
+export async function setImpactStats(stats: ImpactStat[]): Promise<void> {
+  const row: Record<string, string> = {};
+  for (let i = 0; i < IMPACT_STAT_COUNT; i++) {
+    const stat = stats[i] ?? { value: "", label: "" };
+    row[`impact_stat${i + 1}_value`] = stat.value;
+    row[`impact_stat${i + 1}_label`] = stat.label;
+  }
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({ id: 1, ...row, updated_at: new Date().toISOString() });
   if (error) throw new Error(error.message);
 }
 

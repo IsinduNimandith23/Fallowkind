@@ -8,6 +8,7 @@ import ShopBannerForm from "./ShopBannerForm";
 import CommitmentBannerForm from "./CommitmentBannerForm";
 import OurStoryImagesForm from "./OurStoryImagesForm";
 import CommunityBannerForm from "./CommunityBannerForm";
+import ImpactStatsForm from "./ImpactStatsForm";
 import SocialFeedStatus from "./SocialFeedStatus";
 import SiteTabs, { type SiteTab } from "./SiteTabs";
 
@@ -92,12 +93,19 @@ export default async function SiteSettingsPage() {
     {
       id: "community",
       label: "Community page",
-      description: "Hero banner image shown at the top of the community page.",
+      description: "Hero banner image and the “Our Impact Together” stats shown on the community page.",
       content: (
-        <section>
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Community banner</h2>
-          <CommunityBannerForm currentUrl={settings.communityBannerUrl} />
-        </section>
+        <div className="space-y-12">
+          <section>
+            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Community banner</h2>
+            <CommunityBannerForm currentUrl={settings.communityBannerUrl} />
+          </section>
+
+          <section>
+            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Our Impact Together</h2>
+            <ImpactStatsForm currentStats={settings.impactStats} />
+          </section>
+        </div>
       ),
     },
     {
