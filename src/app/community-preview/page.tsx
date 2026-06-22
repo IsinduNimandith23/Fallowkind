@@ -371,20 +371,20 @@ export default async function CommunityPage() {
             <AnimateOnScroll className="md:col-span-3 lg:col-span-3" delay={120}>
               <SectionHead title="Monthly Community Spotlight" />
               <div className="glass-card p-6 sm:p-8 text-center h-[calc(100%-2.75rem)] flex flex-col items-center justify-center">
-                <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-fern/40">
+                <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full overflow-hidden border-2 border-fern/40">
                   <Image
                     src={spotlight.image}
                     alt={`${spotlight.handle} - community spotlight`}
                     fill
-                    sizes="160px"
+                    sizes="208px"
                     className="object-cover"
                   />
                 </div>
-                <p className="mt-5 text-base text-forest/70">
+                <p className="mt-5 text-lg text-forest/70">
                   This month we&apos;re featuring
                 </p>
-                <p className="mt-1 text-2xl text-sage">{spotlight.handle}</p>
-                <p className="mt-3 text-sm text-moss">
+                <p className="mt-1 text-3xl text-sage">{spotlight.handle}</p>
+                <p className="mt-3 text-base text-moss">
                   Thank you for inspiring our community!
                 </p>
                 {spotlight.perks.length > 0 && (
