@@ -604,18 +604,10 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
                 <div>
                   <p className="text-forest mb-2">Shipping</p>
                   <ul className="space-y-2 list-disc pl-5 marker:text-forest/30">
-                    <li>Standard shipping: Rs. 460</li>
+                    <li>Standard shipping: Rs. 425</li>
                     <li>All orders ship within 1–5 business days</li>
                     <li>Island-wide delivery available</li>
                   </ul>
-                  <p className="mt-3 text-[13px] leading-relaxed text-forest/55">
-                    Our standard delivery fee is usually Rs. 400. Due to recent increases in
-                    fuel-related transport costs, our courier partner has temporarily applied
-                    a 15% surcharge on deliveries.
-                  </p>
-                  <p className="mt-2 text-[13px] leading-relaxed text-forest/55">
-                    Thank you for your understanding and support.
-                  </p>
                 </div>
                 <div>
                   <p className="text-forest mb-2">Returns</p>

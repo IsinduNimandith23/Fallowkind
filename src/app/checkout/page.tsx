@@ -8,7 +8,7 @@ import { useCart } from "@/contexts/CartContext";
 import { clearPendingCoupon, getPendingCoupon } from "@/lib/pendingCoupon";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 
-const SHIPPING = 460;
+const SHIPPING = 425;
 const SAVED_INFO_KEY = "fallowkind_saved_checkout_info";
 
 const BANK_DETAILS = {
@@ -644,14 +644,6 @@ export default function CheckoutPage() {
                 />
               )}
               <SummaryRow label="Shipping" value={`Rs. ${SHIPPING.toLocaleString("en-LK")}`} />
-              <p className="text-[11px] leading-relaxed text-forest/55">
-                Our standard delivery fee is usually Rs. 400. Due to recent increases in
-                fuel-related transport costs, our courier partner has temporarily applied a
-                15% surcharge on deliveries.
-              </p>
-              <p className="text-[11px] leading-relaxed text-forest/55">
-                Thank you for your understanding and support.
-              </p>
               <div className="border-t border-forest/10 pt-3 flex justify-between">
                 <span className="text-base font-semibold text-forest">Total</span>
                 <span className="text-base font-semibold text-forest">

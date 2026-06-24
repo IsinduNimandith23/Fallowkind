@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import MonthFilter from "./MonthFilter";
 
 export const metadata: Metadata = { title: "Dashboard" };
 export const revalidate = 0;
@@ -26,9 +27,31 @@ function paymentLabel(method: string, status: string) {
   return method === "cod" ? "COD" : "Pending";
 }
 
-export default async function DashboardPage() {
+// Year-month ("YYYY-MM") of an ISO timestamp, in store time (Asia/Colombo).
+function colomboYM(iso: string) {
+  return new Date(iso)
+    .toLocaleDateString("en-CA", { timeZone: "Asia/Colombo", year: "numeric", month: "2-digit" })
+    .slice(0, 7);
+}
+
+// Human label for a "YYYY-MM" value, e.g. "June 2026".
+function monthLabel(ym: string) {
+  return new Date(`${ym}-01T00:00:00+05:30`).toLocaleDateString("en-LK", {
+    timeZone: "Asia/Colombo",
+    year: "numeric",
+    month: "long",
+  });
+}
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string }>;
+}) {
+  const { month } = await searchParams;
+
   const [{ data: allOrders }, { data: recentOrders }] = await Promise.all([
-    supabase.from("orders").select("id, total, order_status, payment_method, payment_status, created_at"),
+    supabase.from("orders").select("id, total, shipping_fee, order_status, payment_method, payment_status, created_at"),
     supabase
       .from("orders")
       .select("id, order_number, customer_name, total, payment_method, payment_status, order_status, created_at")
@@ -38,13 +61,82 @@ export default async function DashboardPage() {
 
   const orders = allOrders ?? [];
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
 
-  const totalRevenue = orders
-    .filter((o) => o.payment_status === "paid" || o.payment_method === "cod")
-    .reduce((s, o) => s + Number(o.total), 0);
+  // ── Month filter ──────────────────────────────────────────────────
+  // Build a continuous list of months from the earliest order up to the
+  // current month (in store time), plus an "All time" option.
+  const currentYM = colomboYM(now.toISOString());
+  const earliestYM = orders.length
+    ? orders.reduce((min, o) => {
+        const ym = colomboYM(o.created_at);
+        return ym < min ? ym : min;
+      }, currentYM)
+    : currentYM;
 
+  const monthValues: string[] = [];
+  for (let ym = currentYM; ym >= earliestYM; ) {
+    monthValues.push(ym);
+    const [y, m] = ym.split("-").map(Number);
+    const prev = new Date(Date.UTC(y, m - 2, 1)); // m-2 = previous month (0-indexed)
+    ym = `${prev.getUTCFullYear()}-${String(prev.getUTCMonth() + 1).padStart(2, "0")}`;
+  }
+  const monthOptions = [
+    { value: "all", label: "All time" },
+    ...monthValues.map((ym) => ({ value: ym, label: monthLabel(ym) })),
+  ];
+
+  // Resolve the selected period: "all", a valid known month, else current month.
+  const isAllTime = month === "all";
+  const selectedMonth =
+    !isAllTime && month && /^\d{4}-\d{2}$/.test(month) && monthValues.includes(month)
+      ? month
+      : currentYM;
+  const selectedValue = isAllTime ? "all" : selectedMonth;
+  const periodLabel = isAllTime ? "All time" : monthLabel(selectedMonth);
+
+  const periodOrders = isAllTime
+    ? orders
+    : (() => {
+        const start = Date.parse(`${selectedMonth}-01T00:00:00+05:30`);
+        const [y, m] = selectedMonth.split("-").map(Number);
+        const nextMonth = new Date(Date.UTC(y, m, 1)); // m = next month (0-indexed)
+        const end = Date.parse(
+          `${nextMonth.getUTCFullYear()}-${String(nextMonth.getUTCMonth() + 1).padStart(2, "0")}-01T00:00:00+05:30`
+        );
+        return orders.filter((o) => {
+          const t = new Date(o.created_at).getTime();
+          return t >= start && t < end;
+        });
+      })();
+
+  // ── TEMP (2026-06-24): client asked the Revenue card to restart from 0
+  // as of now and keep running for the rest of this month, then reset to a
+  // normal full month from July. Only the current-month Revenue figure is
+  // trimmed — Orders and every other stat are untouched, and historical /
+  // all-time views stay truthful. Auto-no-ops once the month rolls over;
+  // safe to delete this block (and revert totalRevenue to `periodOrders`)
+  // any time after June 2026. ──────────────────────────────────────────
+  const REVENUE_RESET_YM = "2026-06";
+  const REVENUE_RESET_AT = Date.parse("2026-06-24T00:00:00+05:30");
+  const revenueReset = !isAllTime && selectedMonth === REVENUE_RESET_YM;
+  const revenueOrders = revenueReset
+    ? periodOrders.filter((o) => new Date(o.created_at).getTime() >= REVENUE_RESET_AT)
+    : periodOrders;
+  const revenueSub = revenueReset
+    ? `Since ${new Date(REVENUE_RESET_AT).toLocaleDateString("en-LK", {
+        timeZone: "Asia/Colombo",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })}`
+    : periodLabel;
+
+  const totalRevenue = revenueOrders
+    .filter((o) => o.payment_status === "paid" || o.payment_method === "cod")
+    .reduce((s, o) => s + (Number(o.total) - Number(o.shipping_fee ?? 0)), 0);
+
+  // Orders card stays as the all-time total, independent of the month filter.
   const totalOrders = orders.length;
 
   const needsAction = orders.filter(
@@ -55,9 +147,9 @@ export default async function DashboardPage() {
 
   const stats = [
     {
-      label: "Total Revenue",
+      label: "Revenue",
       value: `Rs. ${totalRevenue.toLocaleString("en-LK")}`,
-      sub: "All time",
+      sub: revenueSub,
       color: "border-emerald-400",
       icon: (
         <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -102,11 +194,14 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-4 md:p-8">
-      <div className="mb-6 md:mb-8">
-        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          {new Date().toLocaleDateString("en-LK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-        </p>
+      <div className="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {new Date().toLocaleDateString("en-LK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          </p>
+        </div>
+        <MonthFilter options={monthOptions} selected={selectedValue} />
       </div>
 
       {/* Stats */}

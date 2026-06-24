@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 
-const SHIPPING = 460;
+const SHIPPING = 425;
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQty, clearCart, subtotal, totalItems } = useCart();

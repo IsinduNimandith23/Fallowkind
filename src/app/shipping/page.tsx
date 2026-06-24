@@ -83,12 +83,7 @@ export default function ShippingPage() {
               Delivery fee
             </p>
             <p className="text-forest/75 leading-relaxed">
-              Our standard delivery fee is usually Rs. 400. Due to recent increases in
-              fuel-related transport costs, our courier partner has temporarily applied a
-              15% surcharge on deliveries.
-            </p>
-            <p className="text-forest/75 leading-relaxed mt-3">
-              Thank you for your understanding and support.
+              Our standard delivery fee is Rs. 425, charged island-wide.
             </p>
           </div>
         </AnimateOnScroll>
