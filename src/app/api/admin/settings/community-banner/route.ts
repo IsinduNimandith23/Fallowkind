@@ -8,8 +8,7 @@ export async function PUT(request: Request) {
     const url = (body.url ?? "").trim();
 
     await setCommunityBannerUrl(url);
-    revalidatePath("/community-preview");
-    revalidatePath("/community");
+    revalidatePath("/fallowfam");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);

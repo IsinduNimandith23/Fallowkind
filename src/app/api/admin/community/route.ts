@@ -22,8 +22,7 @@ export async function PATCH(request: Request) {
   }
 
   // Bust the cached public community page so the change shows immediately.
-  revalidatePath("/community-preview");
-  revalidatePath("/community");
+  revalidatePath("/fallowfam");
 
   return NextResponse.json({ success: true });
 }
@@ -44,8 +43,7 @@ export async function DELETE(request: Request) {
   }
 
   // Bust the cached public community page so the change shows immediately.
-  revalidatePath("/community-preview");
-  revalidatePath("/community");
+  revalidatePath("/fallowfam");
 
   return NextResponse.json({ success: true });
 }

@@ -40,6 +40,12 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // The community page was renamed to FallowFam. Keep old links/SEO working.
+      { source: "/community", destination: "/fallowfam", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -21,8 +21,7 @@ export async function PUT(request: Request) {
     }
 
     await setImpactStats(stats);
-    revalidatePath("/community-preview");
-    revalidatePath("/community");
+    revalidatePath("/fallowfam");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);
