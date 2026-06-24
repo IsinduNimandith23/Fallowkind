@@ -9,6 +9,7 @@ export async function PUT(request: Request) {
 
     await setCommunityBannerUrl(url);
     revalidatePath("/fallowfam");
+    revalidatePath("/fallowfam-preview");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);

@@ -22,6 +22,7 @@ export async function PUT(request: Request) {
 
     await setImpactStats(stats);
     revalidatePath("/fallowfam");
+    revalidatePath("/fallowfam-preview");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);
