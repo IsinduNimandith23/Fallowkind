@@ -14,7 +14,14 @@ type ProductPayload = {
   material?: string;
   fit?: string;
   origin?: string;
-  colors?: { name: string; hex: string }[];
+  colors?: {
+    name: string;
+    hex: string;
+    imageUrl?: string;
+    imageUrl2?: string;
+    sizes?: string[];
+    sizeQuantities?: Record<string, number>;
+  }[];
   sizes?: string[];
   size_quantities?: Record<string, number>;
   image_url?: string | null;

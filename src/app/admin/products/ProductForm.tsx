@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product, ProductColor } from "@/lib/products";
 import { SIZE_OPTIONS } from "@/lib/sizes";
-import { lowStockLabel, LOW_STOCK_THRESHOLD } from "@/lib/stock";
+import { lowStockLabel, LOW_STOCK_THRESHOLD, aggregateColorStock } from "@/lib/stock";
 
 const CATEGORY_OPTIONS = ["T-Shirts", "Graphic", "Heavyweight", "Oversized"];
 const TAG_OPTIONS = ["", "New", "Bestseller", "Offer", "Limited"];
@@ -12,6 +12,17 @@ const TAG_OPTIONS = ["", "New", "Bestseller", "Offer", "Limited"];
 type Props = {
   mode: "create" | "edit";
   product?: Product;
+};
+
+// Editable per-colour row. `qty` is keyed by size, holding raw input strings:
+// "" = in stock, untracked (∞); a number = tracked; "0" = sold out for this
+// colour/size.
+type ColorDraft = {
+  hex: string;
+  name: string;
+  imageUrl: string;
+  imageUrl2: string;
+  qty: Record<string, string>;
 };
 
 function parsePriceDigits(s: string): number {
@@ -23,10 +34,53 @@ function parsePriceDigits(s: string): number {
   return parseFloat(cleaned) || 0;
 }
 
+// Build the per-colour drafts from a product. New products (and legacy ones
+// without per-colour stock) seed every colour from the product-level stock so
+// the storefront keeps looking identical until the owner sets real per-colour
+// numbers.
+function initColorDrafts(product?: Product): ColorDraft[] {
+  const perColor = !!product && product.colors.some((c) => Array.isArray(c.sizes));
+
+  const productQty: Record<string, string> = {};
+  for (const s of SIZE_OPTIONS) {
+    const inStock = product ? product.sizes.includes(s) : true;
+    const n = product?.sizeQuantities?.[s];
+    productQty[s] = !inStock ? "0" : n != null ? String(n) : "";
+  }
+
+  const base: ProductColor[] = product?.colors?.length
+    ? product.colors
+    : [{ name: "", hex: "#EDE6D3" }];
+
+  return base.map((c) => {
+    const qty: Record<string, string> = {};
+    if (perColor && Array.isArray(c.sizes)) {
+      for (const s of SIZE_OPTIONS) {
+        const avail = c.sizes.includes(s);
+        const n = c.sizeQuantities?.[s];
+        qty[s] = !avail ? "0" : n != null ? String(n) : "";
+      }
+    } else {
+      for (const s of SIZE_OPTIONS) qty[s] = productQty[s];
+    }
+    return {
+      hex: c.hex,
+      name: c.name,
+      imageUrl: c.imageUrl ?? "",
+      imageUrl2: c.imageUrl2 ?? "",
+      qty,
+    };
+  });
+}
+
+function emptyQty(): Record<string, string> {
+  const qty: Record<string, string> = {};
+  for (const s of SIZE_OPTIONS) qty[s] = "";
+  return qty;
+}
+
 export default function ProductForm({ mode, product }: Props) {
   const router = useRouter();
-  const fileRef1 = useRef<HTMLInputElement>(null);
-  const fileRef2 = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(product?.name ?? "");
   const [category, setCategory] = useState(product?.category ?? "T-Shirts");
@@ -41,24 +95,9 @@ export default function ProductForm({ mode, product }: Props) {
   const [material, setMaterial] = useState(product?.details.material ?? "");
   const [fit, setFit] = useState(product?.details.fit ?? "");
   const [origin, setOrigin] = useState(product?.details.origin ?? "Responsibly made in Sri Lanka");
-  const [colors, setColors] = useState<ProductColor[]>(
-    product?.colors ?? [{ name: "", hex: "#EDE6D3" }]
-  );
-  const [sizes, setSizes] = useState<string[]>(
-    product?.sizes ?? ["S", "M", "L", "XL"]
-  );
-  const [sizeQty, setSizeQty] = useState<Record<string, string>>(() => {
-    const sq = product?.sizeQuantities ?? {};
-    const init: Record<string, string> = {};
-    for (const s of SIZE_OPTIONS) {
-      init[s] = sq[s] != null ? String(sq[s]) : "";
-    }
-    return init;
-  });
-  const [imageUrl, setImageUrl] = useState(product?.imageUrl ?? "");
-  const [imageUrl2, setImageUrl2] = useState(product?.imageUrl2 ?? "");
-  const [uploadingImage1, setUploadingImage1] = useState(false);
-  const [uploadingImage2, setUploadingImage2] = useState(false);
+  const [colors, setColors] = useState<ColorDraft[]>(() => initColorDrafts(product));
+  // In-flight image uploads, keyed by `${colorIndex}-${slot}`.
+  const [uploading, setUploading] = useState<Set<string>>(new Set());
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -70,34 +109,33 @@ export default function ProductForm({ mode, product }: Props) {
     }
   }
 
-  function updateColor(idx: number, patch: Partial<ProductColor>) {
+  function updateColor(idx: number, patch: Partial<ColorDraft>) {
     setColors((prev) => prev.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
   }
+  function updateColorQty(idx: number, size: string, value: string) {
+    setColors((prev) =>
+      prev.map((c, i) => (i === idx ? { ...c, qty: { ...c.qty, [size]: value } } : c))
+    );
+  }
   function addColor() {
-    setColors((prev) => [...prev, { name: "", hex: "#888888" }]);
+    setColors((prev) => [
+      ...prev,
+      { hex: "#888888", name: "", imageUrl: "", imageUrl2: "", qty: emptyQty() },
+    ]);
   }
   function removeColor(idx: number) {
     setColors((prev) => prev.filter((_, i) => i !== idx));
   }
 
-  function toggleSize(s: string) {
-    setSizes((prev) =>
-      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
-    );
-  }
-
-  async function handleImageUpload(
-    e: React.ChangeEvent<HTMLInputElement>,
-    slot: 1 | 2
+  async function handleColorImageUpload(
+    idx: number,
+    slot: 1 | 2,
+    e: React.ChangeEvent<HTMLInputElement>
   ) {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const setUploading = slot === 1 ? setUploadingImage1 : setUploadingImage2;
-    const setUrl = slot === 1 ? setImageUrl : setImageUrl2;
-    const inputRef = slot === 1 ? fileRef1 : fileRef2;
-
-    setUploading(true);
+    const key = `${idx}-${slot}`;
+    setUploading((prev) => new Set(prev).add(key));
     setError("");
     try {
       const fd = new FormData();
@@ -106,13 +144,16 @@ export default function ProductForm({ mode, product }: Props) {
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Upload failed");
-      setUrl(json.url);
+      updateColor(idx, slot === 1 ? { imageUrl: json.url } : { imageUrl2: json.url });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Upload failed";
-      setError(msg);
+      setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
+      setUploading((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+      e.target.value = "";
     }
   }
 
@@ -120,27 +161,35 @@ export default function ProductForm({ mode, product }: Props) {
     e.preventDefault();
     setError("");
 
-    const cleanColors = colors
-      .filter((c) => c.name.trim() && c.hex.trim())
-      .map((c) => ({ name: c.name.trim(), hex: c.hex.trim() }));
+    // Build each colour's images + per-size stock. Same blank/0 rules as the
+    // storefront: blank = in stock (untracked), a number = tracked, 0 = sold out.
+    const cleanColors: ProductColor[] = [];
+    for (const c of colors) {
+      const cname = c.name.trim();
+      const hex = c.hex.trim();
+      if (!cname || !hex) continue;
 
-    // Build the in-stock size list and the per-size quantity map together.
-    // Blank quantity = in stock, untracked. 0 = sold out (drop from sizes).
-    const cleanSizes: string[] = [];
-    const size_quantities: Record<string, number> = {};
-    for (const s of SIZE_OPTIONS) {
-      if (!sizes.includes(s)) continue; // marked sold out via the toggle
-      const raw = (sizeQty[s] ?? "").trim();
-      if (raw === "") {
-        cleanSizes.push(s);
-        continue;
+      const cSizes: string[] = [];
+      const cQuant: Record<string, number> = {};
+      for (const s of SIZE_OPTIONS) {
+        const raw = (c.qty[s] ?? "").trim();
+        if (raw === "") {
+          cSizes.push(s);
+          continue;
+        }
+        const n = Number(raw);
+        if (!Number.isFinite(n) || n < 0)
+          return setError(`Quantity for ${cname} / ${s} must be 0 or more`);
+        const q = Math.floor(n);
+        if (q === 0) continue; // sold out for this colour/size
+        cSizes.push(s);
+        cQuant[s] = q;
       }
-      const n = Number(raw);
-      if (!Number.isFinite(n) || n < 0) return setError(`Quantity for ${s} must be 0 or more`);
-      const q = Math.floor(n);
-      if (q === 0) continue; // zero on hand = sold out
-      cleanSizes.push(s);
-      size_quantities[s] = q;
+
+      const color: ProductColor = { name: cname, hex, sizes: cSizes, sizeQuantities: cQuant };
+      if (c.imageUrl.trim()) color.imageUrl = c.imageUrl.trim();
+      if (c.imageUrl2.trim()) color.imageUrl2 = c.imageUrl2.trim();
+      cleanColors.push(color);
     }
 
     if (!name.trim()) return setError("Name is required");
@@ -148,6 +197,12 @@ export default function ProductForm({ mode, product }: Props) {
     if (!priceDisplay.trim()) return setError("Price (display) is required");
     if (priceValue <= 0) return setError("Price value must be greater than zero");
     if (cleanColors.length === 0) return setError("Add at least one colour");
+
+    // Roll the per-colour stock up into the product-level aggregate used by the
+    // shop grid, filters, restock logic and metadata.
+    const agg = aggregateColorStock(cleanColors);
+    // The grid/OG image comes from the first colour that has a photo.
+    const firstWithImg = cleanColors.find((c) => c.imageUrl) ?? cleanColors[0];
 
     const payload = {
       name: name.trim(),
@@ -157,15 +212,15 @@ export default function ProductForm({ mode, product }: Props) {
       original_price: originalPrice.trim() || null,
       tag: tag.trim() || null,
       description: description.trim(),
-      in_stock: cleanSizes.length > 0,
+      in_stock: agg.inStock,
       material: material.trim(),
       fit: fit.trim(),
       origin: origin.trim(),
       colors: cleanColors,
-      sizes: cleanSizes,
-      size_quantities,
-      image_url: imageUrl.trim() || null,
-      image_url_2: imageUrl2.trim() || null,
+      sizes: agg.sizes,
+      size_quantities: agg.sizeQuantities,
+      image_url: firstWithImg.imageUrl || null,
+      image_url_2: firstWithImg.imageUrl2 || null,
     };
 
     setSubmitting(true);
@@ -191,6 +246,14 @@ export default function ProductForm({ mode, product }: Props) {
       setSubmitting(false);
     }
   }
+
+  // Live "any colour in stock" indicator for the section footer.
+  const anyInStock = colors.some((c) =>
+    SIZE_OPTIONS.some((s) => {
+      const raw = (c.qty[s] ?? "").trim();
+      return raw === "" || Number(raw) > 0;
+    })
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
@@ -287,64 +350,124 @@ export default function ProductForm({ mode, product }: Props) {
         </Field>
       </Section>
 
-      {/* Images */}
-      <Section title="Product images" subtitle="Primary is required-ish; secondary is optional">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ImageSlot
-            label="Primary image"
-            value={imageUrl}
-            onChange={setImageUrl}
-            uploading={uploadingImage1}
-            inputRef={fileRef1}
-            onFile={(e) => handleImageUpload(e, 1)}
-          />
-          <ImageSlot
-            label="Secondary image"
-            value={imageUrl2}
-            onChange={setImageUrl2}
-            uploading={uploadingImage2}
-            inputRef={fileRef2}
-            onFile={(e) => handleImageUpload(e, 2)}
-          />
-        </div>
-      </Section>
-
-      {/* Colors */}
-      <Section title="Colours" subtitle="At least one">
-        <div className="space-y-2">
-          {colors.map((c, idx) => (
-            <div key={idx} className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
-              <input
-                type="color"
-                value={c.hex}
-                onChange={(e) => updateColor(idx, { hex: e.target.value })}
-                className="w-12 h-10 border border-gray-200 rounded cursor-pointer flex-shrink-0"
-                aria-label="Colour swatch"
-              />
-              <input
-                type="text"
-                value={c.hex}
-                onChange={(e) => updateColor(idx, { hex: e.target.value })}
-                placeholder="#EDE6D3"
-                className="w-28 flex-shrink-0 border border-gray-200 rounded px-3 py-2 text-sm font-mono uppercase bg-white text-gray-800 focus:outline-none focus:border-forest"
-              />
-              <input
-                type="text"
-                value={c.name}
-                onChange={(e) => updateColor(idx, { name: e.target.value })}
-                placeholder="Colour name (e.g. Natural)"
-                className="flex-1 min-w-0 border border-gray-200 rounded px-3 py-2 text-sm bg-white text-gray-800 focus:outline-none focus:border-forest"
-              />
-              <button
-                type="button"
-                onClick={() => removeColor(idx)}
-                className="text-xs text-red-600 hover:underline px-2 flex-shrink-0"
-                disabled={colors.length <= 1}
+      {/* Colours: each has its own photos + per-size stock */}
+      <Section
+        title="Colours, photos & stock"
+        subtitle={`Each colour has its own front/back photos and its own stock. Blank qty = in stock (not counted). 0 = that colour/size is sold out. When a size has ${LOW_STOCK_THRESHOLD} or fewer left the store shows an "Only X left" badge.`}
+      >
+        <div className="space-y-5">
+          {colors.map((c, idx) => {
+            const soldOutColor = SIZE_OPTIONS.every((s) => {
+              const raw = (c.qty[s] ?? "").trim();
+              return raw !== "" && Number(raw) === 0;
+            });
+            return (
+              <div
+                key={idx}
+                className="border border-gray-200 rounded-lg p-4 bg-gray-50/40 space-y-4"
               >
-                Remove
-              </button>
-            </div>
-          ))}
+                {/* Colour identity */}
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
+                  <input
+                    type="color"
+                    value={c.hex}
+                    onChange={(e) => updateColor(idx, { hex: e.target.value })}
+                    className="w-12 h-10 border border-gray-200 rounded cursor-pointer flex-shrink-0"
+                    aria-label="Colour swatch"
+                  />
+                  <input
+                    type="text"
+                    value={c.hex}
+                    onChange={(e) => updateColor(idx, { hex: e.target.value })}
+                    placeholder="#2C335D"
+                    className="w-28 flex-shrink-0 border border-gray-200 rounded px-3 py-2 text-sm font-mono uppercase bg-white text-gray-800 focus:outline-none focus:border-forest"
+                  />
+                  <input
+                    type="text"
+                    value={c.name}
+                    onChange={(e) => updateColor(idx, { name: e.target.value })}
+                    placeholder="Colour name (e.g. Navy Blue)"
+                    className="flex-1 min-w-0 border border-gray-200 rounded px-3 py-2 text-sm bg-white text-gray-800 focus:outline-none focus:border-forest"
+                  />
+                  {soldOutColor && (
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-red-600 flex-shrink-0">
+                      Sold out
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeColor(idx)}
+                    className="text-xs text-red-600 hover:underline px-2 flex-shrink-0 disabled:text-gray-300 disabled:no-underline"
+                    disabled={colors.length <= 1}
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                {/* Colour photos */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ImageSlot
+                    label="Front image"
+                    value={c.imageUrl}
+                    onChange={(v) => updateColor(idx, { imageUrl: v })}
+                    uploading={uploading.has(`${idx}-1`)}
+                    onFile={(e) => handleColorImageUpload(idx, 1, e)}
+                  />
+                  <ImageSlot
+                    label="Back image"
+                    value={c.imageUrl2}
+                    onChange={(v) => updateColor(idx, { imageUrl2: v })}
+                    uploading={uploading.has(`${idx}-2`)}
+                    onFile={(e) => handleColorImageUpload(idx, 2, e)}
+                  />
+                </div>
+
+                {/* Per-size stock for this colour */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Stock per size
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {SIZE_OPTIONS.map((s) => {
+                      const raw = (c.qty[s] ?? "").trim();
+                      const n = raw === "" ? null : Number(raw);
+                      const valid = n != null && Number.isFinite(n) && n >= 0;
+                      const soldOut = valid && n === 0;
+                      const label = valid && !soldOut ? lowStockLabel(n) : null;
+                      return (
+                        <div key={s} className="border border-gray-200 rounded bg-white p-2">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                              {s}
+                            </span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wider">
+                              {soldOut ? (
+                                <span className="text-red-600">Sold out</span>
+                              ) : label ? (
+                                <span className="text-amber-600">{label}</span>
+                              ) : (
+                                <span className="text-emerald-700">In stock</span>
+                              )}
+                            </span>
+                          </div>
+                          <input
+                            type="number"
+                            step="1"
+                            min="0"
+                            value={c.qty[s] ?? ""}
+                            onChange={(e) => updateColorQty(idx, s, e.target.value)}
+                            placeholder="∞"
+                            className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-forest"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
           <button
             type="button"
             onClick={addColor}
@@ -353,68 +476,12 @@ export default function ProductForm({ mode, product }: Props) {
             + Add colour
           </button>
         </div>
-      </Section>
 
-      {/* Sizes & stock */}
-      <Section
-        title="Sizes & stock"
-        subtitle={`Set a stock quantity per size. Blank = in stock, not counted. 0 (or untick) = sold out. When a size has ${LOW_STOCK_THRESHOLD} or fewer left the store shows an "Only X left" badge.`}
-      >
-        <div className="space-y-2.5">
-          {SIZE_OPTIONS.map((s) => {
-            const inStock = sizes.includes(s);
-            const raw = (sizeQty[s] ?? "").trim();
-            const n = raw === "" ? null : Number(raw);
-            const valid = n != null && Number.isFinite(n) && n >= 0;
-            const label = inStock && valid ? lowStockLabel(n) : null;
-            return (
-              <div key={s} className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => toggleSize(s)}
-                  title={inStock ? "In stock - click to mark sold out" : "Sold out - click to mark in stock"}
-                  className={`min-w-[56px] px-4 py-2 text-xs font-semibold uppercase tracking-wider border-2 rounded transition-colors ${
-                    inStock
-                      ? "bg-forest text-linen border-forest"
-                      : "bg-red-50 text-red-700/70 border-red-200 line-through decoration-2 hover:border-red-300"
-                  }`}
-                >
-                  {s}
-                </button>
-                <input
-                  type="number"
-                  step="1"
-                  min="0"
-                  value={sizeQty[s] ?? ""}
-                  disabled={!inStock}
-                  onChange={(e) =>
-                    setSizeQty((prev) => ({ ...prev, [s]: e.target.value }))
-                  }
-                  placeholder={inStock ? "Qty (∞ if blank)" : "Sold out"}
-                  className="w-44 border border-gray-200 rounded px-3 py-2 text-sm bg-white text-gray-800 focus:outline-none focus:border-forest disabled:bg-gray-50 disabled:text-gray-300"
-                />
-                <span className="text-[11px] font-semibold uppercase tracking-wider">
-                  {!inStock ? (
-                    <span className="text-red-600">Sold out</span>
-                  ) : !valid ? (
-                    <span className="text-emerald-700">In stock</span>
-                  ) : n === 0 ? (
-                    <span className="text-red-600">Sold out</span>
-                  ) : label ? (
-                    <span className="text-amber-600">“{label}”</span>
-                  ) : (
-                    <span className="text-emerald-700">In stock</span>
-                  )}
-                </span>
-              </div>
-            );
-          })}
-        </div>
         <div className="mt-4 flex items-center gap-4 flex-wrap text-[11px] text-gray-500">
           <span className="ml-auto flex items-center gap-2 font-semibold uppercase tracking-wider">
-            <span className={`w-2 h-2 rounded-full ${sizes.length > 0 ? "bg-emerald-500" : "bg-red-500"}`} />
-            <span className={sizes.length > 0 ? "text-emerald-700" : "text-red-600"}>
-              Product status: {sizes.length > 0 ? "In Stock" : "Out of Stock"}
+            <span className={`w-2 h-2 rounded-full ${anyInStock ? "bg-emerald-500" : "bg-red-500"}`} />
+            <span className={anyInStock ? "text-emerald-700" : "text-red-600"}>
+              Product status: {anyInStock ? "In Stock" : "Out of Stock"}
             </span>
           </span>
         </div>
@@ -469,7 +536,7 @@ export default function ProductForm({ mode, product }: Props) {
         </button>
         <button
           type="submit"
-          disabled={submitting || uploadingImage1 || uploadingImage2}
+          disabled={submitting || uploading.size > 0}
           className="bg-forest text-linen px-6 py-2.5 rounded text-xs font-semibold uppercase tracking-wider hover:bg-forest/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting
@@ -529,18 +596,16 @@ function ImageSlot({
   value,
   onChange,
   uploading,
-  inputRef,
   onFile,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   uploading: boolean;
-  inputRef: React.RefObject<HTMLInputElement | null>;
   onFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <div className="border border-gray-100 rounded p-4 bg-gray-50/40">
+    <div className="border border-gray-100 rounded p-4 bg-white">
       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
         {label}
       </p>
@@ -558,7 +623,6 @@ function ImageSlot({
         <div className="flex-1 w-full space-y-3">
           <Field label="Upload">
             <input
-              ref={inputRef}
               type="file"
               accept="image/*"
               onChange={onFile}

@@ -17,6 +17,14 @@ function sortSizes(sizes: string[]): string[] {
 export type ProductColor = {
   name: string;
   hex: string;
+  // Per-colour photos (front/back). When unset, the storefront falls back to
+  // the product-level image_url/image_url_2.
+  imageUrl?: string;
+  imageUrl2?: string;
+  // Per-colour stock. When these are defined the product tracks stock per
+  // colour; otherwise it falls back to the product-level sizes/sizeQuantities.
+  sizes?: string[];
+  sizeQuantities?: SizeQuantities;
 };
 
 export type ProductDetails = {
@@ -74,7 +82,9 @@ function rowToProduct(row: ProductRow): Product {
     originalPrice: row.original_price ?? undefined,
     tag: row.tag ?? undefined,
     description: row.description,
-    colors: row.colors ?? [],
+    colors: (row.colors ?? []).map((c) =>
+      c.sizes ? { ...c, sizes: sortSizes(c.sizes) } : c
+    ),
     sizes: sortSizes(row.sizes ?? []),
     inStock: row.in_stock,
     sizeQuantities: row.size_quantities ?? {},
@@ -93,7 +103,7 @@ export async function getAllProducts(): Promise<Product[]> {
     .from("products")
     .select("*")
     .order("sort_order", { ascending: true })
-    .order("id", { ascending: true });
+    .order("id", { ascending: false });
 
   if (error) {
     console.error("getAllProducts error:", error);

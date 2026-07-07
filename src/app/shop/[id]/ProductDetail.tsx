@@ -19,9 +19,6 @@ type Props = {
 };
 
 export default function ProductDetail({ product, allProducts, reviews }: Props) {
-  const productImages = [product.imageUrl, product.imageUrl2].filter(
-    (u): u is string => Boolean(u)
-  );
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState("");
   const [qty, setQty] = useState(1);
@@ -40,9 +37,31 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
   const { addItem, openCart } = useCart();
   const router = useRouter();
 
-  // The whole product is unavailable when it's flagged out of stock or every
-  // size has sold out. We then swap the buy controls for a restock sign-up.
-  const allSoldOut = !product.inStock || product.sizes.length === 0;
+  // ── Per-colour view ──
+  // Photos and stock for the selected colour, falling back to the product-level
+  // values when this colour has none configured (legacy products).
+  const colorImages = (() => {
+    const own = [selectedColor?.imageUrl, selectedColor?.imageUrl2].filter(
+      (u): u is string => Boolean(u)
+    );
+    if (own.length) return own;
+    return [product.imageUrl, product.imageUrl2].filter((u): u is string => Boolean(u));
+  })();
+  const colorSizes = selectedColor?.sizes ?? product.sizes;
+  const colorQuantities = selectedColor?.sizeQuantities ?? product.sizeQuantities;
+
+  // Gallery image list for the currently selected colour.
+  const productImages = colorImages;
+
+  // Reset the gallery to the first photo whenever the colour changes.
+  useEffect(() => {
+    setActiveImage(0);
+  }, [selectedColor?.name]);
+
+  // The selected colour is unavailable when the product is flagged out of stock
+  // or the colour has no available sizes. We then swap the buy controls for a
+  // restock sign-up.
+  const allSoldOut = !product.inStock || colorSizes.length === 0;
 
   // Fire a Meta Pixel ViewContent when a product page is viewed.
   useEffect(() => {
@@ -54,17 +73,17 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
     });
   }, [product.id, product.name, product.category, product.priceValue]);
 
-  const selectedSizeOutOfStock = !!selectedSize && !product.sizes.includes(selectedSize);
+  const selectedSizeOutOfStock = !!selectedSize && !colorSizes.includes(selectedSize);
   const purchaseDisabled = selectedSizeOutOfStock;
 
-  // Low-stock urgency: per the selected size, or the product total before one is picked.
+  // Low-stock urgency: per the selected size, or the colour total before one is picked.
   const lowStockText = selectedSize
-    ? lowStockLabel(product.sizeQuantities[selectedSize])
-    : productLowStockLabel(product.sizes, product.sizeQuantities);
+    ? lowStockLabel(colorQuantities[selectedSize])
+    : productLowStockLabel(colorSizes, colorQuantities);
 
   // Cap the quantity stepper at the selected size's tracked stock. Untracked
   // sizes (no number set) have no cap.
-  const selectedSizeStock = selectedSize ? product.sizeQuantities[selectedSize] : undefined;
+  const selectedSizeStock = selectedSize ? colorQuantities[selectedSize] : undefined;
   const maxQty = typeof selectedSizeStock === "number" ? selectedSizeStock : Infinity;
   const atMaxQty = qty >= maxQty;
 
@@ -99,8 +118,8 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
         color: selectedColor.name,
         colorHex: selectedColor.hex,
         size: selectedSize,
-        imageUrl: product.imageUrl,
-        imageUrl2: product.imageUrl2,
+        imageUrl: colorImages[0] ?? product.imageUrl,
+        imageUrl2: colorImages[1] ?? product.imageUrl2,
       },
       qty
     );
@@ -351,7 +370,7 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
             </div>
             <div className={`flex flex-wrap gap-2 transition-all duration-200 ${sizeError ? "ring-2 ring-red-400/60 ring-offset-2 rounded-2xl p-1" : ""}`}>
               {SIZE_OPTIONS.map((s) => {
-                const available = product.sizes.includes(s);
+                const available = colorSizes.includes(s);
                 const isSelected = selectedSize === s;
                 return (
                   <button
@@ -384,25 +403,25 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
             )}
           </div>
 
-          {/* Availability */}
+          {/* Availability (reflects the selected colour) */}
           <div className="flex items-center gap-2 mb-6">
             <span
               className={`relative inline-flex w-2.5 h-2.5 rounded-full ${
-                product.inStock && !selectedSizeOutOfStock ? "bg-moss" : "bg-red-500"
+                !allSoldOut && !selectedSizeOutOfStock ? "bg-moss" : "bg-red-500"
               }`}
             >
-              {product.inStock && !selectedSizeOutOfStock && (
+              {!allSoldOut && !selectedSizeOutOfStock && (
                 <span className="absolute inset-0 rounded-full bg-moss/60 animate-ping" aria-hidden="true" />
               )}
             </span>
             <span
               className={`text-[11px] tracking-[0.18em] uppercase font-semibold ${
-                product.inStock && !selectedSizeOutOfStock ? "text-moss" : "text-red-600"
+                !allSoldOut && !selectedSizeOutOfStock ? "text-moss" : "text-red-600"
               }`}
             >
-              {product.inStock && !selectedSizeOutOfStock ? "In Stock" : "Out of Stock"}
+              {!allSoldOut && !selectedSizeOutOfStock ? "In Stock" : "Out of Stock"}
             </span>
-            {product.inStock && !selectedSizeOutOfStock && lowStockText && (
+            {!allSoldOut && !selectedSizeOutOfStock && lowStockText && (
               <span className="ml-1 text-[11px] tracking-[0.18em] uppercase font-semibold text-amber-600">
                 · {lowStockText}
               </span>
