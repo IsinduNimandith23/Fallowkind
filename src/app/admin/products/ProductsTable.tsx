@@ -197,7 +197,7 @@ export default function ProductsTable({ products }: { products: Product[] }) {
                     >
                       {p.name}
                     </Link>
-                    <p className="text-xs text-gray-400 mt-0.5">ID: {p.id}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">#{i + 1}</p>
                   </td>
                   <td className="px-4 md:px-6 py-3 text-gray-600">{p.category}</td>
                   <td className="px-4 md:px-6 py-3 text-gray-700">{p.price}</td>
