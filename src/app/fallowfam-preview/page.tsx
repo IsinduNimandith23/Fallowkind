@@ -11,9 +11,10 @@ import { getFacebookFeed } from "@/lib/facebook";
 import { getApprovedCommunityReviews } from "@/lib/communityReviews";
 import { getSiteSettings } from "@/lib/siteSettings";
 
-// Hidden preview of the full FallowFam page. The public /fallowfam route shows
-// "Coming Soon" until launch; this route lets the owner review the real page.
-// Kept out of search results so it never competes with the public page.
+// Full FallowFam page implementation. The public /fallowfam route re-exports
+// this component with indexable metadata; this route is a noindex mirror that
+// lets the owner preview changes. Kept out of search results so it never
+// competes with the public page.
 export const metadata: Metadata = {
   title: "FallowFam (Preview)",
   description:
