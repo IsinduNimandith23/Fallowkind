@@ -454,7 +454,7 @@ export default async function FallowFamPreviewPage() {
           <AnimateOnScroll className="md:col-span-3 lg:col-span-4">
             <SectionHead
               title="From Our Community"
-              sub="Stories from our families"
+              sub="Stories from our family"
               href="#"
               action={<CommunityStoriesModal quotes={allCommunityQuotes} />}
             />
