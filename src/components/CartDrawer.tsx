@@ -4,8 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart, type CartItem } from "@/contexts/CartContext";
-
-const SHIPPING = 425;
+import { computeShipping, BULK_THRESHOLD, BULK_SURCHARGE } from "@/lib/shipping";
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQty, clearCart, subtotal, totalItems } = useCart();
@@ -16,7 +15,9 @@ export default function CartDrawer() {
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  const total = subtotal + SHIPPING;
+  const shipping = computeShipping(totalItems);
+  const hasBulkSurcharge = totalItems >= BULK_THRESHOLD;
+  const total = subtotal + shipping;
 
   return (
     <>
@@ -106,8 +107,14 @@ export default function CartDrawer() {
             </div>
             <div className="flex justify-between text-sm text-forest/60">
               <span>Shipping</span>
-              <span>Rs. {SHIPPING.toLocaleString("en-LK")}</span>
+              <span>Rs. {shipping.toLocaleString("en-LK")}</span>
             </div>
+            {hasBulkSurcharge && (
+              <p className="text-[11px] leading-relaxed text-moss">
+                Includes a Rs. {BULK_SURCHARGE.toLocaleString("en-LK")} surcharge - orders of{" "}
+                {BULK_THRESHOLD} or more tees weigh over 1&nbsp;kg.
+              </p>
+            )}
             <div className="flex justify-between text-base font-semibold text-forest border-t border-forest/10 pt-3">
               <span>Total</span>
               <span>Rs. {total.toLocaleString("en-LK")}</span>

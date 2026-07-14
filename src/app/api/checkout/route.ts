@@ -8,8 +8,8 @@ import {
   sendOwnerNotificationEmail,
   type EmailAttachment,
 } from "@/lib/email";
+import { computeShipping } from "@/lib/shipping";
 
-const SHIPPING_FEE = 425;
 const VALID_METHODS = new Set(["cod", "bank_transfer"]);
 
 export async function POST(request: Request) {
@@ -41,7 +41,12 @@ export async function POST(request: Request) {
       (sum: number, i: { priceValue: number; quantity: number }) => sum + i.priceValue * i.quantity,
       0
     );
-    const total = subtotal - discountAmount + SHIPPING_FEE;
+    const totalQuantity = items.reduce(
+      (sum: number, i: { quantity: number }) => sum + i.quantity,
+      0
+    );
+    const shippingFee = computeShipping(totalQuantity);
+    const total = subtotal - discountAmount + shippingFee;
 
     // ── Stock check & reservation ──────────────────────────────────
     // Aggregate the requested quantity per (product, colour, size). Products
@@ -151,7 +156,7 @@ export async function POST(request: Request) {
         postal_code: customer.postalCode,
         notes: customer.notes || null,
         subtotal,
-        shipping_fee: SHIPPING_FEE,
+        shipping_fee: shippingFee,
         discount_amount: discountAmount,
         coupon_code: couponCode || null,
         total,
@@ -263,7 +268,7 @@ export async function POST(request: Request) {
       postal_code: customer.postalCode,
       notes: customer.notes,
       subtotal,
-      shipping_fee: SHIPPING_FEE,
+      shipping_fee: shippingFee,
       discount_amount: discountAmount,
       coupon_code: couponCode,
       total,

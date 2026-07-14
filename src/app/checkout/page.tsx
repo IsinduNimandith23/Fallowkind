@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import { clearPendingCoupon, getPendingCoupon } from "@/lib/pendingCoupon";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { computeShipping, BULK_THRESHOLD, BULK_SURCHARGE } from "@/lib/shipping";
 
-const SHIPPING = 425;
 const SAVED_INFO_KEY = "fallowkind_saved_checkout_info";
 
 const BANK_DETAILS = {
@@ -58,7 +58,7 @@ const INITIAL_FORM: Form = {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, subtotal, clearCart } = useCart();
+  const { items, subtotal, totalItems, clearCart } = useCart();
   const [form, setForm] = useState<Form>(INITIAL_FORM);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer");
   const [couponInput, setCouponInput] = useState("");
@@ -134,7 +134,9 @@ export default function CheckoutPage() {
   }, [subtotal, appliedCoupon]);
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
-  const total = subtotal - discountAmount + SHIPPING;
+  const shipping = computeShipping(totalItems);
+  const hasBulkSurcharge = totalItems >= BULK_THRESHOLD;
+  const total = subtotal - discountAmount + shipping;
 
   function setField(field: keyof Form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -643,7 +645,13 @@ export default function CheckoutPage() {
                   accent
                 />
               )}
-              <SummaryRow label="Shipping" value={`Rs. ${SHIPPING.toLocaleString("en-LK")}`} />
+              <SummaryRow label="Shipping" value={`Rs. ${shipping.toLocaleString("en-LK")}`} />
+              {hasBulkSurcharge && (
+                <p className="text-[11px] leading-relaxed text-moss">
+                  A Rs. {BULK_SURCHARGE.toLocaleString("en-LK")} surcharge is included because
+                  orders of {BULK_THRESHOLD} or more tees weigh over 1&nbsp;kg.
+                </p>
+              )}
               <div className="border-t border-forest/10 pt-3 flex justify-between">
                 <span className="text-base font-semibold text-forest">Total</span>
                 <span className="text-base font-semibold text-forest">
