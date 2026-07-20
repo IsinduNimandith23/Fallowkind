@@ -3,10 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import type { Product } from "@/lib/products";
 import { SIZE_OPTIONS } from "@/lib/sizes";
 import { productLowStockLabel } from "@/lib/stock";
+import { GENDER_OPTIONS, genderMatches, parseGender, type Gender } from "@/lib/gender";
+import { CATEGORY_OPTIONS } from "@/lib/categories";
 
 type SortKey = "default" | "price-asc" | "price-desc" | "name-asc";
 
@@ -47,12 +50,39 @@ export default function ShopGrid({
 }) {
   // Fall back to the desktop banner on mobile if no mobile-specific image is set.
   const mobileSrc = bannerMobileUrl || bannerUrl;
+
+  // The navbar's Shop dropdown links to /shop?gender=...&category=... . Seed the
+  // filters from the URL, and re-sync when the shopper picks another entry from
+  // that dropdown (same route, so this component is not remounted).
+  const searchParams = useSearchParams();
+  const genderParam = parseGender(searchParams.get("gender"));
+
+  // Resolve the category against what products actually carry, so a link that
+  // differs only in casing still matches. An unknown value is kept verbatim -
+  // it shows as a chip over an empty grid rather than being silently dropped.
+  const categoryParam = useMemo(() => {
+    const raw = searchParams.get("category")?.trim();
+    if (!raw) return null;
+    const match = products.find(
+      (p) => p.category.toLowerCase() === raw.toLowerCase()
+    );
+    return match?.category ?? raw;
+  }, [searchParams, products]);
+
+  const [selectedGender, setSelectedGender] = useState<Gender | null>(genderParam);
+  useEffect(() => { setSelectedGender(genderParam); }, [genderParam]);
+
   const [query, setQuery] = useState("");
   const [sortOpen, setSortOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileFiltersVisible, setMobileFiltersVisible] = useState(false);
   const [filterBtnPulse, setFilterBtnPulse] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    categoryParam ? [categoryParam] : []
+  );
+  useEffect(() => {
+    setSelectedCategories(categoryParam ? [categoryParam] : []);
+  }, [categoryParam]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedAvailability, setSelectedAvailability] = useState<"in" | "out" | null>(null);
@@ -110,8 +140,12 @@ export default function ShopGrid({
   };
 
   // Derive filter options from products
+  // Seeded with the canonical list - same as sizes below - so a category the
+  // catalogue does not carry yet still appears in the filter and in the navbar
+  // dropdown that links to it. Any ad-hoc category typed into the admin form is
+  // picked up from the products themselves.
   const allCategories = useMemo(() => {
-    const set = new Set<string>();
+    const set = new Set<string>(CATEGORY_OPTIONS);
     products.forEach((p) => p.category && set.add(p.category));
     return Array.from(set).sort();
   }, [products]);
@@ -126,6 +160,7 @@ export default function ShopGrid({
     const q = query.trim().toLowerCase();
     let list = products.filter((p) => {
       if (q && !p.name.toLowerCase().includes(q)) return false;
+      if (selectedGender && !genderMatches(p.gender, selectedGender)) return false;
       if (selectedCategories.length > 0 && !selectedCategories.includes(p.category)) return false;
       if (selectedSizes.length > 0 && !p.sizes.some((s) => selectedSizes.includes(s))) return false;
       if (selectedTags.length > 0 && (!p.tag || !selectedTags.includes(displayTag(p.tag)))) return false;
@@ -139,15 +174,17 @@ export default function ShopGrid({
     else if (sort === "name-asc") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
 
     return list;
-  }, [products, query, selectedCategories, selectedSizes, selectedTags, selectedAvailability, sort]);
+  }, [products, query, selectedGender, selectedCategories, selectedSizes, selectedTags, selectedAvailability, sort]);
 
   const toggle = (arr: string[], val: string) =>
     arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val];
 
   const activeFilterCount =
-    selectedCategories.length + selectedSizes.length + selectedTags.length + (selectedAvailability ? 1 : 0);
+    selectedCategories.length + selectedSizes.length + selectedTags.length +
+    (selectedAvailability ? 1 : 0) + (selectedGender ? 1 : 0);
 
   const clearAll = () => {
+    setSelectedGender(null);
     setSelectedCategories([]);
     setSelectedSizes([]);
     setSelectedTags([]);
@@ -191,6 +228,8 @@ export default function ShopGrid({
                 allCategories={allCategories}
                 allSizes={allSizes}
                 allTags={ALL_TAGS}
+                selectedGender={selectedGender}
+                onSelectGender={setSelectedGender}
                 selectedCategories={selectedCategories}
                 selectedSizes={selectedSizes}
                 selectedTags={selectedTags}
@@ -314,6 +353,9 @@ export default function ShopGrid({
             {/* Active filter chips */}
             {activeFilterCount > 0 && (
               <div className="flex flex-wrap items-center gap-2 mb-6 md:mb-8">
+                {selectedGender && (
+                  <Chip label={selectedGender} onClear={() => setSelectedGender(null)} />
+                )}
                 {selectedAvailability && (
                   <Chip
                     label={selectedAvailability === "in" ? "In Stock" : "Out of Stock"}
@@ -466,6 +508,8 @@ export default function ShopGrid({
                 allCategories={allCategories}
                 allSizes={allSizes}
                 allTags={ALL_TAGS}
+                selectedGender={selectedGender}
+                onSelectGender={setSelectedGender}
                 selectedCategories={selectedCategories}
                 selectedSizes={selectedSizes}
                 selectedTags={selectedTags}
@@ -497,6 +541,8 @@ function FilterSidebar({
   allCategories,
   allSizes,
   allTags,
+  selectedGender,
+  onSelectGender,
   selectedCategories,
   selectedSizes,
   selectedTags,
@@ -510,6 +556,8 @@ function FilterSidebar({
   allCategories: string[];
   allSizes: string[];
   allTags: string[];
+  selectedGender: Gender | null;
+  onSelectGender: (g: Gender | null) => void;
   selectedCategories: string[];
   selectedSizes: string[];
   selectedTags: string[];
@@ -525,6 +573,21 @@ function FilterSidebar({
       {showHeading && (
         <h2 className="text-xs tracking-[0.28em] uppercase text-forest">Filter</h2>
       )}
+
+      <FilterSection title="Gender">
+        <ul className="space-y-1">
+          {GENDER_OPTIONS.map((g) => (
+            <li key={g}>
+              <SidebarCheck
+                checked={selectedGender === g}
+                onClick={() => onSelectGender(selectedGender === g ? null : g)}
+                label={g}
+                circle
+              />
+            </li>
+          ))}
+        </ul>
+      </FilterSection>
 
       <FilterSection title="Availability">
         <ul className="space-y-1">

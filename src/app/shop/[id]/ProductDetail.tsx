@@ -376,7 +376,11 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
                   <button
                     key={s}
                     type="button"
-                    onClick={() => { setSelectedSize(s); setSizeError(false); }}
+                    onClick={() => {
+                      if (s !== selectedSize) setQty(1);
+                      setSelectedSize(s);
+                      setSizeError(false);
+                    }}
                     title={available ? undefined : "Sold out"}
                     aria-label={available ? s : `${s} - sold out`}
                     className={

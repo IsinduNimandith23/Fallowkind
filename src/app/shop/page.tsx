@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getAllProducts } from "@/lib/products";
 import { getSiteSettings } from "@/lib/siteSettings";
 import ShopGrid from "./ShopGrid";
@@ -23,11 +24,15 @@ export default async function ShopPage() {
     getAllProducts(),
     getSiteSettings(),
   ]);
+  // ShopGrid reads ?gender= via useSearchParams, which needs a Suspense
+  // boundary to keep this page statically rendered under `revalidate`.
   return (
-    <ShopGrid
-      products={products}
-      bannerUrl={settings.shopBannerUrl}
-      bannerMobileUrl={settings.shopBannerMobileUrl}
-    />
+    <Suspense>
+      <ShopGrid
+        products={products}
+        bannerUrl={settings.shopBannerUrl}
+        bannerMobileUrl={settings.shopBannerMobileUrl}
+      />
+    </Suspense>
   );
 }

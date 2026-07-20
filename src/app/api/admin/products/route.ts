@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
+import { DEFAULT_GENDER, isGender } from "@/lib/gender";
 
 type ProductPayload = {
   name?: string;
   category?: string;
+  gender?: string;
   price_display?: string;
   price_value?: number;
   original_price?: string | null;
@@ -37,6 +39,8 @@ function validate(payload: ProductPayload, requireAll = true): string | null {
     if (typeof payload.price_value !== "number" || payload.price_value < 0)
       return "Price value must be a non-negative number";
   }
+  if (payload.gender !== undefined && !isGender(payload.gender))
+    return "Gender must be Men, Women or Unisex";
   if (payload.colors && !Array.isArray(payload.colors)) return "Colors must be an array";
   if (payload.sizes && !Array.isArray(payload.sizes)) return "Sizes must be an array";
   return null;
@@ -53,6 +57,7 @@ export async function POST(request: Request) {
       .insert({
         name: body.name,
         category: body.category,
+        gender: body.gender ?? DEFAULT_GENDER,
         price_display: body.price_display,
         price_value: body.price_value,
         original_price: body.original_price || null,

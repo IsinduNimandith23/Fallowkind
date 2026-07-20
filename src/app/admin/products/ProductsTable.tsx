@@ -117,6 +117,7 @@ export default function ProductsTable({ products }: { products: Product[] }) {
                 <Th>Image</Th>
                 <Th>Name</Th>
                 <Th>Category</Th>
+                <Th>Gender</Th>
                 <Th>Price</Th>
                 <Th>Tag</Th>
                 <Th>Stock</Th>
@@ -200,6 +201,11 @@ export default function ProductsTable({ products }: { products: Product[] }) {
                     <p className="text-xs text-gray-400 mt-0.5">#{i + 1}</p>
                   </td>
                   <td className="px-4 md:px-6 py-3 text-gray-600">{p.category}</td>
+                  <td className="px-4 md:px-6 py-3">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider bg-gray-100 text-gray-600">
+                      {p.gender}
+                    </span>
+                  </td>
                   <td className="px-4 md:px-6 py-3 text-gray-700">{p.price}</td>
                   <td className="px-4 md:px-6 py-3">
                     {p.tag ? (

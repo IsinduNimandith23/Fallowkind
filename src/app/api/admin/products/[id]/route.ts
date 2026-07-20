@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 import { sendBackInStockEmail } from "@/lib/email";
+import { isGender } from "@/lib/gender";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -64,7 +65,7 @@ export async function PATCH(request: Request, { params }: Params) {
   const body = await request.json();
   const allowed: Record<string, unknown> = {};
   const fields = [
-    "name", "category", "price_display", "price_value",
+    "name", "category", "gender", "price_display", "price_value",
     "original_price", "tag", "description", "in_stock",
     "material", "fit", "origin",
     "colors", "sizes", "size_quantities", "image_url", "image_url_2", "sort_order",
@@ -75,6 +76,15 @@ export async function PATCH(request: Request, { params }: Params) {
   // Normalize empty strings on nullable text fields
   for (const f of ["original_price", "tag", "image_url", "image_url_2"]) {
     if (allowed[f] === "") allowed[f] = null;
+  }
+
+  // gender is NOT NULL with a CHECK constraint - reject bad values here so the
+  // caller gets a 400 instead of a Postgres error.
+  if ("gender" in allowed && !isGender(allowed.gender as string)) {
+    return NextResponse.json(
+      { error: "Gender must be Men, Women or Unisex" },
+      { status: 400 }
+    );
   }
 
   // Snapshot availability before the update so we can detect a sold-out →

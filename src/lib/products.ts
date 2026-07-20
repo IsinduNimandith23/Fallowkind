@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import type { SizeQuantities } from "./stock";
+import { DEFAULT_GENDER, isGender, type Gender } from "./gender";
 
 const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 
@@ -37,6 +38,7 @@ export type Product = {
   id: number;
   name: string;
   category: string;
+  gender: Gender;
   price: string;
   priceValue: number;
   originalPrice?: string;
@@ -55,6 +57,7 @@ type ProductRow = {
   id: number;
   name: string;
   category: string;
+  gender: string | null;
   price_display: string;
   price_value: number;
   original_price: string | null;
@@ -77,6 +80,7 @@ function rowToProduct(row: ProductRow): Product {
     id: row.id,
     name: row.name,
     category: row.category,
+    gender: isGender(row.gender) ? row.gender : DEFAULT_GENDER,
     price: row.price_display,
     priceValue: Number(row.price_value),
     originalPrice: row.original_price ?? undefined,

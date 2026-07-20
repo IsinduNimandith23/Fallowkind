@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product, ProductColor } from "@/lib/products";
 import { SIZE_OPTIONS } from "@/lib/sizes";
 import { lowStockLabel, LOW_STOCK_THRESHOLD, aggregateColorStock } from "@/lib/stock";
+import { GENDER_OPTIONS, DEFAULT_GENDER, type Gender } from "@/lib/gender";
+import { CATEGORY_OPTIONS } from "@/lib/categories";
 
-const CATEGORY_OPTIONS = ["T-Shirts", "Graphic", "Heavyweight", "Oversized"];
 const TAG_OPTIONS = ["", "New", "Bestseller", "Offer", "Limited"];
 
 type Props = {
@@ -84,6 +85,17 @@ export default function ProductForm({ mode, product }: Props) {
 
   const [name, setName] = useState(product?.name ?? "");
   const [category, setCategory] = useState(product?.category ?? "T-Shirts");
+  // A product saved before the list was trimmed may carry a category that is no
+  // longer offered. Keep it as an option so opening and saving that product
+  // does not silently re-categorise it - the select would otherwise fall back
+  // to the first entry.
+  const categoryChoices = useMemo(() => {
+    const set = new Set(CATEGORY_OPTIONS);
+    if (product?.category) set.add(product.category);
+    return Array.from(set);
+  }, [product?.category]);
+
+  const [gender, setGender] = useState<Gender>(product?.gender ?? DEFAULT_GENDER);
   const [priceDisplay, setPriceDisplay] = useState(product?.price ?? "Rs. ");
   const [priceValue, setPriceValue] = useState<number>(
     product ? parsePriceDigits(product.price) : 0
@@ -207,6 +219,7 @@ export default function ProductForm({ mode, product }: Props) {
     const payload = {
       name: name.trim(),
       category: category.trim(),
+      gender,
       price_display: priceDisplay.trim(),
       price_value: priceValue,
       original_price: originalPrice.trim() || null,
@@ -270,19 +283,32 @@ export default function ProductForm({ mode, product }: Props) {
             />
           </Field>
           <Field label="Category" required>
-            <input
-              type="text"
+            <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              list="category-options"
               className="input"
               required
-            />
-            <datalist id="category-options">
-              {CATEGORY_OPTIONS.map((c) => (
-                <option key={c} value={c} />
+            >
+              {categoryChoices.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
-            </datalist>
+            </select>
+          </Field>
+          <Field label="Gender" required>
+            <select
+              value={gender}
+              onChange={(e) => setGender(e.target.value as Gender)}
+              className="input"
+              required
+            >
+              {GENDER_OPTIONS.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field label="Tag (optional)">
             <select
