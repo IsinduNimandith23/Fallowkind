@@ -23,8 +23,18 @@ type ColorDraft = {
   name: string;
   imageUrl: string;
   imageUrl2: string;
+  // Optional extra photos, always EXTRA_IMAGE_SLOTS long so each slot keeps its
+  // position while editing. Blank entries are dropped on save.
+  extraImages: string[];
   qty: Record<string, string>;
 };
+
+// How many optional photos a colour can carry on top of front/back.
+const EXTRA_IMAGE_SLOTS = 3;
+
+function initExtraImages(existing?: string[]): string[] {
+  return Array.from({ length: EXTRA_IMAGE_SLOTS }, (_, i) => existing?.[i] ?? "");
+}
 
 function parsePriceDigits(s: string): number {
   // Drop currency prefixes like "Rs." or "USD." (letters + optional dot),
@@ -69,6 +79,7 @@ function initColorDrafts(product?: Product): ColorDraft[] {
       name: c.name,
       imageUrl: c.imageUrl ?? "",
       imageUrl2: c.imageUrl2 ?? "",
+      extraImages: initExtraImages(c.extraImages),
       qty,
     };
   });
@@ -132,16 +143,35 @@ export default function ProductForm({ mode, product }: Props) {
   function addColor() {
     setColors((prev) => [
       ...prev,
-      { hex: "#888888", name: "", imageUrl: "", imageUrl2: "", qty: emptyQty() },
+      {
+        hex: "#888888",
+        name: "",
+        imageUrl: "",
+        imageUrl2: "",
+        extraImages: initExtraImages(),
+        qty: emptyQty(),
+      },
     ]);
   }
   function removeColor(idx: number) {
     setColors((prev) => prev.filter((_, i) => i !== idx));
   }
 
+  function updateColorExtraImage(idx: number, slot: number, value: string) {
+    setColors((prev) =>
+      prev.map((c, i) =>
+        i === idx
+          ? { ...c, extraImages: c.extraImages.map((u, j) => (j === slot ? value : u)) }
+          : c
+      )
+    );
+  }
+
+  // `slot` is 1 for the front photo, 2 for the back, and 3.. for the optional
+  // extras (extra index = slot - 3).
   async function handleColorImageUpload(
     idx: number,
-    slot: 1 | 2,
+    slot: number,
     e: React.ChangeEvent<HTMLInputElement>
   ) {
     const file = e.target.files?.[0];
@@ -156,7 +186,9 @@ export default function ProductForm({ mode, product }: Props) {
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Upload failed");
-      updateColor(idx, slot === 1 ? { imageUrl: json.url } : { imageUrl2: json.url });
+      if (slot === 1) updateColor(idx, { imageUrl: json.url });
+      else if (slot === 2) updateColor(idx, { imageUrl2: json.url });
+      else updateColorExtraImage(idx, slot - 3, json.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -201,6 +233,9 @@ export default function ProductForm({ mode, product }: Props) {
       const color: ProductColor = { name: cname, hex, sizes: cSizes, sizeQuantities: cQuant };
       if (c.imageUrl.trim()) color.imageUrl = c.imageUrl.trim();
       if (c.imageUrl2.trim()) color.imageUrl2 = c.imageUrl2.trim();
+      // Extras are optional - only keep the slots that were filled in.
+      const extras = c.extraImages.map((u) => u.trim()).filter(Boolean);
+      if (extras.length) color.extraImages = extras;
       cleanColors.push(color);
     }
 
@@ -446,6 +481,25 @@ export default function ProductForm({ mode, product }: Props) {
                     uploading={uploading.has(`${idx}-2`)}
                     onFile={(e) => handleColorImageUpload(idx, 2, e)}
                   />
+                </div>
+
+                {/* Optional extra photos - never required to save */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Extra photos (optional)
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {c.extraImages.map((url, slot) => (
+                      <ImageSlot
+                        key={slot}
+                        label={`Extra image ${slot + 1}`}
+                        value={url}
+                        onChange={(v) => updateColorExtraImage(idx, slot, v)}
+                        uploading={uploading.has(`${idx}-${slot + 3}`)}
+                        onFile={(e) => handleColorImageUpload(idx, slot + 3, e)}
+                      />
+                    ))}
+                  </div>
                 </div>
 
                 {/* Per-size stock for this colour */}

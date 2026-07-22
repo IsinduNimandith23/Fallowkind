@@ -21,6 +21,7 @@ type ProductPayload = {
     hex: string;
     imageUrl?: string;
     imageUrl2?: string;
+    extraImages?: string[];
     sizes?: string[];
     sizeQuantities?: Record<string, number>;
   }[];

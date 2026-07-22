@@ -22,6 +22,9 @@ export type ProductColor = {
   // the product-level image_url/image_url_2.
   imageUrl?: string;
   imageUrl2?: string;
+  // Optional extra photos for this colour, shown in the gallery after the
+  // front/back shots. Always optional - a colour can be saved without them.
+  extraImages?: string[];
   // Per-colour stock. When these are defined the product tracks stock per
   // colour; otherwise it falls back to the product-level sizes/sizeQuantities.
   sizes?: string[];

@@ -41,9 +41,11 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
   // Photos and stock for the selected colour, falling back to the product-level
   // values when this colour has none configured (legacy products).
   const colorImages = (() => {
-    const own = [selectedColor?.imageUrl, selectedColor?.imageUrl2].filter(
-      (u): u is string => Boolean(u)
-    );
+    const own = [
+      selectedColor?.imageUrl,
+      selectedColor?.imageUrl2,
+      ...(selectedColor?.extraImages ?? []),
+    ].filter((u): u is string => Boolean(u));
     if (own.length) return own;
     return [product.imageUrl, product.imageUrl2].filter((u): u is string => Boolean(u));
   })();
@@ -273,6 +275,26 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
               </>
             )}
           </div>
+
+          {/* Thumbnails only earn their space once a colour has extra photos. */}
+          {productImages.length > 2 && (
+            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+              {productImages.map((src, i) => (
+                <button
+                  key={src + i}
+                  onClick={() => setActiveImage(i)}
+                  className={`relative aspect-square rounded-2xl overflow-hidden border border-white/40 transition-all duration-200 ${
+                    activeImage === i
+                      ? "ring-2 ring-forest ring-offset-2"
+                      : "opacity-60 hover:opacity-90"
+                  }`}
+                  aria-label={`View image ${i + 1}`}
+                >
+                  <Image src={src} alt="" fill sizes="120px" className="object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
 
           {productImages.length === 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -597,10 +619,13 @@ export default function ProductDetail({ product, allProducts, reviews }: Props) 
             </button>
             {washingOpen && (
               <ul className="pb-5 space-y-2 text-sm text-forest/65 list-disc pl-5 marker:text-forest/30">
-                <li>Wash on gentle with like colors</li>
-                <li>Wash on cold</li>
-                <li>Hang dry only to avoid shrinking - do not place in the dryer</li>
-                <li>For best results, allow to dry in the sun</li>
+                <li>Wash inside out.</li>
+                <li>Machine wash cold on a gentle cycle.</li>
+                <li>Wash with similar colours.</li>
+                <li>Hang dry only. Do not tumble dry.</li>
+                <li>Dry naturally in sunlight for best results.</li>
+                <li>Do not iron directly on the printed design.</li>
+                <li>Hand washing is recommended for the longest garment life.</li>
               </ul>
             )}
           </div>
