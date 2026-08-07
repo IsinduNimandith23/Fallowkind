@@ -172,7 +172,21 @@ export default function Footer() {
         </div>
 
         <div className="mt-16 pt-6 border-t border-linen/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-linen/30">
-          <p>© {new Date().getFullYear()} Fallowkind. All rights reserved.</p>
+          <p className="flex items-center gap-3">
+            <span>© {new Date().getFullYear()} Fallowkind. All rights reserved.</span>
+            <span className="text-linen/15">|</span>
+            <span>
+              Built by{" "}
+              <a
+                href="https://dkaylabs.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-linen/60 hover:text-linen transition-colors"
+              >
+                DKayLabs
+              </a>
+            </span>
+          </p>
           <p>Regenerative living.</p>
         </div>
       </div>
