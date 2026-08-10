@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   description:
     "Rooted Together - a community of people choosing comfort, nature and conscious living. Photos, stories, reels and the collective impact of the Fallowkind community.",
   robots: { index: false, follow: false },
+  // Self-canonical. Without this the route inherits the root layout's
+  // `canonical: "/"`, so the preview declared itself a duplicate of the
+  // home page - a canonical that points somewhere unrelated.
+  alternates: { canonical: "/fallowfam-preview" },
 };
 export const revalidate = 3600;
 
