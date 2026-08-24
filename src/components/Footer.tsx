@@ -178,7 +178,7 @@ export default function Footer() {
             <span>
               Built by{" "}
               <a
-                href="https://dkaylabs.vercel.app/"
+                href="https://www.dkaylabs.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-linen/60 hover:text-linen transition-colors"
