@@ -183,7 +183,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="font-semibold text-linen/60 hover:text-linen transition-colors"
               >
-                DKayLabs
+                DKayLABS
               </a>
             </span>
           </p>
