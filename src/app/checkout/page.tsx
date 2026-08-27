@@ -12,10 +12,10 @@ import { computeShipping, BULK_THRESHOLD, BULK_SURCHARGE } from "@/lib/shipping"
 const SAVED_INFO_KEY = "fallowkind_saved_checkout_info";
 
 const BANK_DETAILS = {
-  accountName: "S Sepala Dahanayake",
-  accountNumber: "8024217640",
+  accountName: "M S Y P Senanayake",
+  accountNumber: "8031375395",
   bank: "Commercial Bank",
-  branch: "Kottawa",
+  branch: "Narahenpita",
 };
 
 type PaymentMethod = "bank_transfer" | "cod";
